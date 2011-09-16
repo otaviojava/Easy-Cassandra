@@ -113,18 +113,18 @@ public class Persistence extends BasePersistence {
     }
 
     public List findAll(Class persistenceClass) throws NumberFormatException, InstantiationException, IllegalAccessException {
-        return findAll(persistenceClass, ConsistencyLevel.ONE, 10000);
+        return findAll(persistenceClass, ConsistencyLevelCQL.ONE, 10000);
     }
 
     public List findAll(Class persistenceClass, int limit) throws NumberFormatException, InstantiationException, IllegalAccessException {
-        return findAll(persistenceClass, ConsistencyLevel.ONE, limit);
+        return findAll(persistenceClass, ConsistencyLevelCQL.ONE, limit);
     }
 
-    public List findAll(Class persistenceClass, ConsistencyLevel consistencyLevel) throws NumberFormatException, InstantiationException, IllegalAccessException {
+    public List findAll(Class persistenceClass, ConsistencyLevelCQL consistencyLevel) throws NumberFormatException, InstantiationException, IllegalAccessException {
         return findAll(persistenceClass, consistencyLevel, 10000);
     }
 
-    public List findAll(Class persistenceClass, ConsistencyLevel consistencyLevel, int limit) throws NumberFormatException, InstantiationException, IllegalAccessException {
+    public List findAll(Class persistenceClass, ConsistencyLevelCQL consistencyLevel, int limit) throws NumberFormatException, InstantiationException, IllegalAccessException {
         List list = new ArrayList<>();
 
         try {
@@ -139,7 +139,8 @@ public class Persistence extends BasePersistence {
             CqlResult execute_cql_query = executeCQL(cql.toString());
             list = listbyQuery(execute_cql_query, persistenceClass);
         } catch (InvalidRequestException | UnavailableException | TimedOutException | SchemaDisagreementException | TException ex) {
-            LOOGER.error("Execute CQL", ex);
+             LOOGER.error("Error during execute CQL", ex);
+
         }
 
         return list;
