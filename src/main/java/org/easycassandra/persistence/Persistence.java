@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *main Class for persistence The Objects
- * @author otavio
+ * @author otaviojava - otaviojava@java.net
  */
 public class Persistence extends BasePersistence {
 
@@ -53,7 +53,19 @@ public class Persistence extends BasePersistence {
         this.referenciaSuperColunas = referenciaSuperColunas;
     }
 
-    protected List createRunCql(String condiction, String keyString, List objects, Class persistenceClass, ConsistencyLevelCQL consistencyLevel, int limit) throws NumberFormatException, InstantiationException, IllegalAccessException {
+    /**
+     * method for retrieve Objects
+     * @param condiction -condiction for search the Objects can be index and rowkey
+     * @param condictionValue - value for seach in condiction
+     * @param objects - List for the object retrieve 
+     * @param persistenceClass - type object class
+     * @param consistencyLevel level consistency for retrive the information
+     * @param limit length max the list
+     * @return the list retrieved with length (limit)
+    
+     */
+    @SuppressWarnings("unchecked")
+    protected List retriveObject(String condiction, String condictionValue, List objects, Class persistenceClass, ConsistencyLevelCQL consistencyLevel, int limit) {
         try {
             StringBuilder cql = new StringBuilder();
 
@@ -66,14 +78,14 @@ public class Persistence extends BasePersistence {
             cql.append(" where ");
             cql.append(" ").append(condiction).append(" =");
             cql.append("'");
-            cql.append(keyString);
+            cql.append(condictionValue);
             cql.append("' ");
             cql.append("LIMIT ").append(limit);//default 10000
 
 
             CqlResult execute_cql_query = executeCQL(cql.toString());
             objects = listbyQuery(execute_cql_query, persistenceClass);
-        } catch (InvalidRequestException | UnavailableException | TimedOutException | SchemaDisagreementException | TException ex) {
+        } catch (NumberFormatException | InstantiationException | IllegalAccessException ex) {
             LOOGER.error("Error during execute CQL", ex);
 
         }
@@ -82,49 +94,97 @@ public class Persistence extends BasePersistence {
     }
 
     //insert commands
-    public void insert(Object object) throws IOException {
+    /**
+     * the method for insert the Object
+     * @param object - the  Object for be insert in Cassandra 
+     * the default  of consistency Level is ONE (ConsistencyLevel.ONE)
+     * @see #insert(java.lang.Object, org.apache.cassandra.thrift.ConsistencyLevel) 
+     */
+    public void insert(Object object) {
         insert(object, ConsistencyLevel.ONE);
     }
 
-    public void insert(Object object, ConsistencyLevel consistencyLevel) throws IOException {
-
-        ColumnParent parent = new ColumnParent(getColumnFamilyName(object.getClass()));
-
-        ByteBuffer rowid = getKey(object);
-
-
-        List<Column> columns = getColumns(object);
-
-
+    /**
+     * the method for insert the Object
+     * @param object - the  Object for be insert in Cassandra 
+     * @param consistencyLevel - Level consistency for be insering
+     */
+    public void insert(Object object, ConsistencyLevel consistencyLevel) {
         try {
+            ColumnParent parent = new ColumnParent(getColumnFamilyName(object.getClass()));
+
+            ByteBuffer rowid;
+
+            rowid = getKey(object);
+
+            List<Column> columns = getColumns(object);
+
             for (Column column : columns) {
 
                 client.insert(rowid, parent, column, consistencyLevel);
-            }
 
-        } catch (InvalidRequestException | UnavailableException | TimedOutException | TException ex) {
+            }
+        } catch (IOException | InvalidRequestException | UnavailableException | TimedOutException | TException ex) {
             LOOGER.error("Error insert Objects", ex);
         }
-
     }
 
-    public CqlResult executeCQL(String cql) throws NumberFormatException, InstantiationException, IllegalAccessException, InvalidRequestException, UnavailableException, TimedOutException, SchemaDisagreementException, TException {
-        return client.execute_cql_query(ByteBuffer.wrap(cql.toString().getBytes()), Compression.NONE);
+    /**
+     * @param cql - Cassandra Query Language 
+     * @return  the result executing query
+     */
+    public CqlResult executeCQL(String cql) {
+        try {
+            return client.execute_cql_query(ByteBuffer.wrap(cql.toString().getBytes()), Compression.NONE);
+        } catch (InvalidRequestException | UnavailableException | TimedOutException | SchemaDisagreementException | TException ex) {
+            LOOGER.error("Error during execute CQL", ex);
+        }
+        return null;
     }
 
-    public List findAll(Class persistenceClass) throws NumberFormatException, InstantiationException, IllegalAccessException {
+    /**
+     * the method for retrieve the object in Cassandra
+     * @param persistenceClass - type of class for be retrieve
+     * the default  of consistency Level is ONE (ConsistencyLevel.ONE)
+     * The default lenght list is 10.000
+     * @see  #findAll(java.lang.Class, org.easycassandra.ConsistencyLevelCQL, int) 
+     * @return the list with Object is retrive
+     */
+    public List findAll(Class persistenceClass) {
         return findAll(persistenceClass, ConsistencyLevelCQL.ONE, 10000);
     }
 
-    public List findAll(Class persistenceClass, int limit) throws NumberFormatException, InstantiationException, IllegalAccessException {
+    /**
+     * the method for retrieve the object in Cassandra
+     * @param persistenceClass - type of class for be retrieve
+     * @param limit - lenght the list
+     * The default  of consistency Level is ONE (ConsistencyLevel.ONE)
+     * @see  #findAll(java.lang.Class, org.easycassandra.ConsistencyLevelCQL, int) 
+     * @return the list with Object is retrive
+     */
+    public List findAll(Class persistenceClass, int limit) {
         return findAll(persistenceClass, ConsistencyLevelCQL.ONE, limit);
     }
 
-    public List findAll(Class persistenceClass, ConsistencyLevelCQL consistencyLevel) throws NumberFormatException, InstantiationException, IllegalAccessException {
+    /**
+     * the method for retrieve the object in Cassandra
+     * @param persistenceClass -  type of class for be retrieve
+     * @param consistencyLevel - Level of consitency for retrive the Object
+     * @see  #findAll(java.lang.Class, org.easycassandra.ConsistencyLevelCQL, int) 
+     * @return the list with Object is retrive
+     */
+    public List findAll(Class persistenceClass, ConsistencyLevelCQL consistencyLevel) {
         return findAll(persistenceClass, consistencyLevel, 10000);
     }
 
-    public List findAll(Class persistenceClass, ConsistencyLevelCQL consistencyLevel, int limit) throws NumberFormatException, InstantiationException, IllegalAccessException {
+    /**
+     * the method for retrieve the object in Cassandra
+     * @param persistenceClass -  type of class for be retrieve
+     * @param consistencyLevel - Level of consitency for retrive the Object
+     * @param limit - lenght the list
+     * @return the list with Object is retrive
+     */
+    public List findAll(Class persistenceClass, ConsistencyLevelCQL consistencyLevel, int limit) {
         List list = new ArrayList<>();
 
         try {
@@ -138,18 +198,27 @@ public class Persistence extends BasePersistence {
             cql.append("LIMIT ").append(limit);//padrao 10000
             CqlResult execute_cql_query = executeCQL(cql.toString());
             list = listbyQuery(execute_cql_query, persistenceClass);
-        } catch (InvalidRequestException | UnavailableException | TimedOutException | SchemaDisagreementException | TException ex) {
-             LOOGER.error("Error during execute CQL", ex);
+        } catch (NumberFormatException | InstantiationException | IllegalAccessException ex) {
+            LOOGER.error("Error during execute CQL", ex);
 
         }
 
         return list;
     }
 
-    protected List listbyQuery(CqlResult execute_cql_query, Class persistenceClass) throws NumberFormatException, InstantiationException, IllegalAccessException {
+    /**
+     * The method for retrive the object from the result of Cassandra Query Language
+     * @param resultCQL - The result of Cassandra Query Language
+     * @param persistenceClass - The kind for retrieve  the Class
+     * @return The result of List
+     * @throws NumberFormatException
+     * @throws InstantiationException
+     * @throws IllegalAccessException 
+     */
+    public List listbyQuery(CqlResult resultCQL, Class persistenceClass) throws NumberFormatException, InstantiationException, IllegalAccessException {
         List<Map<String, ByteBuffer>> listMap = new ArrayList<>();
 
-        for (CqlRow row : execute_cql_query.rows) {
+        for (CqlRow row : resultCQL.rows) {
             Map<String, ByteBuffer> mapColumn = new HashMap<>();
 
             for (Column cl : row.getColumns()) {
@@ -164,15 +233,35 @@ public class Persistence extends BasePersistence {
 
     }
 
+    /**
+     * The method for retrive a object from rowkey
+     * @param key - The value of rowkey
+     * @param persistenceClass - The kind class
+     * The default  of consistency Level is ONE (ConsistencyLevel.ONE)
+     * @return - The object from key
+     * @see #findByKey(java.lang.Object, java.lang.Class, org.easycassandra.ConsistencyLevelCQL) 
+     * @throws NotFoundException
+     * @throws NumberFormatException
+     * @throws InstantiationException
+     * @throws IllegalAccessException 
+     */
     public Object findByKey(Object key, Class persistenceClass) throws NotFoundException, NumberFormatException, InstantiationException, IllegalAccessException {
-        return findByKey(key, persistenceClass, 1, ConsistencyLevelCQL.ONE);
+        return findByKey(key, persistenceClass, ConsistencyLevelCQL.ONE);
     }
 
+    /**
+     * The method for retrive a object from rowkey
+     * @param key - The value of rowkey
+     * @param persistenceClass - The kind class
+     * @param consistencyLevel - The consistency Level
+     * @return - The object from key
+     * @throws NotFoundException
+     * @throws NumberFormatException
+     * @throws InstantiationException
+     * @throws IllegalAccessException 
+     */
     public Object findByKey(Object key, Class persistenceClass, ConsistencyLevelCQL consistencyLevel) throws NotFoundException, NumberFormatException, InstantiationException, IllegalAccessException {
-        return findByKey(key, persistenceClass, 1, consistencyLevel);
-    }
-
-    public Object findByKey(Object key, Class persistenceClass, int limit, ConsistencyLevelCQL consistencyLevel) throws NotFoundException, NumberFormatException, InstantiationException, IllegalAccessException {
+        int limit = 1;
         List objects = new ArrayList<>();
 
         Field keyField = getKeyField(persistenceClass);
@@ -180,7 +269,7 @@ public class Persistence extends BasePersistence {
         String keyString = new UTF8Read().getObjectByByte(keyBuffer).toString();
         String condicao = "KEY";
 
-        objects = createRunCql(condicao, keyString, objects, persistenceClass, consistencyLevel, limit);
+        objects = retriveObject(condicao, keyString, objects, persistenceClass, consistencyLevel, limit);
         if (objects.size() > 0) {
             return objects.get(0);
         }
@@ -190,14 +279,25 @@ public class Persistence extends BasePersistence {
     }
 
     //delete comand
-    public void deleteByKeyValue(Object keyValue, Class obClass) {
-        ByteBuffer keyBuffer = writeMap.get(getKeyField(obClass).getType().getName()).getBytebyObject(keyValue);
+    /**
+     * Delete the Object from the key value
+     * @param keyValue - The key value
+     * @param objectClass  - The Kind of class
+     * the default  of consistency Level is ONE (ConsistencyLevel.ONE)
+     * The default lenght list is 10.000
+     */
+    public void deleteByKeyValue(Object keyValue, Class objectClass) {
+        ByteBuffer keyBuffer = writeMap.get(getKeyField(objectClass).getType().getName()).getBytebyObject(keyValue);
         String keyString = new UTF8Read().getObjectByByte(keyBuffer).toString();
 
 
-        runDeleteCqlCommand(keyString, obClass);
+        runDeleteCqlCommand(keyString, objectClass);
     }
 
+    /**
+     * Delete the Object from the key value
+     * @param keyObject - The Object for be delete
+     */
     public void delete(Object keyObject) {
         Field keyField = getKeyField(keyObject.getClass());
         ByteBuffer keyBuffer = writeMap.get(keyField.getType().getName()).getBytebyObject(ReflectionUtil.getMethod(keyObject, keyField.getName()));
@@ -208,50 +308,90 @@ public class Persistence extends BasePersistence {
 
     }
 
-    protected void runDeleteCqlCommand(String keyString, Class persistenceClass) {
-        try {
-            StringBuilder cql = new StringBuilder();
-            cql.append("delete ");
-            cql.append(columnNames(persistenceClass));
-            cql.append(" from ");
-            cql.append(getColumnFamilyName(persistenceClass));
-            cql.append(" where KEY = '");
-            cql.append(keyString);
-            cql.append("'");
-            CqlResult cqlResult = executeCQL(cql.toString());
-        } catch (NumberFormatException | InstantiationException | IllegalAccessException | InvalidRequestException | UnavailableException | TimedOutException | SchemaDisagreementException | TException ex) {
+    /**
+     * Create the cql and remove the Object 
+     * @param keyValue - The value for row key
+     * @param persistenceClass - The kind object
+     */
+    protected void runDeleteCqlCommand(String keyValue, Class persistenceClass) {
 
-            LOOGER.error("Error during execute CQL", ex);
-        }
+        StringBuilder cql = new StringBuilder();
+        cql.append("delete ");
+        cql.append(columnNames(persistenceClass));
+        cql.append(" from ");
+        cql.append(getColumnFamilyName(persistenceClass));
+        cql.append(" where KEY = '");
+        cql.append(keyValue);
+        cql.append("'");
+        CqlResult cqlResult = executeCQL(cql.toString());
+
     }
 
     //find index
-    public List findByIndex(Object index, Class obClass) throws NotFoundException, NumberFormatException, InstantiationException, IllegalAccessException {
-        return findByIndex(index, obClass, ConsistencyLevelCQL.ONE);
+    /**
+     * Find list objects from index
+     * @param index - the index value
+     * @param objectClass - Kind the Object
+     * the default  of consistency Level is ONE (ConsistencyLevel.ONE)
+     * The default lenght list is 10.000
+     * @see #findByIndex(java.lang.Object, java.lang.Class, org.easycassandra.ConsistencyLevelCQL, int) 
+     * @return list retrieve from the value index
+     * 
+     */
+    public List findByIndex(Object index, Class objectClass) {
+        return findByIndex(index, objectClass, ConsistencyLevelCQL.ONE);
     }
 
-    public List findByIndex(Object index, Class obClass, ConsistencyLevelCQL consistencyLevel) throws NotFoundException, NumberFormatException, InstantiationException, IllegalAccessException {
-        return findByIndex(index, obClass, consistencyLevel, 10000);
+    /**
+     * Find list objects from index
+     * @param index - the index value
+     * @param objectClass - Kind the Object
+     * @param consistencyLevel - The consistency Level
+     * @see #findByIndex(java.lang.Object, java.lang.Class, org.easycassandra.ConsistencyLevelCQL, int) 
+     * The default lenght list is 10.000
+     * @return list retrieve from the value index
+     */
+    public List findByIndex(Object index, Class objectClass, ConsistencyLevelCQL consistencyLevel) {
+        return findByIndex(index, objectClass, consistencyLevel, 10000);
     }
 
-    public List findByIndex(Object index, Class obClass, ConsistencyLevelCQL consistencyLevelCQL, int limit) throws NotFoundException, NumberFormatException, InstantiationException, IllegalAccessException {
+    /**
+     * Find list objects from index
+     * @param index - the index value
+     * @param objectClass - kind the Object
+     * @param consistencyLevelCQL  - The consistency Level
+     * @param limit - The length of List
+     * @return  list retrieve from the value index
+     */
+    public List findByIndex(Object index, Class objectClass, ConsistencyLevelCQL consistencyLevelCQL, int limit) {
         List objects = new ArrayList<>();
 
         String indexString = index.toString();
-        ColumnValue coluna = getIndexField(obClass).getAnnotation(ColumnValue.class);
+        ColumnValue coluna = getIndexField(objectClass).getAnnotation(ColumnValue.class);
         String condicao = coluna.nome();
 
 
-        return createRunCql(condicao, indexString, objects, obClass, consistencyLevelCQL, limit);
+        return retriveObject(condicao, indexString, objects, objectClass, consistencyLevelCQL, limit);
 
 
     }
 
-    public void update(Object object) throws Exception {
+    /**
+     * Update the Object
+     * The default  of consistency Level is ONE (ConsistencyLevel.ONE)
+     * @see #update(java.lang.Object, org.easycassandra.ConsistencyLevelCQL) 
+     * @param object = The Object will updated 
+     */
+    public void update(Object object) {
         update(object, ConsistencyLevelCQL.ONE);
     }
 
-    public void update(Object object, ConsistencyLevelCQL consistencyLevel) throws Exception {
+    /**
+     * Update the Object
+     * @param object - The Object will updated
+     * @param consistencyLevel - Th consistency Level
+     */
+    public void update(Object object, ConsistencyLevelCQL consistencyLevel) {
         StringBuilder cql = new StringBuilder();
         cql.append("UPDATE ");
         cql.append(getColumnFamilyName(object.getClass()));
