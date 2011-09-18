@@ -84,7 +84,7 @@ class BasePersistence {
         return getField(persistenceClass, IndexValue.class);
     }
 
-    protected ByteBuffer getKey(Object object) throws IOException {
+    protected ByteBuffer getKey(Object object, boolean autoEnable) throws IOException {
         Field keyField = getKeyField(object.getClass());
         String colunaFamilia = getColumnFamilyName(object.getClass());
         if (keyField != null) {
@@ -92,7 +92,7 @@ class BasePersistence {
             KeyValue chave = keyField.getAnnotation(KeyValue.class);
 
             Long id = null;
-            if (chave.auto()) {
+            if (chave.auto() && autoEnable) {
                 id = referenciaSuperColunas.get().getId(colunaFamilia);
 
                 ReflectionUtil.setMethod(object, keyField.getName(), id);
@@ -126,8 +126,8 @@ class BasePersistence {
         for (Field f : fields) {
             if (f.getAnnotation(KeyValue.class) != null) {
                 continue;
-            } else if (f.getAnnotation(ColumnValue.class) != null) {
-                names.add(f.getName());
+            } else if (f.getAnnotation(ColumnValue.class) != null || f.getAnnotation(EnumeratedValue.class) != null) {
+                names.add(f.getAnnotation(ColumnValue.class) != null ? f.getAnnotation(ColumnValue.class).nome() : f.getAnnotation(EnumeratedValue.class).nome());
             } else if (f.getAnnotation(EmbeddedValue.class) != null) {
                 Object subObject = f.getType().newInstance();
                 names.addAll(getColumnNames(subObject.getClass()).getNames());
@@ -155,8 +155,9 @@ class BasePersistence {
                     columns.add(column);
                 }
             } else if (f.getAnnotation(EmbeddedValue.class) != null) {
-
-                columns.addAll(getColumns(ReflectionUtil.getMethod(object, f.getName())));
+                if (ReflectionUtil.getMethod(object, f.getName()) != null) {
+                    columns.addAll(getColumns(ReflectionUtil.getMethod(object, f.getName())));
+                }
             } else if (f.getAnnotation(EnumeratedValue.class) != null) {
                 Column column = new Column();
                 column.setTimestamp(timeStamp);
@@ -193,48 +194,6 @@ class BasePersistence {
         } else {
             return null;
         }
-    }
-
-//util to Update command
-    protected List<String> prepareCQLtoUpdate(Object object) {
-
-        List<String> strings = new ArrayList<>();
-        Field[] fields = object.getClass().getDeclaredFields();
-
-        for (Field f : fields) {
-            if (f.getAnnotation(KeyValue.class) != null) {
-                continue;
-            }
-            if (f.getAnnotation(ColumnValue.class) != null) {
-                if (ReflectionUtil.getMethod(object, f.getName()) == null) {
-                    continue;
-                }
-                String string = " " + f.getName() + " = '" + ReflectionUtil.getMethod(object, f.getName()) + "' ";
-                strings.add(string);
-
-            } else if (f.getAnnotation(EmbeddedValue.class) != null) {
-
-                strings.addAll(prepareCQLtoUpdate(ReflectionUtil.getMethod(object, f.getName())));
-            } else if (f.getAnnotation(EnumeratedValue.class) != null) {
-                Enum enumObject = (Enum) ReflectionUtil.getMethod(object, f.getName());
-                Integer index = 0;
-                Object[] enums = enumObject.getClass().getEnumConstants();
-                for (int i = 0; i < enums.length; i++) {
-                    if (enumObject.equals(enums[i])) {
-                        index = i;
-                        break;
-                    }
-
-                }
-
-                String string = " " + f.getAnnotation(EnumeratedValue.class).nome() + " = '" + index + "' ";
-                strings.add(string);
-
-
-            }
-
-        }
-        return strings;
     }
 
     //read objetct

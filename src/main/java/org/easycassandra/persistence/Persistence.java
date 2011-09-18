@@ -29,7 +29,6 @@ import org.apache.cassandra.thrift.ConsistencyLevel;
 import org.apache.cassandra.thrift.CqlResult;
 import org.apache.cassandra.thrift.CqlRow;
 import org.apache.cassandra.thrift.InvalidRequestException;
-import org.apache.cassandra.thrift.NotFoundException;
 import org.apache.cassandra.thrift.SchemaDisagreementException;
 import org.apache.cassandra.thrift.TimedOutException;
 import org.apache.cassandra.thrift.UnavailableException;
@@ -40,7 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *main Class for persistence The Objects
+ * main Class for persistence The Objects
  * @author otaviojava - otaviojava@java.net
  */
 public class Persistence extends BasePersistence {
@@ -98,35 +97,48 @@ public class Persistence extends BasePersistence {
      * the method for insert the Object
      * @param object - the  Object for be insert in Cassandra 
      * the default  of consistency Level is ONE (ConsistencyLevel.ONE)
+     * @return the result of insertion
      * @see #insert(java.lang.Object, org.apache.cassandra.thrift.ConsistencyLevel) 
      */
-    public void insert(Object object) {
-        insert(object, ConsistencyLevel.ONE);
+    public boolean  insert(Object object) {
+        return insert(object, ConsistencyLevel.ONE);
     }
 
     /**
      * the method for insert the Object
      * @param object - the  Object for be insert in Cassandra 
      * @param consistencyLevel - Level consistency for be insering
+     * @return the result of insertion
      */
-    public void insert(Object object, ConsistencyLevel consistencyLevel) {
+    public boolean  insert(Object object, ConsistencyLevel consistencyLevel) {
+        return insert(object, consistencyLevel, true);
+    }
+
+    /**
+     * the method for insert the Object
+     * @param object - the  Object for be insert in Cassandra 
+     * @param consistencyLevel -Level consistency for be insering
+     * @param autoEnable -
+     * @return the result of insertion
+     */
+    public boolean  insert(Object object, ConsistencyLevel consistencyLevel, boolean autoEnable) {
         try {
-            ColumnParent parent = new ColumnParent(getColumnFamilyName(object.getClass()));
 
-            ByteBuffer rowid;
 
-            rowid = getKey(object);
+            ByteBuffer rowid = getKey(object, autoEnable);
 
-            List<Column> columns = getColumns(object);
+            ColumnParent columnParent = new ColumnParent(getColumnFamilyName(object.getClass()));
 
-            for (Column column : columns) {
+            for (Column column : getColumns(object)) {
 
-                client.insert(rowid, parent, column, consistencyLevel);
+                client.insert(rowid, columnParent, column, consistencyLevel);
 
             }
         } catch (IOException | InvalidRequestException | UnavailableException | TimedOutException | TException ex) {
             LOOGER.error("Error insert Objects", ex);
+            return false;
         }
+        return true;
     }
 
     /**
@@ -240,12 +252,8 @@ public class Persistence extends BasePersistence {
      * The default  of consistency Level is ONE (ConsistencyLevel.ONE)
      * @return - The object from key
      * @see #findByKey(java.lang.Object, java.lang.Class, org.easycassandra.ConsistencyLevelCQL) 
-     * @throws NotFoundException
-     * @throws NumberFormatException
-     * @throws InstantiationException
-     * @throws IllegalAccessException 
      */
-    public Object findByKey(Object key, Class persistenceClass) throws NotFoundException, NumberFormatException, InstantiationException, IllegalAccessException {
+    public Object findByKey(Object key, Class persistenceClass) {
         return findByKey(key, persistenceClass, ConsistencyLevelCQL.ONE);
     }
 
@@ -255,12 +263,8 @@ public class Persistence extends BasePersistence {
      * @param persistenceClass - The kind class
      * @param consistencyLevel - The consistency Level
      * @return - The object from key
-     * @throws NotFoundException
-     * @throws NumberFormatException
-     * @throws InstantiationException
-     * @throws IllegalAccessException 
      */
-    public Object findByKey(Object key, Class persistenceClass, ConsistencyLevelCQL consistencyLevel) throws NotFoundException, NumberFormatException, InstantiationException, IllegalAccessException {
+    public Object findByKey(Object key, Class persistenceClass, ConsistencyLevelCQL consistencyLevel) {
         int limit = 1;
         List objects = new ArrayList<>();
 
@@ -283,27 +287,27 @@ public class Persistence extends BasePersistence {
      * Delete the Object from the key value
      * @param keyValue - The key value
      * @param objectClass  - The Kind of class
-     * the default  of consistency Level is ONE (ConsistencyLevel.ONE)
-     * The default lenght list is 10.000
+     * @return the result of deletion
      */
-    public void deleteByKeyValue(Object keyValue, Class objectClass) {
+    public boolean  deleteByKeyValue(Object keyValue, Class objectClass) {
         ByteBuffer keyBuffer = writeMap.get(getKeyField(objectClass).getType().getName()).getBytebyObject(keyValue);
         String keyString = new UTF8Read().getObjectByByte(keyBuffer).toString();
 
 
-        runDeleteCqlCommand(keyString, objectClass);
+     return   runDeleteCqlCommand(keyString, objectClass);
     }
 
     /**
      * Delete the Object from the key value
      * @param keyObject - The Object for be delete
+     * @return the result of deletion
      */
-    public void delete(Object keyObject) {
+    public boolean  delete(Object keyObject) {
         Field keyField = getKeyField(keyObject.getClass());
         ByteBuffer keyBuffer = writeMap.get(keyField.getType().getName()).getBytebyObject(ReflectionUtil.getMethod(keyObject, keyField.getName()));
         String keyString = new UTF8Read().getObjectByByte(keyBuffer).toString();
 
-        runDeleteCqlCommand(keyString, keyObject.getClass());
+      return  runDeleteCqlCommand(keyString, keyObject.getClass());
 
 
     }
@@ -312,8 +316,9 @@ public class Persistence extends BasePersistence {
      * Create the cql and remove the Object 
      * @param keyValue - The value for row key
      * @param persistenceClass - The kind object
+     * @return the result of deletion
      */
-    protected void runDeleteCqlCommand(String keyValue, Class persistenceClass) {
+    protected boolean  runDeleteCqlCommand(String keyValue, Class persistenceClass) {
 
         StringBuilder cql = new StringBuilder();
         cql.append("delete ");
@@ -324,7 +329,7 @@ public class Persistence extends BasePersistence {
         cql.append(keyValue);
         cql.append("'");
         CqlResult cqlResult = executeCQL(cql.toString());
-
+           return cqlResult!=null;
     }
 
     //find index
@@ -380,36 +385,20 @@ public class Persistence extends BasePersistence {
      * Update the Object
      * The default  of consistency Level is ONE (ConsistencyLevel.ONE)
      * @see #update(java.lang.Object, org.easycassandra.ConsistencyLevelCQL) 
-     * @param object = The Object will updated 
+     * @param object = The Object will updated
+     * @return the result of update data 
      */
-    public void update(Object object) {
-        update(object, ConsistencyLevelCQL.ONE);
+    public boolean  update(Object object) {
+        return update(object, ConsistencyLevel.ONE);
     }
 
     /**
      * Update the Object
      * @param object - The Object will updated
      * @param consistencyLevel - Th consistency Level
+     * @return the result of update data 
      */
-    public void update(Object object, ConsistencyLevelCQL consistencyLevel) {
-        StringBuilder cql = new StringBuilder();
-        cql.append("UPDATE ");
-        cql.append(getColumnFamilyName(object.getClass()));
-        cql.append(" USING ").append(consistencyLevel.getValue()).append(" ");
-        cql.append(" SET");
-        List<String> strings = prepareCQLtoUpdate(object);
-        int cont = 1;
-        for (String string : strings) {
-            cql.append(string);
-            if (cont < strings.size()) {
-                cql.append(" ,");
-            }
-            cont++;
-        }
-
-        cql.append(" where Key ='");
-        cql.append("31");
-        cql.append("'");
-        executeCQL(cql.toString());
+    public boolean  update(Object object, ConsistencyLevel consistencyLevel) {
+         return insert(object, consistencyLevel, true);
     }
 }
