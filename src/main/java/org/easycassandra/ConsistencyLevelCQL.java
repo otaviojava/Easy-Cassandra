@@ -5,8 +5,7 @@
 package org.easycassandra;
 
 /**
- *
- * @author otavio
+  * @author otavio
  */
 public enum ConsistencyLevelCQL {
 
