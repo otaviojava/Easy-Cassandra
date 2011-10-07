@@ -26,6 +26,18 @@ public class ReflectionUtilTest {
         }
         Assert.assertEquals(ReflectionUtil.getMethod(objectTest, field), value);
     }
+    @Test
+    public void setMethodTest() {
+        String value = "test";
+        ObjectTest objectTest = new ObjectTest();
+        Field field = null;
+        for (Field f : objectTest.getClass().getDeclaredFields()) {
+            field = f;
+            break;
+        }
+        ReflectionUtil.setMethod(objectTest, field,value);
+        Assert.assertEquals(ReflectionUtil.getMethod(objectTest, field), value);
+    }
 
     public class ObjectTest {
 

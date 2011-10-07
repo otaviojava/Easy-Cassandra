@@ -95,7 +95,7 @@ class BasePersistence {
             if (chave.auto() && autoEnable) {
                 id = referenciaSuperColunas.get().getId(colunaFamilia);
 
-                ReflectionUtil.setMethod(object, keyField.getName(), id);
+                ReflectionUtil.setMethod(object, keyField, id);
             } else {
                 id = (Long) ReflectionUtil.getMethod(object, keyField);
             }
@@ -214,35 +214,35 @@ class BasePersistence {
 
     protected void readObject(Map<String, ByteBuffer> listMap, Object bean) throws InstantiationException, IllegalAccessException {
         Field[] fieldsAll = bean.getClass().getDeclaredFields();
-        for (Field f : fieldsAll) {
+        for (Field field : fieldsAll) {
 
-            if (f.getAnnotation(KeyValue.class) != null) {
+            if (field.getAnnotation(KeyValue.class) != null) {
                 ByteBuffer bb = listMap.get("KEY");
 
-                ReflectionUtil.setMethod(bean, f.getName(), readMap.get(f.getType().getName()).getObjectByByte(bb));
+                ReflectionUtil.setMethod(bean, field, readMap.get(field.getType().getName()).getObjectByByte(bb));
                 continue;
-            } else if (f.getAnnotation(ColumnValue.class) != null) {
-                ByteBuffer bb = listMap.get(f.getAnnotation(ColumnValue.class).nome());
+            } else if (field.getAnnotation(ColumnValue.class) != null) {
+                ByteBuffer bb = listMap.get(field.getAnnotation(ColumnValue.class).nome());
                 if (bb != null) {
-                    ReflectionUtil.setMethod(bean, f.getName(), readMap.get(f.getType().getName()).getObjectByByte(bb));
+                    ReflectionUtil.setMethod(bean, field, readMap.get(field.getType().getName()).getObjectByByte(bb));
                 }
 
-            } else if (f.getAnnotation(EmbeddedValue.class) != null) {
+            } else if (field.getAnnotation(EmbeddedValue.class) != null) {
 
-                Object subObject = f.getType().newInstance();
+                Object subObject = field.getType().newInstance();
 
                 readObject(listMap, subObject);
 
-                ReflectionUtil.setMethod(bean, f.getName(), subObject);
-            } else if (f.getAnnotation(EnumeratedValue.class) != null) {
+                ReflectionUtil.setMethod(bean, field, subObject);
+            } else if (field.getAnnotation(EnumeratedValue.class) != null) {
 
-                ByteBuffer bb = listMap.get(f.getAnnotation(EnumeratedValue.class).nome());
+                ByteBuffer bb = listMap.get(field.getAnnotation(EnumeratedValue.class).nome());
                 if (bb != null) {
 
-                    Object[] enums = f.getType().getEnumConstants();
+                    Object[] enums = field.getType().getEnumConstants();
                     Integer index = (Integer) new EnumRead().getObjectByByte(bb);
 
-                    ReflectionUtil.setMethod(bean, f.getName(), enums[index]);
+                    ReflectionUtil.setMethod(bean, field, enums[index]);
                 }
 
             }

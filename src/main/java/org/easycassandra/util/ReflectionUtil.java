@@ -4,9 +4,6 @@
  */
 package org.easycassandra.util;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -43,9 +40,10 @@ public class ReflectionUtil {
         return null;
     }
 
-    public static boolean setMethod(Object object, String attribute, Object... params) {
+    public static boolean setMethod(Object object, Field attribute, Object... params) {
+           String attributeName=attribute.getName();
         Class clazz = object.getClass();
-        String metodo = "set" + attribute.substring(0, 1).toUpperCase() + attribute.substring(1);
+        String metodo = "set" + attributeName.substring(0, 1).toUpperCase() + attributeName.substring(1);
         Object o = null;
         Method m;
         try {
