@@ -4,6 +4,7 @@
  */
 package org.easycassandra.util;
 
+import java.lang.reflect.Field;
 import junit.framework.Assert;
 import org.junit.Test;
 
@@ -13,17 +14,19 @@ import org.junit.Test;
  */
 public class ReflectionUtilTest {
 
-    
     @Test
-    public void getMethodTest(){
-    String value="test";
-    ObjectTest objectTest=new ObjectTest();
-    objectTest.setName(value);
-    
-    Assert.assertEquals(ReflectionUtil.getMethod(objectTest, "name"), value);
+    public void getMethodTest() {
+        String value = "test";
+        ObjectTest objectTest = new ObjectTest();
+        objectTest.setName(value);
+        Field field = null;
+        for (Field f : objectTest.getClass().getDeclaredFields()) {
+            field = f;
+            break;
+        }
+        Assert.assertEquals(ReflectionUtil.getMethod(objectTest, field), value);
     }
-    
-    
+
     public class ObjectTest {
 
         private String name;

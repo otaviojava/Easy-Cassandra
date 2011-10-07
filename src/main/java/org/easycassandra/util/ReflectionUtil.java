@@ -4,6 +4,10 @@
  */
 package org.easycassandra.util;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -18,10 +22,11 @@ public class ReflectionUtil {
 
     private static Logger LOOGER = LoggerFactory.getLogger(ReflectionUtil.class);
 
-    public static Object getMethod(Object object, String attribute) {
+    public static Object getMethod(Object object, Field attribute) {
+        String attributeName=attribute.getName();
         try {
             Class clazz = object.getClass();
-            String metodo = "get" + attribute.substring(0, 1).toUpperCase() + attribute.substring(1);
+            String metodo = "get" + attributeName.substring(0, 1).toUpperCase() + attributeName.substring(1);
             Object o = null;
             Method m;
 
@@ -86,4 +91,6 @@ public class ReflectionUtil {
         }
         return classes;
     }
+    
+     
 }

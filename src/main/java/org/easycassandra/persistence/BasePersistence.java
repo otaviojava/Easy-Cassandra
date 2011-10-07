@@ -97,7 +97,7 @@ class BasePersistence {
 
                 ReflectionUtil.setMethod(object, keyField.getName(), id);
             } else {
-                id = (Long) ReflectionUtil.getMethod(object, keyField.getName());
+                id = (Long) ReflectionUtil.getMethod(object, keyField);
             }
             data = writeMap.get(keyField.getType().getName()).getBytebyObject(id);
             return data;
@@ -143,28 +143,28 @@ class BasePersistence {
     protected List<Column> getColumns(Object object) {
         Long timeStamp = System.currentTimeMillis();
         List<Column> columns = new ArrayList<>();
-        Field[] fields1 = object.getClass().getDeclaredFields();
+        Field[] fields = object.getClass().getDeclaredFields();
 
-        for (Field f : fields1) {
-            if (f.getAnnotation(KeyValue.class) != null) {
+        for (Field field : fields) {
+            if (field.getAnnotation(KeyValue.class) != null) {
                 continue;
             }
-            if (f.getAnnotation(ColumnValue.class) != null) {
-                Column column = makeColumn(timeStamp, f.getAnnotation(ColumnValue.class).nome(), object, f);
+            if (field.getAnnotation(ColumnValue.class) != null) {
+                Column column = makeColumn(timeStamp, field.getAnnotation(ColumnValue.class).nome(), object, field);
                 if (column != null) {
                     columns.add(column);
                 }
-            } else if (f.getAnnotation(EmbeddedValue.class) != null) {
-                if (ReflectionUtil.getMethod(object, f.getName()) != null) {
-                    columns.addAll(getColumns(ReflectionUtil.getMethod(object, f.getName())));
+            } else if (field.getAnnotation(EmbeddedValue.class) != null) {
+                if (ReflectionUtil.getMethod(object, field) != null) {
+                    columns.addAll(getColumns(ReflectionUtil.getMethod(object, field)));
                 }
-            } else if (f.getAnnotation(EnumeratedValue.class) != null) {
+            } else if (field.getAnnotation(EnumeratedValue.class) != null) {
                 Column column = new Column();
                 column.setTimestamp(timeStamp);
-                column.setName(EncodingUtil.stringToByte(f.getAnnotation(EnumeratedValue.class).nome()));
+                column.setName(EncodingUtil.stringToByte(field.getAnnotation(EnumeratedValue.class).nome()));
 
 
-                ByteBuffer byteBuffer = new EnumWrite().getBytebyObject(ReflectionUtil.getMethod(object, f.getName()));
+                ByteBuffer byteBuffer = new EnumWrite().getBytebyObject(ReflectionUtil.getMethod(object, field));
                 column.setValue(byteBuffer);
 
 
@@ -177,9 +177,9 @@ class BasePersistence {
         return columns;
     }
 
-    protected Column makeColumn(long timeStamp, String coluna, Object object, Field f) {
+    protected Column makeColumn(long timeStamp, String coluna, Object object, Field field) {
 
-        Object o = ReflectionUtil.getMethod(object, f.getName());
+        Object o = ReflectionUtil.getMethod(object, field);
         if (o != null) {
             Column column = new Column();
 
@@ -187,7 +187,7 @@ class BasePersistence {
             column.setName(EncodingUtil.stringToByte(coluna));
 
 
-            ByteBuffer byteBuffer = writeMap.get(f.getType().getName()).getBytebyObject(o);
+            ByteBuffer byteBuffer = writeMap.get(field.getType().getName()).getBytebyObject(o);
             column.setValue(byteBuffer);
 
             return column;

@@ -304,7 +304,7 @@ public class Persistence extends BasePersistence {
      */
     public boolean  delete(Object keyObject) {
         Field keyField = getKeyField(keyObject.getClass());
-        ByteBuffer keyBuffer = writeMap.get(keyField.getType().getName()).getBytebyObject(ReflectionUtil.getMethod(keyObject, keyField.getName()));
+        ByteBuffer keyBuffer = writeMap.get(keyField.getType().getName()).getBytebyObject(ReflectionUtil.getMethod(keyObject, keyField));
         String keyString = new UTF8Read().getObjectByByte(keyBuffer).toString();
 
       return  runDeleteCqlCommand(keyString, keyObject.getClass());
