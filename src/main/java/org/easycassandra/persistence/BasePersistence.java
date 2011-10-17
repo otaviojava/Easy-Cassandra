@@ -59,16 +59,14 @@ class BasePersistence {
 
     private Field getField(Class persistenceClass, Class annotation) {
 
-        for (Field f : persistenceClass.getDeclaredFields()) {
-            if (f.getAnnotation(annotation) != null) {
-                return f;
-            } else if (f.getAnnotation(EmbeddedValue.class) != null) {
-                String tipo = f.getType().getName();
-                try {
-                    return getField(f.getType().newInstance().getClass(), annotation);
-                } catch (InstantiationException | IllegalAccessException ex) {
-                    LOOGER.error("Error during getField", ex);
-                }
+        for (Field field : persistenceClass.getDeclaredFields()) {
+            if (field.getAnnotation(annotation) != null) {
+                return field;
+            } else if (field.getAnnotation(EmbeddedValue.class) != null) {
+              
+               
+                    return getField(ReflectionUtil.getMethod(persistenceClass, field).getClass(), annotation);
+               
             }
 
         }
@@ -129,8 +127,7 @@ class BasePersistence {
             } else if (f.getAnnotation(ColumnValue.class) != null || f.getAnnotation(EnumeratedValue.class) != null) {
                 names.add(f.getAnnotation(ColumnValue.class) != null ? f.getAnnotation(ColumnValue.class).nome() : f.getAnnotation(EnumeratedValue.class).nome());
             } else if (f.getAnnotation(EmbeddedValue.class) != null) {
-                Object subObject = f.getType().newInstance();
-                names.addAll(getColumnNames(subObject.getClass()).getNames());
+                 names.addAll(getColumnNames(f.getType()).getNames());
             }
 
 

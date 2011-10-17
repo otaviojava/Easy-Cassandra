@@ -4,7 +4,6 @@
  */
 package org.easycassandra.annotations.write;
 
-import org.easycassandra.annotations.write.WriteInterface;
 import org.easycassandra.util.EncodingUtil;
 import java.nio.ByteBuffer;
 
