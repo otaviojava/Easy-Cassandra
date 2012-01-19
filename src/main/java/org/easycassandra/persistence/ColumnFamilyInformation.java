@@ -15,6 +15,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ColumnFamilyInformation implements Serializable {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 859191542482693032L;
+
+	/**
      * O number of the id Column Family
      */
     @XmlAttribute

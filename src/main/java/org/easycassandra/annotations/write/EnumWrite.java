@@ -11,9 +11,11 @@ import org.easycassandra.util.EncodingUtil;
 public class EnumWrite implements WriteInterface {
 
     @Override
+    @SuppressWarnings("rawtypes")
     public ByteBuffer getBytebyObject(Object object) {
         
-            Enum enumObject= (Enum)object;
+            
+			Enum enumObject= (Enum)object;
             Integer index=0;
             Object[] enums=enumObject.getClass().getEnumConstants();
             for(int i=0;i<enums.length;i++){

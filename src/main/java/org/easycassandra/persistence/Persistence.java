@@ -44,8 +44,8 @@ public class Persistence extends BasePersistence {
      * @return the list retrieved with length (limit)
     
      */
-    @SuppressWarnings("unchecked")
-    protected List retriveObject(String condiction, String condictionValue, List objects, Class persistenceClass, ConsistencyLevelCQL consistencyLevel, int limit) {
+    @SuppressWarnings("rawtypes")
+	protected List retriveObject(String condiction, String condictionValue, List objects, Class persistenceClass, ConsistencyLevelCQL consistencyLevel, int limit) {
         try {
             StringBuilder cql = new StringBuilder();
 
@@ -143,7 +143,8 @@ public class Persistence extends BasePersistence {
      * @see  #findAll(java.lang.Class, org.easycassandra.ConsistencyLevelCQL, int) 
      * @return the list with Object is retrive
      */
-    public List findAll(Class persistenceClass) {
+    @SuppressWarnings("rawtypes")
+	public List findAll(Class persistenceClass) {
         return findAll(persistenceClass, ConsistencyLevelCQL.ONE, 10000);
     }
 
@@ -154,8 +155,9 @@ public class Persistence extends BasePersistence {
      * The default  of consistency Level is ONE (ConsistencyLevel.ONE)
      * @see  #findAll(java.lang.Class, org.easycassandra.ConsistencyLevelCQL, int) 
      * @return the list with Object is retrive
-     */
-    public List findAll(Class persistenceClass, int limit) {
+     */    
+    @SuppressWarnings("rawtypes")
+	public List findAll(Class persistenceClass, int limit) {
         return findAll(persistenceClass, ConsistencyLevelCQL.ONE, limit);
     }
 
@@ -166,6 +168,7 @@ public class Persistence extends BasePersistence {
      * @see  #findAll(java.lang.Class, org.easycassandra.ConsistencyLevelCQL, int) 
      * @return the list with Object is retrive
      */
+    @SuppressWarnings("rawtypes")
     public List findAll(Class persistenceClass, ConsistencyLevelCQL consistencyLevel) {
         return findAll(persistenceClass, consistencyLevel, 10000);
     }
@@ -177,6 +180,7 @@ public class Persistence extends BasePersistence {
      * @param limit - lenght the list
      * @return the list with Object is retrive
      */
+    @SuppressWarnings("rawtypes")
     public List findAll(Class persistenceClass, ConsistencyLevelCQL consistencyLevel, int limit) {
         List list = new ArrayList<>();
 
@@ -208,6 +212,7 @@ public class Persistence extends BasePersistence {
      * @throws InstantiationException
      * @throws IllegalAccessException 
      */
+    @SuppressWarnings("rawtypes")
     public List listbyQuery(CqlResult resultCQL, Class persistenceClass) throws NumberFormatException, InstantiationException, IllegalAccessException {
         List<Map<String, ByteBuffer>> listMap = new ArrayList<>();
 
@@ -234,6 +239,7 @@ public class Persistence extends BasePersistence {
      * @return - The object from key
      * @see #findByKey(java.lang.Object, java.lang.Class, org.easycassandra.ConsistencyLevelCQL) 
      */
+    @SuppressWarnings("rawtypes")
     public Object findByKey(Object key, Class persistenceClass) {
         return findByKey(key, persistenceClass, ConsistencyLevelCQL.ONE);
     }
@@ -245,6 +251,7 @@ public class Persistence extends BasePersistence {
      * @param consistencyLevel - The consistency Level
      * @return - The object from key
      */
+    @SuppressWarnings("rawtypes")
     public Object findByKey(Object key, Class persistenceClass, ConsistencyLevelCQL consistencyLevel) {
         int limit = 1;
         List objects = new ArrayList<>();
@@ -270,6 +277,7 @@ public class Persistence extends BasePersistence {
      * @param objectClass  - The Kind of class
      * @return the result of deletion
      */
+    @SuppressWarnings("rawtypes")
     public boolean  deleteByKeyValue(Object keyValue, Class objectClass) {
         ByteBuffer keyBuffer = writeMap.get(getKeyField(objectClass).getType().getName()).getBytebyObject(keyValue);
         String keyString = new UTF8Read().getObjectByByte(keyBuffer).toString();
@@ -299,6 +307,7 @@ public class Persistence extends BasePersistence {
      * @param persistenceClass - The kind object
      * @return the result of deletion
      */
+    @SuppressWarnings("rawtypes")
     protected boolean  runDeleteCqlCommand(String keyValue, Class persistenceClass) {
 
         StringBuilder cql = new StringBuilder();
@@ -324,6 +333,7 @@ public class Persistence extends BasePersistence {
      * @return list retrieve from the value index
      * 
      */
+    @SuppressWarnings("rawtypes")
     public List findByIndex(Object index, Class objectClass) {
         return findByIndex(index, objectClass, ConsistencyLevelCQL.ONE);
     }
@@ -337,6 +347,7 @@ public class Persistence extends BasePersistence {
      * The default lenght list is 10.000
      * @return list retrieve from the value index
      */
+    @SuppressWarnings("rawtypes")
     public List findByIndex(Object index, Class objectClass, ConsistencyLevelCQL consistencyLevel) {
         return findByIndex(index, objectClass, consistencyLevel, 10000);
     }
@@ -349,6 +360,7 @@ public class Persistence extends BasePersistence {
      * @param limit - The length of List
      * @return  list retrieve from the value index
      */
+    @SuppressWarnings("rawtypes")
     public List findByIndex(Object index, Class objectClass, ConsistencyLevelCQL consistencyLevelCQL, int limit) {
         List objects = new ArrayList<>();
 

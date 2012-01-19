@@ -23,6 +23,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ColumnFamilyIds implements Serializable {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 4263760877341591338L;
+	/**
      * The unit for The Column Family
      * @see  ColumnFamilyIds
      */

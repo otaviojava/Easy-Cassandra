@@ -7,26 +7,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+
 import org.apache.cassandra.thrift.Column;
-import org.easycassandra.annotations.*;
+import org.easycassandra.annotations.ColumnFamilyValue;
+import org.easycassandra.annotations.ColumnValue;
+import org.easycassandra.annotations.EmbeddedValue;
+import org.easycassandra.annotations.EnumeratedValue;
+import org.easycassandra.annotations.IndexValue;
+import org.easycassandra.annotations.KeyValue;
 import org.easycassandra.annotations.read.EnumRead;
 import org.easycassandra.annotations.read.ReadInterface;
 import org.easycassandra.annotations.write.EnumWrite;
 import org.easycassandra.annotations.write.WriteInterface;
 import org.easycassandra.util.EncodingUtil;
 import org.easycassandra.util.ReflectionUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author otavio
  */
 class BasePersistence {
-    /**
-     * Logger
-     */
-    private static Logger LOOGER = LoggerFactory.getLogger(BasePersistence.class);
     /**
      * Key value of write for The Cassandra persistence
      * @see  WriteInterface
@@ -58,7 +58,8 @@ class BasePersistence {
  * @param object - Class of the object viewed
  * @return The name of Column name if there are not will be return null
  */
-    protected String getColumnFamilyName(Class object) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	protected String getColumnFamilyName(Class object) {
 
         ColumnFamilyValue colunaFamilia = (ColumnFamilyValue) object.getAnnotation(ColumnFamilyValue.class);
 
@@ -66,6 +67,27 @@ class BasePersistence {
             return colunaFamilia.nome();
         }
         return null;
+    }
+    /**
+     * verifies that the name of the annotation is empty
+     * if you take the field name
+     * @param field - field for viewd
+     * @return The name inside annotations or the field's name
+     */
+    private String getColumnNanme(Field field) {
+        String columnName=field.getAnnotation(ColumnValue.class).nome().equals("") ?field.getName():field.getAnnotation(ColumnValue.class).nome();
+        return columnName;
+    }
+
+    /**
+     * verifies that the name of the annotation is empty
+     * if you take the field name
+     * @param field
+     * @return The name inside annotations or the field's name
+     */
+    private String getEnumeratedName(Field field) {
+        String columnName=field.getAnnotation(EnumeratedValue.class).nome().equals("") ?field.getName():field.getAnnotation(ColumnValue.class).nome();
+        return columnName;
     }
 
     /**
@@ -75,6 +97,7 @@ class BasePersistence {
      * @param annotation
      * @return 
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private Field getField(Class object, Class annotation) {
 
         for (Field field : object.getDeclaredFields()) {
@@ -97,6 +120,7 @@ class BasePersistence {
      * @param persistenceClass - Class of the object viewed
      * @return the Field if there are not will be return null
      */
+    @SuppressWarnings({ "rawtypes" })
     protected Field getKeyField(Class persistenceClass) {
 
         return getField(persistenceClass, KeyValue.class);
@@ -108,6 +132,7 @@ class BasePersistence {
      * @param persistenceClass - Class of the object viewed
      * @return the Field if there are not will be return null
      */
+    @SuppressWarnings({ "rawtypes" })
     protected Field getIndexField(Class persistenceClass) {
         return getField(persistenceClass, IndexValue.class);
     }
@@ -152,6 +177,7 @@ class BasePersistence {
  * @see DecoratorColumnNames
  * @see BasePersistence#getColumnNames(java.lang.Class) 
  */
+    @SuppressWarnings({ "rawtypes" })
     protected DecoratorColumnNames columnNames(Class object) {
 
         try {
@@ -171,17 +197,18 @@ class BasePersistence {
      * @throws InstantiationException
      * @throws IllegalAccessException 
      */
+    @SuppressWarnings({ "rawtypes" })
     protected DecoratorColumnNames getColumnNames(Class object) throws InstantiationException, IllegalAccessException {
         DecoratorColumnNames names = new DecoratorColumnNames();
         Field[] fields = object.getDeclaredFields();
 
-        for (Field f : fields) {
-            if (f.getAnnotation(KeyValue.class) != null) {
+        for (Field field : fields) {
+            if (field.getAnnotation(KeyValue.class) != null) {
                 continue;
-            } else if (f.getAnnotation(ColumnValue.class) != null || f.getAnnotation(EnumeratedValue.class) != null) {
-                names.add(f.getAnnotation(ColumnValue.class) != null ? f.getAnnotation(ColumnValue.class).nome() : f.getAnnotation(EnumeratedValue.class).nome());
-            } else if (f.getAnnotation(EmbeddedValue.class) != null) {
-                 names.addAll(getColumnNames(f.getType()).getNames());
+            } else if (field.getAnnotation(ColumnValue.class) != null || field.getAnnotation(EnumeratedValue.class) != null) {
+                names.add(field.getAnnotation(ColumnValue.class) != null ? getColumnNanme(field) : getEnumeratedName(field));
+            } else if (field.getAnnotation(EmbeddedValue.class) != null) {
+                 names.addAll(getColumnNames(field.getType()).getNames());
             }
 
 
@@ -206,7 +233,8 @@ class BasePersistence {
                 continue;
             }
             if (field.getAnnotation(ColumnValue.class) != null) {
-                Column column = makeColumn(timeStamp, field.getAnnotation(ColumnValue.class).nome(), object, field);
+                
+                Column column = makeColumn(timeStamp, getColumnNanme(field), object, field);
                 if (column != null) {
                     columns.add(column);
                 }
@@ -217,7 +245,7 @@ class BasePersistence {
             } else if (field.getAnnotation(EnumeratedValue.class) != null) {
                 Column column = new Column();
                 column.setTimestamp(timeStamp);
-                column.setName(EncodingUtil.stringToByte(field.getAnnotation(EnumeratedValue.class).nome()));
+                column.setName(EncodingUtil.stringToByte(getEnumeratedName(field)));
 
 
                 ByteBuffer byteBuffer = new EnumWrite().getBytebyObject(ReflectionUtil.getMethod(object, field));
@@ -269,6 +297,7 @@ class BasePersistence {
      * @throws InstantiationException
      * @throws IllegalAccessException 
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     protected List getList(List<Map<String, ByteBuffer>> colMap, Class persisteceClass) throws InstantiationException, IllegalAccessException {
         List lists = new ArrayList<>();
         Object bean = null;
@@ -300,7 +329,8 @@ class BasePersistence {
                 ReflectionUtil.setMethod(bean, field, readMap.get(field.getType().getName()).getObjectByByte(byteBuffer));
                 continue;
             } else if (field.getAnnotation(ColumnValue.class) != null) {
-                ByteBuffer byteBuffer = listMap.get(field.getAnnotation(ColumnValue.class).nome());
+                
+                ByteBuffer byteBuffer = listMap.get(getColumnNanme(field));
                 if (byteBuffer != null) {
                     ReflectionUtil.setMethod(bean, field, readMap.get(field.getType().getName()).getObjectByByte(byteBuffer));
                 }
@@ -314,7 +344,7 @@ class BasePersistence {
                 ReflectionUtil.setMethod(bean, field, subObject);
             } else if (field.getAnnotation(EnumeratedValue.class) != null) {
 
-                ByteBuffer bb = listMap.get(field.getAnnotation(EnumeratedValue.class).nome());
+                ByteBuffer bb = listMap.get(getEnumeratedName(field));
                 if (bb != null) {
 
                     Object[] enums = field.getType().getEnumConstants();
