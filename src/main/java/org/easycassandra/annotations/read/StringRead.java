@@ -4,11 +4,12 @@
  */
 package org.easycassandra.annotations.read;
 
-import org.easycassandra.util.EncodingUtil;
 import java.nio.ByteBuffer;
+import org.easycassandra.util.EncodingUtil;
 
 /**
- *
+ *for read String
+ * @see String
  * @author otavio
  */
 public class StringRead implements ReadInterface {

@@ -1,17 +1,12 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.easycassandra.annotations.write;
 
-import org.easycassandra.annotations.write.WriteInterface;
-import org.easycassandra.util.EncodingUtil;
-import java.lang.Long;
 import java.nio.ByteBuffer;
 import java.util.Date;
+import org.easycassandra.util.EncodingUtil;
 
 /**
- *
+ *for Write Bate
+ * @see Date
  * @author otavio
  */
 public class DateWrite implements WriteInterface {

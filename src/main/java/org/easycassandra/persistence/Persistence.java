@@ -1,40 +1,21 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.easycassandra.persistence;
 
-import org.easycassandra.annotations.ColumnValue;
-
-
-import org.easycassandra.annotations.read.UTF8Read;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.easycassandra.util.EncodingUtil;
-
-
-import org.easycassandra.util.ReflectionUtil;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import org.apache.cassandra.thrift.Cassandra.Client;
-import org.apache.cassandra.thrift.Column;
-import org.apache.cassandra.thrift.ColumnParent;
-import org.apache.cassandra.thrift.Compression;
-import org.apache.cassandra.thrift.ConsistencyLevel;
-import org.apache.cassandra.thrift.CqlResult;
-import org.apache.cassandra.thrift.CqlRow;
-import org.apache.cassandra.thrift.InvalidRequestException;
-import org.apache.cassandra.thrift.SchemaDisagreementException;
-import org.apache.cassandra.thrift.TimedOutException;
-import org.apache.cassandra.thrift.UnavailableException;
-
+import org.apache.cassandra.thrift.*;
 import org.apache.thrift.TException;
 import org.easycassandra.ConsistencyLevelCQL;
+import org.easycassandra.annotations.ColumnValue;
+import org.easycassandra.annotations.read.UTF8Read;
+import org.easycassandra.util.EncodingUtil;
+import org.easycassandra.util.ReflectionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

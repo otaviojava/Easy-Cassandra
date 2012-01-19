@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.easycassandra.util;
 
 import java.nio.ByteBuffer;
@@ -13,17 +9,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ *transform ByteBuffer and String vice versa
  * @author otavio
  */
 public class EncodingUtil {
 
     private static Logger LOOGER = LoggerFactory.getLogger(EncodingUtil.class);
-    public static String encogin = "UTF-8";
-    public static Charset charset = Charset.forName(encogin);
-    public static CharsetEncoder encoder = charset.newEncoder();
-    public static CharsetDecoder decoder = charset.newDecoder();
-
+    
+    public static final String encogin = "UTF-8";
+    
+    public static final Charset charset = Charset.forName(encogin);
+    
+    public static final CharsetEncoder encoder = charset.newEncoder();
+    
+    public static final CharsetDecoder decoder = charset.newDecoder();
+    
+/**
+ *  return a ByteBuffer from String
+ * @param msg mensage
+ * @return 
+ */
     public static ByteBuffer stringToByte(String msg) {
         try {
             return encoder.encode(CharBuffer.wrap(msg));
@@ -33,6 +38,11 @@ public class EncodingUtil {
         return null;
     }
 
+    /**
+     * Return the String from ByteBuffer
+     * @param buffer
+     * @return 
+     */
     public static String byteToString(ByteBuffer buffer) {
         String data = "";
         try {

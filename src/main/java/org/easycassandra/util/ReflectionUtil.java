@@ -1,19 +1,14 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.easycassandra.util;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * The class does getter and setter with invoke Dynamic
  * @author otavio
  */
 public class ReflectionUtil {
@@ -89,6 +84,12 @@ public class ReflectionUtil {
 //        return false;
 //    }
 
+    /**
+     * Return The Object from the Field
+     * @param object
+     * @param field
+     * @return 
+     */
     public static Object getMethod(Object object, Field field) {
        
         try {
@@ -104,6 +105,13 @@ public class ReflectionUtil {
         return null;
     }
 
+    /**
+     * Set the field in the Object
+     * @param object
+     * @param field
+     * @param value
+     * @return 
+     */
     public static boolean setMethod(Object object, Field field, Object value) {
       
         try {

@@ -4,12 +4,12 @@
  */
 package org.easycassandra.annotations.read;
 
-import org.easycassandra.util.EncodingUtil;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import org.easycassandra.util.EncodingUtil;
 
 /**
- *
+ *Read in UTF8
  * @author otavio
  */
 public class UTF8Read implements ReadInterface {

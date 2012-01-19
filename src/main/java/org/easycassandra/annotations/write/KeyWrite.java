@@ -1,17 +1,12 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.easycassandra.annotations.write;
 
-import org.easycassandra.annotations.write.WriteInterface;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
 /**
- *
+ *for Write Key
  * @author otavio
  */
 public class KeyWrite implements WriteInterface {

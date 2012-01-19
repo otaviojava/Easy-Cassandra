@@ -1,18 +1,17 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.easycassandra.persistence;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * Decorator for the name of the Columns
  * @author otavio
  */
  class DecoratorColumnNames {
 
+     /**
+      * Columns's Names
+      */
     private List<String> names;
     
     public List<String> getNames() {
@@ -23,6 +22,10 @@ import java.util.List;
         this.names = names;
     }
 
+    /**
+     * add new name for the List
+     * @param name - name for the List
+     */
     public void add(String name) {
         names.add(name);
         
@@ -36,6 +39,10 @@ import java.util.List;
         names = new ArrayList<>();
     }
 
+    /**
+     * Names with separation for be used in CQL
+     * @return 
+     */
     @Override
     public String toString() {
     StringBuilder concatNames=new StringBuilder();

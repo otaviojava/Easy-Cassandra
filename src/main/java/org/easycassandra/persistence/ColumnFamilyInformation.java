@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.easycassandra.persistence;
 
 import java.io.Serializable;
@@ -10,13 +6,23 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-
+/**
+ * The unit in XML Document
+ * @author otavio
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "ColumnFamily")
 public class ColumnFamilyInformation implements Serializable {
 
+    /**
+     * O number of the id Column Family
+     */
     @XmlAttribute
     private Long id;
+    
+    /**
+     * name of the Column Family
+     */
     @XmlAttribute
     private String columnFamilyName;
 

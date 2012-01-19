@@ -4,11 +4,11 @@
  */
 package org.easycassandra.annotations.read;
 
-import org.easycassandra.util.EncodingUtil;
 import java.nio.ByteBuffer;
+import org.easycassandra.util.EncodingUtil;
 
 /**
- *
+ *for read Float
  * @author otavio
  */
 public class FloatRead implements ReadInterface {

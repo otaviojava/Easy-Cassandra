@@ -1,14 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.easycassandra.annotations.read;
 
-import org.easycassandra.util.EncodingUtil;
 import java.nio.ByteBuffer;
+import org.easycassandra.util.EncodingUtil;
 
 /**
- *
+ *for Read Boolean
+ * @see Boolean
  * @author otavio
  */
 public class BooleanRead implements ReadInterface {

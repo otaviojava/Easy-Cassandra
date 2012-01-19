@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.easycassandra.persistence;
 
 import java.util.Objects;
@@ -10,16 +6,34 @@ import org.apache.cassandra.thrift.Cassandra.Client;
 import org.apache.thrift.transport.TTransport;
 
 /**
- *
+ *Information about Cassandra's Connection
  * @author otavio
  */
-class Conection {
+class Connection {
 
+    /**
+     * The host name
+     */
     private String host;
+    
+    /**
+     * The keyspace Name
+     */
     private String keyspace;
+    
+    /**
+     * The number's port
+     */
     private Integer port;
+    
+    /**
+     * @see TTransport
+     */
     private TTransport transport;
     
+    /**
+     * @see Cassandra#Client
+     */
     private Cassandra.Client client;
 
     public Client getClient() {
@@ -78,7 +92,7 @@ class Conection {
             return true;
         }
 
-        if (obj instanceof Conection) {
+        if (obj instanceof Connection) {
 
             return obj.toString().equalsIgnoreCase(this.toString());
         }
@@ -94,10 +108,10 @@ class Conection {
         return hash;
     }
 
-    public Conection() {
+    public Connection() {
     }
 
-    public Conection(String host, String keyspace, Integer port) {
+    public Connection(String host, String keyspace, Integer port) {
         this.host = host;
         this.keyspace = keyspace;
         this.port = port;

@@ -1,13 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.easycassandra.annotations.write;
 
 import java.nio.ByteBuffer;
 
 /**
- *
+ *interface for write some information  from Object
+ * @see Object
  * @author otavio
  */
 public interface WriteInterface {

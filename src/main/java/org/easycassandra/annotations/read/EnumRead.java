@@ -4,11 +4,11 @@
  */
 package org.easycassandra.annotations.read;
 
-import org.easycassandra.util.EncodingUtil;
 import java.nio.ByteBuffer;
+import org.easycassandra.util.EncodingUtil;
 
 /**
- *
+ *for read Enuns
  * @author otavio
  */
 public class EnumRead implements ReadInterface {
