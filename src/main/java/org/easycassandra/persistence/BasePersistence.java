@@ -86,7 +86,7 @@ class BasePersistence {
      * @return The name inside annotations or the field's name
      */
     private String getEnumeratedName(Field field) {
-        String columnName=field.getAnnotation(EnumeratedValue.class).nome().equals("") ?field.getName():field.getAnnotation(ColumnValue.class).nome();
+        String columnName=field.getAnnotation(EnumeratedValue.class).nome().equals("") ?field.getName():field.getAnnotation(EnumeratedValue.class).nome();
         return columnName;
     }
 

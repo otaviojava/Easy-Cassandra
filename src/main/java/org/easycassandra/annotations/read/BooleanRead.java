@@ -13,8 +13,7 @@ public class BooleanRead implements ReadInterface {
     @Override
     public Object getObjectByByte(ByteBuffer buffer) {
         String booleanString = EncodingUtil.byteToString(buffer);
-      
-        return Boolean.getBoolean(booleanString);
+        return Boolean.parseBoolean(booleanString);
 
     }
     

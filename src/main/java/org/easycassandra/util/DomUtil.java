@@ -25,7 +25,7 @@ public class DomUtil {
   * @param objClass -
   * @return 
   */
-    public static Object getDom(File file, Class objClass) {
+    public static Object getDom(File file, @SuppressWarnings("rawtypes") Class objClass) {
         try {
             JAXBContext jAXBContext = JAXBContext.newInstance(objClass);
             Unmarshaller unmarshaller = jAXBContext.createUnmarshaller();

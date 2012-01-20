@@ -20,4 +20,24 @@ public class EncodingUtilTest {
         Assert.assertEquals(EncodingUtil.stringToByte("teste"), ByteBuffer.wrap("teste".getBytes()));
         
     }
+    
+    @Test
+    public void stringToByteFailTest() {
+
+        Assert.assertFalse(EncodingUtil.stringToByte("teste2").equals(ByteBuffer.wrap("teste".getBytes())));
+        
+    }
+    
+    @Test
+    public void byteToStringTest(){
+    	String testValue="Cassandra";
+    	Assert.assertEquals(EncodingUtil.byteToString(EncodingUtil.stringToByte(testValue)),testValue);
+    }
+    
+    @Test
+    public void byteToStringFailTest(){
+    	String testValue="Cassandra";
+    	Assert.assertFalse(EncodingUtil.byteToString(EncodingUtil.stringToByte(testValue)).equals("Java Test"));
+    }
+    
 }

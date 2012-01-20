@@ -5,8 +5,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 /**
- * the class with this is annotation 
- * has fields inside itself
+ * The class with this is annotation has fields
+ * with ColumnValue inside itself, 
+ * but the persistence way continues 
+ * in the same Family of the Column. 
+ * This annotation is to do the 
+ * object's modeling easily
  * @author otavio
  */
 @Target (ElementType.FIELD)

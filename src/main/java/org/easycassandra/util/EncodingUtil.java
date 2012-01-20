@@ -5,8 +5,9 @@ import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 /**
  *transform ByteBuffer and String vice versa
@@ -14,7 +15,7 @@ import org.slf4j.LoggerFactory;
  */
 public class EncodingUtil {
 
-    private static Logger LOOGER = LoggerFactory.getLogger(EncodingUtil.class);
+  
     
     public static final String encogin = "UTF-8";
     
@@ -32,8 +33,9 @@ public class EncodingUtil {
     public static ByteBuffer stringToByte(String msg) {
         try {
             return encoder.encode(CharBuffer.wrap(msg));
-        } catch (Exception e) {
-            LOOGER.error("Error during encode", e);
+        } catch (Exception exception) {
+            Logger.getLogger(EncodingUtil.class.getName()).log(Level.SEVERE, null, exception);
+            
         }
         return null;
     }
@@ -50,8 +52,8 @@ public class EncodingUtil {
             data = decoder.decode(buffer).toString();
 
             buffer.position(old_position);
-        } catch (Exception e) {
-            LOOGER.error("Error during dencode", e);
+        } catch (Exception exception) {
+               Logger.getLogger(EncodingUtil.class.getName()).log(Level.SEVERE, null, exception);
             return "";
         }
         return data;

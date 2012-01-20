@@ -5,6 +5,7 @@ The EasyCassandra uses the Thrift implementation and has like the main objective
 
 
 Version: 1.0.2
+* Fixes bug with Boolean's Object
 * Now the Cassandra's lib is supported this way is possible use every Cassandra above of the version 0.8.0
 
 Version: 1.0.1

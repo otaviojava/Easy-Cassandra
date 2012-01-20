@@ -1,6 +1,6 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>otaviojava</groupId>
@@ -9,7 +9,7 @@
     <packaging>jar</packaging>
 
     <name>EasyCassandra</name>
-    <url>http://maven.apache.org</url>
+    <url>https://github.com/otaviojava/Easy-Cassandra</url>
     <build>
         <plugins>
             <plugin>
@@ -48,7 +48,7 @@
             <version>0.8.5</version>
             <type>jar</type>
         </dependency>
-        
+                
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

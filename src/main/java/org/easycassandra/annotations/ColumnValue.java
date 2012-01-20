@@ -9,8 +9,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 /**
- * annotations for  identify the column name
- * The classes can be used are below:
+ * annotations for  identify the column in the Family Column
+ * The classes can be used are:
  * @see Boolean
  * @see java#util#Date
  * @see Double
