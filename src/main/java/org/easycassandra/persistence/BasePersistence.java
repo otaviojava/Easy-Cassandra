@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.cassandra.thrift.Column;
 import org.easycassandra.annotations.ColumnFamilyValue;
@@ -182,9 +184,8 @@ class BasePersistence {
 
         try {
             return getColumnNames(object);
-        } catch (IllegalAccessException | InstantiationException ex) {
-
-
+        } catch (IllegalAccessException | InstantiationException exception) {
+  Logger.getLogger(BasePersistence.class.getName()).log(Level.SEVERE, null, exception);
             return null;
         }
     }
@@ -300,13 +301,15 @@ class BasePersistence {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     protected List getList(List<Map<String, ByteBuffer>> colMap, Class persisteceClass) throws InstantiationException, IllegalAccessException {
         List lists = new ArrayList<>();
-        Object bean = null;
-        try {
-            bean = persisteceClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException ex) {
-        }
+       
 
         for (Map<String, ByteBuffer> listMap : colMap) {
+        	 Object bean = null;
+             try {
+                 bean = persisteceClass.newInstance();
+             } catch (InstantiationException | IllegalAccessException exception) {
+                 Logger.getLogger(BasePersistence.class.getName()).log(Level.SEVERE, null, exception);
+             }
             readObject(listMap, bean);
             lists.add(bean);
         }

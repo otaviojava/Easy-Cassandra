@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.cassandra.thrift.Cassandra.Client;
 import org.apache.cassandra.thrift.*;
 import org.apache.thrift.TException;
@@ -16,8 +18,7 @@ import org.easycassandra.annotations.ColumnValue;
 import org.easycassandra.annotations.read.UTF8Read;
 import org.easycassandra.util.EncodingUtil;
 import org.easycassandra.util.ReflectionUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 /**
  * main Class for persistence The Objects
@@ -25,7 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Persistence extends BasePersistence {
 
-    private static Logger LOOGER = LoggerFactory.getLogger(Persistence.class);
+   
     protected Client client = null;
 
     Persistence(Client client, AtomicReference<ColumnFamilyIds> referenciaSuperColunas) {
@@ -65,8 +66,8 @@ public class Persistence extends BasePersistence {
 
             CqlResult execute_cql_query = executeCQL(cql.toString());
             objects = listbyQuery(execute_cql_query, persistenceClass);
-        } catch (NumberFormatException | InstantiationException | IllegalAccessException ex) {
-            LOOGER.error("Error during execute CQL", ex);
+        } catch (NumberFormatException | InstantiationException | IllegalAccessException exception) {
+         Logger.getLogger(Persistence.class.getName()).log(Level.SEVERE, null, exception);
 
         }
 
@@ -115,8 +116,8 @@ public class Persistence extends BasePersistence {
                 client.insert(rowid, columnParent, column, consistencyLevel);
 
             }
-        } catch (IOException | InvalidRequestException | UnavailableException | TimedOutException | TException ex) {
-            LOOGER.error("Error insert Objects", ex);
+        } catch (IOException | InvalidRequestException | UnavailableException | TimedOutException | TException exception) {
+            Logger.getLogger(Persistence.class.getName()).log(Level.SEVERE, null, exception);
             return false;
         }
         return true;
@@ -129,8 +130,8 @@ public class Persistence extends BasePersistence {
     public CqlResult executeCQL(String cql) {
         try {
             return client.execute_cql_query(ByteBuffer.wrap(cql.toString().getBytes()), Compression.NONE);
-        } catch (InvalidRequestException | UnavailableException | TimedOutException | SchemaDisagreementException | TException ex) {
-            LOOGER.error("Error during execute CQL", ex);
+        } catch (InvalidRequestException | UnavailableException | TimedOutException | SchemaDisagreementException | TException exception) {
+        Logger.getLogger(Persistence.class.getName()).log(Level.SEVERE, null, exception);
         }
         return null;
     }
@@ -195,8 +196,8 @@ public class Persistence extends BasePersistence {
             cql.append("LIMIT ").append(limit);//padrao 10000
             CqlResult execute_cql_query = executeCQL(cql.toString());
             list = listbyQuery(execute_cql_query, persistenceClass);
-        } catch (NumberFormatException | InstantiationException | IllegalAccessException ex) {
-            LOOGER.error("Error during execute CQL", ex);
+        } catch (NumberFormatException | InstantiationException | IllegalAccessException exception) {
+            Logger.getLogger(Persistence.class.getName()).log(Level.SEVERE, null, exception);
 
         }
 

@@ -5,7 +5,7 @@
 
     <groupId>otaviojava</groupId>
     <artifactId>EasyCassandra</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.3-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>EasyCassandra</name>
@@ -41,13 +41,19 @@
     </properties>
 
     <dependencies>
-      
-        <dependency>
-            <groupId>org.apache.cassandra</groupId>
-            <artifactId>cassandra-thrift</artifactId>
-            <version>0.8.5</version>
-            <type>jar</type>
-        </dependency>
+
+	<dependency>
+		<groupId>org.apache.cassandra</groupId>
+		<artifactId>cassandra-thrift</artifactId>
+		<version>1.0.6</version>
+	    <exclusions>
+	     <exclusion>
+	      <artifactId>slf4j-api</artifactId>
+	      <groupId>org.slf4j</groupId>
+	     </exclusion>
+	    </exclusions>
+	</dependency>
+        
                 
         <dependency>
             <groupId>junit</groupId>

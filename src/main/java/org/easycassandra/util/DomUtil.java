@@ -3,12 +3,13 @@ package org.easycassandra.util;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 /**
  *for Read and write a XML Document
@@ -16,7 +17,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DomUtil {
 
-    private static Logger LOOGER = LoggerFactory.getLogger(DomUtil.class);
+ 
     public static final String FILE = "cassandraSuperColunas.xml";
 
  /**
@@ -31,8 +32,8 @@ public class DomUtil {
             Unmarshaller unmarshaller = jAXBContext.createUnmarshaller();
             Object myclass = unmarshaller.unmarshal(file);
             return myclass;
-        } catch (JAXBException ex) {
-            LOOGER.error("Error parse to Object", ex);
+        } catch (JAXBException exception) {
+             Logger.getLogger(DomUtil.class.getName()).log(Level.SEVERE, null, exception);
         }
 
         return null;
@@ -52,8 +53,8 @@ public class DomUtil {
             File file = new File(FILE);
             marshaller.marshal(object, new FileWriter(file.getAbsolutePath()));
             return file;
-        } catch (IOException | JAXBException ex) {
-            LOOGER.error("Error parse to File", ex);
+        } catch (IOException | JAXBException exception) {
+            Logger.getLogger(DomUtil.class.getName()).log(Level.SEVERE, null, exception);
         }
 
         return null;

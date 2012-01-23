@@ -4,8 +4,9 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 /**
  * The class does getter and setter with invoke Dynamic
@@ -13,7 +14,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ReflectionUtil {
 
-    private static Logger LOOGER = LoggerFactory.getLogger(ReflectionUtil.class);
+
 
 //    public static Object executeMethod(Object object, String method, Object... params) {
 //        Class clazz = object.getClass();
@@ -99,8 +100,8 @@ public class ReflectionUtil {
             MethodHandle methodHandle = MethodHandles.publicLookup().bind(object, methodName, methodType);
 
             return methodHandle.invoke();
-        } catch (Throwable ex) {
-            LOOGER.error("Error in execute getter", ex);
+        } catch (Throwable exception) {
+          Logger.getLogger(ReflectionUtil.class.getName()).log(Level.SEVERE, null, exception);
         }
         return null;
     }
@@ -124,8 +125,8 @@ public class ReflectionUtil {
             printer.invoke();
 
 
-        } catch (Throwable ex) {
-            LOOGER.error("Error in execute setter", ex);
+        } catch (Throwable exception) {
+            Logger.getLogger(ReflectionUtil.class.getName()).log(Level.SEVERE, null, exception);
             return false;
         }
         return true;

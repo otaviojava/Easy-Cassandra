@@ -3,6 +3,8 @@ package org.easycassandra.persistence;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.cassandra.thrift.Cassandra;
 import org.apache.cassandra.thrift.Cassandra.Client;
 import org.apache.cassandra.thrift.InvalidRequestException;
@@ -13,8 +15,7 @@ import org.apache.thrift.transport.TFramedTransport;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.easycassandra.util.DomUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 /**
  *
@@ -22,9 +23,11 @@ import org.slf4j.LoggerFactory;
  */
 public class EasyCassandraManager implements AutoCloseable {
 
-    private static Logger LOOGER = LoggerFactory.getLogger(DomUtil.class);
+   
     private static List<Connection> conections;
+    
     private static AtomicReference<ColumnFamilyIds> referenciaSuperColunas;
+    
     private static Thread escreverSuperColuna;
 
     public static Client getClient(String keySpace, String host, int port) {
@@ -46,8 +49,8 @@ public class EasyCassandraManager implements AutoCloseable {
             conection.setTransport(transport);
             conections.add(conection);
             return client;
-        } catch (InvalidRequestException | TException ex) {
-            LOOGER.error("Error during crete Client for Cassandra", ex);
+        } catch (InvalidRequestException | TException exception) {
+             Logger.getLogger(EasyCassandraManager.class.getName()).log(Level.SEVERE, null, exception);
         }
         return null;
     }
