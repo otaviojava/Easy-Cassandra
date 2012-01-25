@@ -32,11 +32,20 @@ import org.easycassandra.util.ReflectionUtil;
 class BasePersistence {
 
     /**
-     * @param aLOCK_WRITE_DOCUMENT the LOCK_WRITE_DOCUMENT to set
+     * @param LOCK_WRITE_VALUE the LOCK_WRITE to set
      */
-    public static void setLOCK_WRITE_DOCUMENT(AtomicBoolean aLOCK_WRITE_DOCUMENT) {
-        LOCK_WRITE_DOCUMENT = aLOCK_WRITE_DOCUMENT;
+    public static void setLockWrite(AtomicBoolean LOCK_WRITE_VALUE) {
+        LOCK_WRITE= LOCK_WRITE_VALUE;
     }
+
+      /**
+     * @param LOCK_WRITE_VALUE the LOCK_WRITE to set
+     */
+    public static AtomicBoolean getLockWrite() {
+        return LOCK_WRITE;
+    }
+    /**
+    
     /**
      * Key value of write for The Cassandra persistence
      * @see  WriteInterface
@@ -56,7 +65,7 @@ class BasePersistence {
      * field for lock or unlock for run 
      * the Thread
      */
-     public  static  AtomicBoolean LOCK_WRITE_DOCUMENT= new AtomicBoolean(false);
+     private  static  AtomicBoolean LOCK_WRITE= new AtomicBoolean(false);
     
     /**
      * Thread for write the id in the Document
@@ -182,8 +191,8 @@ class BasePersistence {
             if (chave.auto() && autoEnable) {
                 id = referenciaSuperColunas.get().getId(colunaFamilia,keyStore);
               
-                if(!LOCK_WRITE_DOCUMENT.get()){
-                	LOCK_WRITE_DOCUMENT.set(true);
+                if(!LOCK_WRITE.get()){
+                	LOCK_WRITE.set(true);
                 	writeDocumentThread.start();
                 }
               

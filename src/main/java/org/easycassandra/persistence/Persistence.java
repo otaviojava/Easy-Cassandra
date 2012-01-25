@@ -56,7 +56,7 @@ public class Persistence extends BasePersistence {
         this.client = client;
         setReferenciaSuperColunas(referenciaSuperColunas);
         setKeyStore(keyStore);
-        setWriteDocumentThread(new Thread(new WriteDocument(LOCK_WRITE_DOCUMENT, referenciaSuperColunas)));
+        setWriteDocumentThread(new Thread(new WriteDocument(getLockWrite(), referenciaSuperColunas)));
     }
 
     /**
@@ -71,7 +71,7 @@ public class Persistence extends BasePersistence {
     
      */
     @SuppressWarnings("rawtypes")
-	protected List retriveObject(String condiction, String condictionValue, List objects, Class persistenceClass, ConsistencyLevelCQL consistencyLevel, int limit) {
+	protected void retriveObject(String condiction, String condictionValue, List objects, Class persistenceClass, ConsistencyLevelCQL consistencyLevel, int limit) {
         try {
             StringBuilder cql = new StringBuilder();
 
@@ -89,14 +89,14 @@ public class Persistence extends BasePersistence {
             cql.append("LIMIT ").append(limit);//default 10000
 
 
-            CqlResult execute_cql_query = executeCQL(cql.toString());
-            objects = listbyQuery(execute_cql_query, persistenceClass);
+            CqlResult executeCqlQuery = executeCQL(cql.toString());
+            objects = listbyQuery(executeCqlQuery, persistenceClass);
         } catch (Exception exception) {
          Logger.getLogger(Persistence.class.getName()).log(Level.SEVERE, null, exception);
 
         }
 
-        return objects;
+        
     }
 
     //insert commands
@@ -219,8 +219,8 @@ public class Persistence extends BasePersistence {
             cql.append(getColumnFamilyName(persistenceClass));
             cql.append(" USING ").append(consistencyLevel.getValue()).append(" ");   //padra One
             cql.append("LIMIT ").append(limit);//padrao 10000
-            CqlResult execute_cql_query = executeCQL(cql.toString());
-            list = listbyQuery(execute_cql_query, persistenceClass);
+            CqlResult executeCqlQuery = executeCQL(cql.toString());
+            list = listbyQuery(executeCqlQuery, persistenceClass);
         } catch (Exception exception) {
             Logger.getLogger(Persistence.class.getName()).log(Level.SEVERE, null, exception);
 
@@ -287,7 +287,7 @@ public class Persistence extends BasePersistence {
         String keyString = new UTF8Read().getObjectByByte(keyBuffer).toString();
         String condicao = "KEY";
 
-        objects = retriveObject(condicao, keyString, objects, persistenceClass, consistencyLevel, limit);
+        retriveObject(condicao, keyString, objects, persistenceClass, consistencyLevel, limit);
         if (objects.size() > 0) {
             return objects.get(0);
         }
@@ -393,9 +393,9 @@ public class Persistence extends BasePersistence {
         String indexString = index.toString();
         ColumnValue coluna = getIndexField(objectClass).getAnnotation(ColumnValue.class);
         String condicao = coluna.nome();
+        retriveObject(condicao, indexString, objects, objectClass, consistencyLevelCQL, limit);
 
-
-        return retriveObject(condicao, indexString, objects, objectClass, consistencyLevelCQL, limit);
+        return objects;
 
 
     }

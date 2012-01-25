@@ -48,10 +48,10 @@ public class EncodingUtil {
     public static String byteToString(ByteBuffer buffer) {
         String data = "";
         try {
-            int old_position = buffer.position();
+            int oldPosition = buffer.position();
             data = DECODER.decode(buffer).toString();
 
-            buffer.position(old_position);
+            buffer.position(oldPosition);
         } catch (Exception exception) {
                Logger.getLogger(EncodingUtil.class.getName()).log(Level.SEVERE, null, exception);
             return "";
