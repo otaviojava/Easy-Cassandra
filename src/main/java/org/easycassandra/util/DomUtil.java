@@ -59,4 +59,8 @@ public class DomUtil {
 
         return null;
     }
+    
+    private DomUtil(){
+        
+    }
 }

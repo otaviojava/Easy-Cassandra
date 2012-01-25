@@ -105,4 +105,7 @@ public class EasyCassandraManager {
         DomUtil.getFileDom(referenceSuperColunms.get());
 
     }
+    
+    private EasyCassandraManager(){
+    }
 }

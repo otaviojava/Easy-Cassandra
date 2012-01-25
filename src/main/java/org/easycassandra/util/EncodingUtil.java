@@ -58,4 +58,12 @@ public class EncodingUtil {
         }
         return data;
     }
+
+    /**
+     * Singleton
+     */
+    private EncodingUtil() {
+    }
+    
+     
 }

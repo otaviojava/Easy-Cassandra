@@ -31,20 +31,8 @@ import org.easycassandra.util.ReflectionUtil;
  */
 class BasePersistence {
 
-    /**
-     * @param LOCK_WRITE_VALUE the LOCK_WRITE to set
-     */
-    public static void setLockWrite(AtomicBoolean LOCK_WRITE_VALUE) {
-        LOCK_WRITE= LOCK_WRITE_VALUE;
-    }
-
-      /**
-     * @param LOCK_WRITE_VALUE the LOCK_WRITE to set
-     */
-    public static AtomicBoolean getLockWrite() {
-        return LOCK_WRITE;
-    }
-    /**
+  
+    
     
     /**
      * Key value of write for The Cassandra persistence
@@ -65,7 +53,7 @@ class BasePersistence {
      * field for lock or unlock for run 
      * the Thread
      */
-     private  static  AtomicBoolean LOCK_WRITE= new AtomicBoolean(false);
+     private  static   AtomicBoolean LOCK_WRITE= new AtomicBoolean(false);
     
     /**
      * Thread for write the id in the Document
@@ -93,7 +81,7 @@ class BasePersistence {
  * @param object - Class of the object viewed
  * @return The name of Column name if there are not will be return null
  */
-    @SuppressWarnings({ "rawtypes" })
+    
 	protected String getColumnFamilyName(Class object) {
 
         ColumnFamilyValue colunaFamilia = (ColumnFamilyValue) object.getAnnotation(ColumnFamilyValue.class);
@@ -442,5 +430,17 @@ class BasePersistence {
         this.keyStore = keyStore;
     }
          
-         
+           /**
+     * @param lockWrite the LOCK_WRITE to set
+     */
+    public static void setLockWrite(AtomicBoolean lockWrite) {
+        LOCK_WRITE= lockWrite;
+    }
+
+      /**
+     * @param LOCK_WRITE_VALUE the LOCK_WRITE to set
+     */
+    public static AtomicBoolean getLockWrite() {
+        return LOCK_WRITE;
+    }
 }

@@ -67,4 +67,10 @@ class ReadWriteMaps {
         readMap.put("java.util.Date", new DateRead());
         readMap.put("java.lang.Boolean", new BooleanRead());
     }
+    
+    /**
+     * Singleton
+     */
+    private ReadWriteMaps(){
+    }
 }

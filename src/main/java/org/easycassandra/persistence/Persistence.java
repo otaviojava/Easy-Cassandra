@@ -70,7 +70,7 @@ public class Persistence extends BasePersistence {
      * @return the list retrieved with length (limit)
     
      */
-    @SuppressWarnings("rawtypes")
+  
 	protected void retriveObject(String condiction, String condictionValue, List objects, Class persistenceClass, ConsistencyLevelCQL consistencyLevel, int limit) {
         try {
             StringBuilder cql = new StringBuilder();

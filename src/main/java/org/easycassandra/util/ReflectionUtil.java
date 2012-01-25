@@ -64,5 +64,10 @@ public class ReflectionUtil {
         return true;
   }
 
+    /**
+     * Singleton
+     */
+    private ReflectionUtil(){
+    }
     
 }
