@@ -16,6 +16,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ColumnFamilyInformation implements Serializable {
 
   
+	private static final int HASH_CODE = 61;
+
+	private static final int HASH_VALUE = 7;
+
 	private static final long serialVersionUID = 859191542482693032L;
 
 	/**
@@ -101,9 +105,9 @@ public class ColumnFamilyInformation implements Serializable {
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 61 * hash + Objects.hashCode(this.columnFamilyName);
-        return 61 * hash + Objects.hashCode(this.keyStore);
+        int hash = HASH_VALUE;
+        hash = HASH_CODE * hash + Objects.hashCode(this.columnFamilyName);
+        return HASH_CODE * hash + Objects.hashCode(this.keyStore);
       
     }
 

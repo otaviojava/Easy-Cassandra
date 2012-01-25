@@ -36,7 +36,10 @@ import org.easycassandra.util.ReflectionUtil;
  */
 public class Persistence extends BasePersistence {
 
-   
+   /**
+    * the value default for list the result
+    */
+	private static final int DEFAULT_VALUE = 10000;
 	/**
 	 * Client's Cassandra
 	 */
@@ -52,7 +55,7 @@ public class Persistence extends BasePersistence {
     Persistence(Client client, AtomicReference<ColumnFamilyIds> referenciaSuperColunas,String keyspace) {
         this.client = client;
         this.referenciaSuperColunas = referenciaSuperColunas;
-        writeDocumentThread=new Thread(new WriteDocument(lock, referenciaSuperColunas));
+        writeDocumentThread=new Thread(new WriteDocument(LOCK_THREAD, referenciaSuperColunas));
     }
 
     /**
@@ -87,7 +90,7 @@ public class Persistence extends BasePersistence {
 
             CqlResult execute_cql_query = executeCQL(cql.toString());
             objects = listbyQuery(execute_cql_query, persistenceClass);
-        } catch (NumberFormatException | InstantiationException | IllegalAccessException exception) {
+        } catch (Exception exception) {
          Logger.getLogger(Persistence.class.getName()).log(Level.SEVERE, null, exception);
 
         }
@@ -167,7 +170,7 @@ public class Persistence extends BasePersistence {
      */
     @SuppressWarnings("rawtypes")
 	public List findAll(Class persistenceClass) {
-        return findAll(persistenceClass, ConsistencyLevelCQL.ONE, 10000);
+        return findAll(persistenceClass, ConsistencyLevelCQL.ONE, DEFAULT_VALUE);
     }
 
     /**
@@ -192,7 +195,7 @@ public class Persistence extends BasePersistence {
      */
     @SuppressWarnings("rawtypes")
     public List findAll(Class persistenceClass, ConsistencyLevelCQL consistencyLevel) {
-        return findAll(persistenceClass, consistencyLevel, 10000);
+        return findAll(persistenceClass, consistencyLevel, DEFAULT_VALUE);
     }
 
     /**
@@ -217,7 +220,7 @@ public class Persistence extends BasePersistence {
             cql.append("LIMIT ").append(limit);//padrao 10000
             CqlResult execute_cql_query = executeCQL(cql.toString());
             list = listbyQuery(execute_cql_query, persistenceClass);
-        } catch (NumberFormatException | InstantiationException | IllegalAccessException exception) {
+        } catch (Exception exception) {
             Logger.getLogger(Persistence.class.getName()).log(Level.SEVERE, null, exception);
 
         }
@@ -235,7 +238,7 @@ public class Persistence extends BasePersistence {
      * @throws IllegalAccessException 
      */
     @SuppressWarnings("rawtypes")
-    public List listbyQuery(CqlResult resultCQL, Class persistenceClass) throws NumberFormatException, InstantiationException, IllegalAccessException {
+    public List listbyQuery(CqlResult resultCQL, Class persistenceClass) throws Exception {
         List<Map<String, ByteBuffer>> listMap = new ArrayList<>();
 
         for (CqlRow row : resultCQL.rows) {
@@ -371,7 +374,7 @@ public class Persistence extends BasePersistence {
      */
     @SuppressWarnings("rawtypes")
     public List findByIndex(Object index, Class objectClass, ConsistencyLevelCQL consistencyLevel) {
-        return findByIndex(index, objectClass, consistencyLevel, 10000);
+        return findByIndex(index, objectClass, consistencyLevel, DEFAULT_VALUE);
     }
 
     /**
@@ -421,7 +424,7 @@ public class Persistence extends BasePersistence {
      * the with synchronized for the KeySpace
      * @return
      */
-	synchronized public String getKeySpace() {
+	 public synchronized String getKeySpace() {
 		return keySpace;
 	}
 }

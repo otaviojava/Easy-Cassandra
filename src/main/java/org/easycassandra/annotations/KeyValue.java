@@ -17,5 +17,5 @@ public @interface  KeyValue {
      * each new Key in the FamilyColumn there are a new value auto numeric
      * @return if is auto increment
      */
-    public boolean auto() default false;
+     boolean auto() default false;
 }

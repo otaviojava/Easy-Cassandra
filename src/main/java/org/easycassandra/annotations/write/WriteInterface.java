@@ -9,7 +9,11 @@ import java.nio.ByteBuffer;
  */
 public interface WriteInterface {
     
-    
-    public ByteBuffer getBytebyObject(Object object);
+    /**
+     * 
+     * @param object
+     * @return
+     */
+     ByteBuffer getBytebyObject(Object object);
     
 }

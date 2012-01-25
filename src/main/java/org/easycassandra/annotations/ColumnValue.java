@@ -31,7 +31,7 @@ public @interface ColumnValue {
      * if this no used the value is the field's name
      * @return the name of the Column  
      */
-      public String nome() default "";
+       String nome() default "";
     
     
 }

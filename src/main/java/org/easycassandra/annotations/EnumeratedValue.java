@@ -12,10 +12,11 @@ import java.lang.annotation.Target;
 @Target (ElementType.FIELD)
 @Retention (RetentionPolicy.RUNTIME)
 public @interface EnumeratedValue {
-     /**
-      * 
-      * @return 
-      */
-     public String nome();
+	  /**
+     * The valeu for the EnumeratedValue name
+     * if this no used the value is the field's name
+     * @return the name of the Column  
+     */
+      String nome();
     
 }

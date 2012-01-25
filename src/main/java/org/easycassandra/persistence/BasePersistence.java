@@ -49,7 +49,7 @@ class BasePersistence {
      * field for lock or unlock for run 
      * the Thread
      */
-     protected  final static AtomicBoolean lock= new AtomicBoolean(false);
+     protected  static  AtomicBoolean LOCK_THREAD= new AtomicBoolean(false);
     
     /**
      * Thread for write the id in the Document
@@ -175,8 +175,8 @@ class BasePersistence {
             if (chave.auto() && autoEnable) {
                 id = referenciaSuperColunas.get().getId(colunaFamilia,keySpace);
               
-                if(!lock.get()){
-                	lock.set(true);
+                if(!LOCK_THREAD.get()){
+                	LOCK_THREAD.set(true);
                 	writeDocumentThread.start();
                 }
               

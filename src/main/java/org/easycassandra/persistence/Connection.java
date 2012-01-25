@@ -11,7 +11,11 @@ import org.apache.thrift.transport.TTransport;
  */
 class Connection {
 
-    /**
+    private static final int HASH_CODE = 89;
+
+	private static final int HASH_VALUE = 7;
+
+	/**
      * The host name
      */
     private String host;
@@ -101,10 +105,10 @@ class Connection {
     }
 
     public int hashCode() {
-        int hash = 7;
-        hash = 89 * hash + Objects.hashCode(this.host);
-        hash = 89 * hash + Objects.hashCode(this.keyspace);
-        hash = 89 * hash + Objects.hashCode(this.port);
+        int hash = HASH_VALUE;
+        hash = HASH_CODE * hash + Objects.hashCode(this.host);
+        hash = HASH_CODE * hash + Objects.hashCode(this.keyspace);
+        hash = HASH_CODE * hash + Objects.hashCode(this.port);
         return hash;
     }
 

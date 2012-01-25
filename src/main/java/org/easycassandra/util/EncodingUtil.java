@@ -17,13 +17,13 @@ public class EncodingUtil {
 
   
     
-    public static final String encogin = "UTF-8";
+    public static final String ENCODING = "UTF-8";
     
-    public static final Charset charset = Charset.forName(encogin);
+    public static final Charset CHARSET = Charset.forName(ENCODING);
     
-    public static final CharsetEncoder encoder = charset.newEncoder();
+    public static final CharsetEncoder ENCODER = CHARSET.newEncoder();
     
-    public static final CharsetDecoder decoder = charset.newDecoder();
+    public static final CharsetDecoder DECODER = CHARSET.newDecoder();
     
 /**
  *  return a ByteBuffer from String
@@ -32,7 +32,7 @@ public class EncodingUtil {
  */
     public static ByteBuffer stringToByte(String msg) {
         try {
-            return encoder.encode(CharBuffer.wrap(msg));
+            return ENCODER.encode(CharBuffer.wrap(msg));
         } catch (Exception exception) {
             Logger.getLogger(EncodingUtil.class.getName()).log(Level.SEVERE, null, exception);
             
@@ -49,7 +49,7 @@ public class EncodingUtil {
         String data = "";
         try {
             int old_position = buffer.position();
-            data = decoder.decode(buffer).toString();
+            data = DECODER.decode(buffer).toString();
 
             buffer.position(old_position);
         } catch (Exception exception) {

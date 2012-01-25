@@ -12,5 +12,10 @@ import java.nio.ByteBuffer;
  * @author otavio
  */
 public interface ReadInterface {
- public Object getObjectByByte(ByteBuffer buffer);   
+ /**
+  * 
+  * @param buffer
+  * @return
+  */
+	Object getObjectByByte(ByteBuffer buffer);   
 }

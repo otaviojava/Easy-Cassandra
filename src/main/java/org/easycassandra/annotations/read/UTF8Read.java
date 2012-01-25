@@ -14,7 +14,16 @@ import org.easycassandra.util.EncodingUtil;
  */
 public class UTF8Read implements ReadInterface {
 
-    @Override
+	/**
+	 * Constante ZERO
+	 */
+    private static final String ZERO = "0";
+    /**
+     * Base 
+     */
+	private static final int BASE_UTF8 = 256;
+
+	@Override
     public Object getObjectByByte(ByteBuffer buffer) {
         String value = EncodingUtil.byteToString(buffer);
         return toUTF8(value);
@@ -24,11 +33,11 @@ public class UTF8Read implements ReadInterface {
         try {
             StringBuilder string = new StringBuilder();
 
-            byte[] b = value.toString().getBytes(EncodingUtil.encogin);
-            for (int k = 0; k < b.length; k++) {
-                String hex = Long.toHexString((b[k] + 256) % 256);
+            byte[] bytes = value.toString().getBytes(EncodingUtil.ENCODING);
+            for (int index = 0; index < bytes.length; index++) {
+                String hex = Long.toHexString((bytes[index] + BASE_UTF8) % BASE_UTF8);
                 if (hex.length() == 1) {
-                    hex = "0" + hex;
+                    hex = ZERO + hex;
                 }
                 string.append(hex);
 
