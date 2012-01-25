@@ -30,36 +30,43 @@ import org.easycassandra.util.ReflectionUtil;
  * @author otavio
  */
 class BasePersistence {
+
+    /**
+     * @param aLOCK_WRITE_DOCUMENT the LOCK_WRITE_DOCUMENT to set
+     */
+    public static void setLOCK_WRITE_DOCUMENT(AtomicBoolean aLOCK_WRITE_DOCUMENT) {
+        LOCK_WRITE_DOCUMENT = aLOCK_WRITE_DOCUMENT;
+    }
     /**
      * Key value of write for The Cassandra persistence
      * @see  WriteInterface
      */
-    protected Map<String, WriteInterface> writeMap;
+    private Map<String, WriteInterface> writeMap;
     /**
      * Key Valeu of read for The Cassnadra persistence
      * @see ReadInterface
      */
-    protected Map<String, ReadInterface> readMap;
+    private Map<String, ReadInterface> readMap;
     /**
      * Class with information about Column Family managed by Easy-Cassandra
      */
-    protected AtomicReference<ColumnFamilyIds> referenciaSuperColunas;
+    private AtomicReference<ColumnFamilyIds> referenciaSuperColunas;
     
     /**
      * field for lock or unlock for run 
      * the Thread
      */
-     protected  static  AtomicBoolean LOCK_WRITE_DOCUMENT= new AtomicBoolean(false);
+     public  static  AtomicBoolean LOCK_WRITE_DOCUMENT= new AtomicBoolean(false);
     
     /**
      * Thread for write the id in the Document
      */
-    protected Thread writeDocumentThread;
+    private Thread writeDocumentThread;
     
     /**
      * name of keyspace where the Client is
      */
-    protected  String keyStore;
+    private  String keyStore;
     
 
     /**
@@ -184,7 +191,7 @@ class BasePersistence {
             } else {
                 id = (Long) ReflectionUtil.getMethod(object, keyField);
             }
-            data = writeMap.get(keyField.getType().getName()).getBytebyObject(id);
+            data = getWriteMap().get(keyField.getType().getName()).getBytebyObject(id);
             return data;
 
         }
@@ -302,7 +309,7 @@ class BasePersistence {
             column.setName(EncodingUtil.stringToByte(coluna));
 
 
-            ByteBuffer byteBuffer = writeMap.get(field.getType().getName()).getBytebyObject(subObject);
+            ByteBuffer byteBuffer = getWriteMap().get(field.getType().getName()).getBytebyObject(subObject);
             column.setValue(byteBuffer);
 
             return column;
@@ -351,13 +358,13 @@ class BasePersistence {
             if (field.getAnnotation(KeyValue.class) != null) {
                 ByteBuffer byteBuffer = listMap.get("KEY");
 
-                ReflectionUtil.setMethod(bean, field, readMap.get(field.getType().getName()).getObjectByByte(byteBuffer));
+                ReflectionUtil.setMethod(bean, field, getReadMap().get(field.getType().getName()).getObjectByByte(byteBuffer));
                 continue;
             } else if (field.getAnnotation(ColumnValue.class) != null) {
                 
                 ByteBuffer byteBuffer = listMap.get(getColumnNanme(field));
                 if (byteBuffer != null) {
-                    ReflectionUtil.setMethod(bean, field, readMap.get(field.getType().getName()).getObjectByByte(byteBuffer));
+                    ReflectionUtil.setMethod(bean, field, getReadMap().get(field.getType().getName()).getObjectByByte(byteBuffer));
                 }
 
             } else if (field.getAnnotation(EmbeddedValue.class) != null) {
@@ -381,4 +388,50 @@ class BasePersistence {
             }
         }
     }
+    
+    
+      /**
+     * the with synchronized for the KeySpace
+     * @return
+     */
+	 public synchronized String getKeySpace() {
+		return keyStore;
+	}
+
+    /**
+     * @return the writeMap
+     */
+    public Map<String, WriteInterface> getWriteMap() {
+        return writeMap;
+    }
+
+    /**
+     * @return the readMap
+     */
+    public Map<String, ReadInterface> getReadMap() {
+        return readMap;
+    }
+
+    /**
+     * @param referenciaSuperColunas the referenciaSuperColunas to set
+     */
+    public void setReferenciaSuperColunas(AtomicReference<ColumnFamilyIds> referenciaSuperColunas) {
+        this.referenciaSuperColunas = referenciaSuperColunas;
+    }
+
+    /**
+     * @param writeDocumentThread the writeDocumentThread to set
+     */
+    public void setWriteDocumentThread(Thread writeDocumentThread) {
+        this.writeDocumentThread = writeDocumentThread;
+    }
+
+    /**
+     * @param keyStore the keyStore to set
+     */
+    public void setKeyStore(String keyStore) {
+        this.keyStore = keyStore;
+    }
+         
+         
 }

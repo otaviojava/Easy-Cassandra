@@ -43,7 +43,7 @@ public class Persistence extends BasePersistence {
 	/**
 	 * Client's Cassandra
 	 */
-    protected Client client = null;
+    private Client client = null;
     
 
     /**
@@ -54,9 +54,9 @@ public class Persistence extends BasePersistence {
      */
     Persistence(Client client, AtomicReference<ColumnFamilyIds> referenciaSuperColunas,String keyStore) {
         this.client = client;
-        this.referenciaSuperColunas = referenciaSuperColunas;
-        this.keyStore=keyStore;
-        writeDocumentThread=new Thread(new WriteDocument(LOCK_WRITE_DOCUMENT, referenciaSuperColunas));
+        setReferenciaSuperColunas(referenciaSuperColunas);
+        setKeyStore(keyStore);
+        setWriteDocumentThread(new Thread(new WriteDocument(LOCK_WRITE_DOCUMENT, referenciaSuperColunas)));
     }
 
     /**
@@ -283,7 +283,7 @@ public class Persistence extends BasePersistence {
         List objects = new ArrayList<>();
 
         Field keyField = getKeyField(persistenceClass);
-        ByteBuffer keyBuffer = writeMap.get(keyField.getType().getName()).getBytebyObject(key);
+        ByteBuffer keyBuffer = getWriteMap().get(keyField.getType().getName()).getBytebyObject(key);
         String keyString = new UTF8Read().getObjectByByte(keyBuffer).toString();
         String condicao = "KEY";
 
@@ -305,7 +305,7 @@ public class Persistence extends BasePersistence {
      */
     @SuppressWarnings("rawtypes")
     public boolean  deleteByKeyValue(Object keyValue, Class objectClass) {
-        ByteBuffer keyBuffer = writeMap.get(getKeyField(objectClass).getType().getName()).getBytebyObject(keyValue);
+        ByteBuffer keyBuffer = getWriteMap().get(getKeyField(objectClass).getType().getName()).getBytebyObject(keyValue);
         String keyString = new UTF8Read().getObjectByByte(keyBuffer).toString();
 
 
@@ -319,7 +319,7 @@ public class Persistence extends BasePersistence {
      */
     public boolean  delete(Object keyObject) {
         Field keyField = getKeyField(keyObject.getClass());
-        ByteBuffer keyBuffer = writeMap.get(keyField.getType().getName()).getBytebyObject(ReflectionUtil.getMethod(keyObject, keyField));
+        ByteBuffer keyBuffer = getWriteMap().get(keyField.getType().getName()).getBytebyObject(ReflectionUtil.getMethod(keyObject, keyField));
         String keyString = new UTF8Read().getObjectByByte(keyBuffer).toString();
 
       return  runDeleteCqlCommand(keyString, keyObject.getClass());
@@ -421,11 +421,5 @@ public class Persistence extends BasePersistence {
          return insert(object, consistencyLevel, true);
     }
 
-    /**
-     * the with synchronized for the KeySpace
-     * @return
-     */
-	 public synchronized String getKeySpace() {
-		return keyStore;
-	}
+  
 }
