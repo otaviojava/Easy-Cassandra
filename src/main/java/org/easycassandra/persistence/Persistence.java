@@ -50,12 +50,13 @@ public class Persistence extends BasePersistence {
      * Constructor for Persistence
      * @param client
      * @param referenciaSuperColunas
-     * @param keyspace
+     * @param keyStore
      */
-    Persistence(Client client, AtomicReference<ColumnFamilyIds> referenciaSuperColunas,String keyspace) {
+    Persistence(Client client, AtomicReference<ColumnFamilyIds> referenciaSuperColunas,String keyStore) {
         this.client = client;
         this.referenciaSuperColunas = referenciaSuperColunas;
-        writeDocumentThread=new Thread(new WriteDocument(LOCK_THREAD, referenciaSuperColunas));
+        this.keyStore=keyStore;
+        writeDocumentThread=new Thread(new WriteDocument(LOCK_WRITE_DOCUMENT, referenciaSuperColunas));
     }
 
     /**
@@ -153,7 +154,7 @@ public class Persistence extends BasePersistence {
      */
     public CqlResult executeCQL(String cql) {
         try {
-            return client.execute_cql_query(ByteBuffer.wrap(cql.toString().getBytes()), Compression.NONE);
+            return client.execute_cql_query(ByteBuffer.wrap(cql.getBytes()), Compression.NONE);
         } catch (InvalidRequestException | UnavailableException | TimedOutException | SchemaDisagreementException | TException exception) {
         Logger.getLogger(Persistence.class.getName()).log(Level.SEVERE, null, exception);
         }
@@ -238,7 +239,7 @@ public class Persistence extends BasePersistence {
      * @throws IllegalAccessException 
      */
     @SuppressWarnings("rawtypes")
-    public List listbyQuery(CqlResult resultCQL, Class persistenceClass) throws Exception {
+    public List listbyQuery(CqlResult resultCQL, Class persistenceClass) throws InstantiationException, IllegalAccessException  {
         List<Map<String, ByteBuffer>> listMap = new ArrayList<>();
 
         for (CqlRow row : resultCQL.rows) {
@@ -425,6 +426,6 @@ public class Persistence extends BasePersistence {
      * @return
      */
 	 public synchronized String getKeySpace() {
-		return keySpace;
+		return keyStore;
 	}
 }

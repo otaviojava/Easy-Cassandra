@@ -28,7 +28,7 @@ public class EasyCassandraManager {
 	/**
 	 * List with all Connections
 	 */
-    private static List<Connection> conections;
+    private static List<EasyCassandraClient> conections;
     
     /**
      * information about id Column Family
@@ -50,7 +50,7 @@ public class EasyCassandraManager {
      * @return
      */
     public static Client getClient(String keySpace, String host, int port) {
-        Connection conection = new Connection(host, keySpace, port);
+        EasyCassandraClient conection = new EasyCassandraClient(host, keySpace, port);
         if (conections.contains(conection)) {
             return conections.get(conections.indexOf(conection)).getClient();
 
@@ -91,15 +91,6 @@ public class EasyCassandraManager {
 
     
 
-    /**
-     * When the JVM call finalize in this object
-     * its close all connections
-     */
-    @Override
-    protected void finalize() throws Throwable {
-    	  closeClients();
-    	  super.finalize();
-    }
 
 
     /**
@@ -108,7 +99,7 @@ public class EasyCassandraManager {
      */
     public static void closeClients() {
 
-        for (Connection conexao : conections) {
+        for (EasyCassandraClient conexao : conections) {
             conexao.getTransport().close();
         }
         DomUtil.getFileDom(referenceSuperColunms.get());

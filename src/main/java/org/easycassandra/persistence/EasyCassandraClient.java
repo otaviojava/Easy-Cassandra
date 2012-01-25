@@ -6,10 +6,10 @@ import org.apache.cassandra.thrift.Cassandra.Client;
 import org.apache.thrift.transport.TTransport;
 
 /**
- *Information about Cassandra's Connection
+ *Information about Cassandra's EasyCassandraClient
  * @author otavio
  */
-class Connection {
+class EasyCassandraClient {
 
     private static final int HASH_CODE = 89;
 
@@ -96,7 +96,7 @@ class Connection {
             return true;
         }
 
-        if (obj instanceof Connection) {
+        if (obj instanceof EasyCassandraClient) {
 
             return obj.toString().equalsIgnoreCase(this.toString());
         }
@@ -112,10 +112,10 @@ class Connection {
         return hash;
     }
 
-    public Connection() {
+    public EasyCassandraClient() {
     }
 
-    public Connection(String host, String keyspace, Integer port) {
+    public EasyCassandraClient(String host, String keyspace, Integer port) {
         this.host = host;
         this.keyspace = keyspace;
         this.port = port;

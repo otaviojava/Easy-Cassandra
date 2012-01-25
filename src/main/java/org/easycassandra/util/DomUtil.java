@@ -30,8 +30,8 @@ public class DomUtil {
         try {
             JAXBContext jAXBContext = JAXBContext.newInstance(objClass);
             Unmarshaller unmarshaller = jAXBContext.createUnmarshaller();
-            Object myclass = unmarshaller.unmarshal(file);
-            return myclass;
+            return unmarshaller.unmarshal(file);
+            
         } catch (JAXBException exception) {
              Logger.getLogger(DomUtil.class.getName()).log(Level.SEVERE, null, exception);
         }

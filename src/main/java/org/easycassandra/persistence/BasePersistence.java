@@ -49,7 +49,7 @@ class BasePersistence {
      * field for lock or unlock for run 
      * the Thread
      */
-     protected  static  AtomicBoolean LOCK_THREAD= new AtomicBoolean(false);
+     protected  static  AtomicBoolean LOCK_WRITE_DOCUMENT= new AtomicBoolean(false);
     
     /**
      * Thread for write the id in the Document
@@ -59,7 +59,7 @@ class BasePersistence {
     /**
      * name of keyspace where the Client is
      */
-    protected  String keySpace;
+    protected  String keyStore;
     
 
     /**
@@ -77,7 +77,7 @@ class BasePersistence {
  * @param object - Class of the object viewed
  * @return The name of Column name if there are not will be return null
  */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({ "rawtypes" })
 	protected String getColumnFamilyName(Class object) {
 
         ColumnFamilyValue colunaFamilia = (ColumnFamilyValue) object.getAnnotation(ColumnFamilyValue.class);
@@ -94,8 +94,8 @@ class BasePersistence {
      * @return The name inside annotations or the field's name
      */
     private String getColumnNanme(Field field) {
-        String columnName=field.getAnnotation(ColumnValue.class).nome().equals("") ?field.getName():field.getAnnotation(ColumnValue.class).nome();
-        return columnName;
+        return field.getAnnotation(ColumnValue.class).nome().equals("") ?field.getName():field.getAnnotation(ColumnValue.class).nome();
+        
     }
 
     /**
@@ -105,8 +105,8 @@ class BasePersistence {
      * @return The name inside annotations or the field's name
      */
     private String getEnumeratedName(Field field) {
-        String columnName=field.getAnnotation(EnumeratedValue.class).nome().equals("") ?field.getName():field.getAnnotation(EnumeratedValue.class).nome();
-        return columnName;
+        return field.getAnnotation(EnumeratedValue.class).nome().equals("") ?field.getName():field.getAnnotation(EnumeratedValue.class).nome();
+        
     }
 
     /**
@@ -173,10 +173,10 @@ class BasePersistence {
 
             Long id = null;
             if (chave.auto() && autoEnable) {
-                id = referenciaSuperColunas.get().getId(colunaFamilia,keySpace);
+                id = referenciaSuperColunas.get().getId(colunaFamilia,keyStore);
               
-                if(!LOCK_THREAD.get()){
-                	LOCK_THREAD.set(true);
+                if(!LOCK_WRITE_DOCUMENT.get()){
+                	LOCK_WRITE_DOCUMENT.set(true);
                 	writeDocumentThread.start();
                 }
               
