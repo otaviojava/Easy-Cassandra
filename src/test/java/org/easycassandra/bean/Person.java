@@ -17,12 +17,12 @@ import org.easycassandra.annotations.KeyValue;
  *
  * @author otavio
  */
-@ColumnFamilyValue(nome = "pessoa")
+@ColumnFamilyValue(nome = "person")
 public class Person implements Serializable {
 
     private static final long serialVersionUID = 3L;
     
-    @KeyValue(auto=false)
+    @KeyValue(auto=true)
     private Long id;
     
     @IndexValue

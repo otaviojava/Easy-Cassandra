@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.apache.cassandra.thrift.Cassandra;
 import org.apache.cassandra.thrift.Cassandra.Client;
 import org.apache.cassandra.thrift.InvalidRequestException;
@@ -18,20 +19,37 @@ import org.easycassandra.util.DomUtil;
 
 
 /**
- *
+ *Class for manage  Connections
  * @author otavio
  */
-public class EasyCassandraManager implements AutoCloseable {
+public class EasyCassandraManager {
 
    
+	/**
+	 * List with all Connections
+	 */
     private static List<Connection> conections;
     
-    private static AtomicReference<ColumnFamilyIds> referenciaSuperColunas;
+    /**
+     * information about id Column Family
+     */
+    private static AtomicReference<ColumnFamilyIds> referenceSuperColunms;
     
-    private static Thread escreverSuperColuna;
+    static {
+    	conections=new ArrayList<>();
+    	referenceSuperColunms=new AtomicReference<>();
+    	ReadDocument readDocument=new ReadDocument();
+    	referenceSuperColunms.set(readDocument.read());
+    }
 
+    /**
+     * Methodo for create the Casansndra's Client
+     * @param keySpace
+     * @param host
+     * @param port
+     * @return
+     */
     public static Client getClient(String keySpace, String host, int port) {
-        initListConection();
         Connection conection = new Connection(host, keySpace, port);
         if (conections.contains(conection)) {
             return conections.get(conections.indexOf(conection)).getClient();
@@ -55,46 +73,45 @@ public class EasyCassandraManager implements AutoCloseable {
         return null;
     }
 
+    /**
+     * Class for create the persistence from Client
+     * @param keySpace
+     * @param host
+     * @param port
+     * @see Persistence
+     * @see EasyCassandraManager#getClient(String, String, int)
+     * @return
+     */
     public static Persistence getPersistence(String keySpace, String host, int port) {
-        Persistence persistence = new Persistence(getClient(keySpace, host, port), referenciaSuperColunas);
+        Persistence persistence = new Persistence(getClient(keySpace, host, port), referenceSuperColunms,keySpace);
 
 
         return persistence;
     }
 
-    private static void initListConection() {
-        if (conections == null) {
-            conections = new ArrayList<>();
-            referenciaSuperColunas = new AtomicReference<>(ReadColumnReferenceID.getColunaID());
+    
 
-        }
-
-
-        if (escreverSuperColuna == null) {
-            escreverSuperColuna = new Thread(new WriteColumnReferenceID(referenciaSuperColunas));
-
-        }
-
-    }
-
+    /**
+     * When the JVM call finalize in this object
+     * its close all connections
+     */
     @Override
     protected void finalize() throws Throwable {
-        close();
-        super.finalize();
+    	  closeClients();
+    	  super.finalize();
     }
 
-    @Override
-    public void close() throws Exception {
-        closeClients();
-    }
 
+    /**
+     * Method for close all Cleint in the list
+     * @see EasyCassandraManager#conections
+     */
     public static void closeClients() {
-        WriteColumnReferenceID.stop();
 
         for (Connection conexao : conections) {
             conexao.getTransport().close();
         }
-        DomUtil.getFileDom(referenciaSuperColunas.get());
+        DomUtil.getFileDom(referenceSuperColunms.get());
 
     }
 }

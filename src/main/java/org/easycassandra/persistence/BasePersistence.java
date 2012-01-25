@@ -6,6 +6,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,6 +44,23 @@ class BasePersistence {
      * Class with information about Column Family managed by Easy-Cassandra
      */
     protected AtomicReference<ColumnFamilyIds> referenciaSuperColunas;
+    
+    /**
+     * field for lock or unlock for run 
+     * the Thread
+     */
+     protected  final static AtomicBoolean lock= new AtomicBoolean(false);
+    
+    /**
+     * Thread for write the id in the Document
+     */
+    protected Thread writeDocumentThread;
+    
+    /**
+     * name of keyspace where the Client is
+     */
+    protected  String keySpace;
+    
 
     /**
      * Construtor for inicialize the readMap and the WriteMap
@@ -51,7 +69,6 @@ class BasePersistence {
      */
     public BasePersistence() {
         writeMap = ReadWriteMaps.getWriteMap();
-
         readMap = ReadWriteMaps.getReadMap();
 
     }
@@ -156,8 +173,13 @@ class BasePersistence {
 
             Long id = null;
             if (chave.auto() && autoEnable) {
-                id = referenciaSuperColunas.get().getId(colunaFamilia);
-
+                id = referenciaSuperColunas.get().getId(colunaFamilia,keySpace);
+              
+                if(!lock.get()){
+                	lock.set(true);
+                	writeDocumentThread.start();
+                }
+              
                 ReflectionUtil.setMethod(object, keyField, id);
             } else {
                 id = (Long) ReflectionUtil.getMethod(object, keyField);

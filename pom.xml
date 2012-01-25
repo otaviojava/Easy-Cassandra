@@ -46,13 +46,7 @@
 		<groupId>org.apache.cassandra</groupId>
 		<artifactId>cassandra-thrift</artifactId>
 		<version>1.0.6</version>
-	    <exclusions>
-	     <exclusion>
-	      <artifactId>slf4j-api</artifactId>
-	      <groupId>org.slf4j</groupId>
-	     </exclusion>
-	    </exclusions>
-	</dependency>
+	 </dependency>
         
                 
         <dependency>

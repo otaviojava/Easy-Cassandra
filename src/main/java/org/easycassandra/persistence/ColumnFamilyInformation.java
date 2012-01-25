@@ -2,6 +2,7 @@ package org.easycassandra.persistence;
 
 import java.io.Serializable;
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -14,22 +15,27 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "ColumnFamily")
 public class ColumnFamilyInformation implements Serializable {
 
-    /**
-	 * 
-	 */
+  
 	private static final long serialVersionUID = 859191542482693032L;
 
 	/**
-     * O number of the id Column Family
+     * the number of the id Column Family
      */
     @XmlAttribute
     private Long id;
+    
     
     /**
      * name of the Column Family
      */
     @XmlAttribute
     private String columnFamilyName;
+    
+    /**
+     * name of the KeyStore
+     */
+    @XmlAttribute
+    private String keyStore;
 
     public Long increment() {
         return ++id;
@@ -55,9 +61,19 @@ public class ColumnFamilyInformation implements Serializable {
         this.id = id;
     }
 
-    public ColumnFamilyInformation(String columnFamilyName) {
+
+	public String getKeyStore() {
+		return keyStore;
+	}
+
+	public void setKeyStore(String keyStore) {
+		this.keyStore = keyStore;
+	}
+
+	public ColumnFamilyInformation(String columnFamilyName,String keyStore) {
         id = new Long(0);
         this.columnFamilyName = columnFamilyName;
+        this.keyStore=keyStore;
     }
 
     @Override
@@ -70,22 +86,30 @@ public class ColumnFamilyInformation implements Serializable {
         if (obj == null) {
             return false;
         }
-
-        if (this == obj) {
-            return true;
+        if (getClass() != obj.getClass()) {
+            return false;
         }
-
-        if (obj instanceof ColumnFamilyInformation) {
-
-            return columnFamilyName.equals(((ColumnFamilyInformation) obj).getColumnFamilyName());
+        final ColumnFamilyInformation other = (ColumnFamilyInformation) obj;
+        if (!Objects.equals(this.columnFamilyName, other.columnFamilyName)) {
+            return false;
         }
-
-        return false;
+        if (!Objects.equals(this.keyStore, other.keyStore)) {
+            return false;
+        }
+        return true;
     }
 
+    @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 19 * hash + Objects.hashCode(this.columnFamilyName);
-        return hash;
+        int hash = 7;
+        hash = 61 * hash + Objects.hashCode(this.columnFamilyName);
+        return 61 * hash + Objects.hashCode(this.keyStore);
+      
     }
+
+
+
+	
+
+
 }

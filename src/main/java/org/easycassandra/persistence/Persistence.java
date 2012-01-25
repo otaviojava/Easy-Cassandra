@@ -10,8 +10,18 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.apache.cassandra.thrift.Cassandra.Client;
-import org.apache.cassandra.thrift.*;
+import org.apache.cassandra.thrift.Column;
+import org.apache.cassandra.thrift.ColumnParent;
+import org.apache.cassandra.thrift.Compression;
+import org.apache.cassandra.thrift.ConsistencyLevel;
+import org.apache.cassandra.thrift.CqlResult;
+import org.apache.cassandra.thrift.CqlRow;
+import org.apache.cassandra.thrift.InvalidRequestException;
+import org.apache.cassandra.thrift.SchemaDisagreementException;
+import org.apache.cassandra.thrift.TimedOutException;
+import org.apache.cassandra.thrift.UnavailableException;
 import org.apache.thrift.TException;
 import org.easycassandra.ConsistencyLevelCQL;
 import org.easycassandra.annotations.ColumnValue;
@@ -27,11 +37,22 @@ import org.easycassandra.util.ReflectionUtil;
 public class Persistence extends BasePersistence {
 
    
+	/**
+	 * Client's Cassandra
+	 */
     protected Client client = null;
+    
 
-    Persistence(Client client, AtomicReference<ColumnFamilyIds> referenciaSuperColunas) {
+    /**
+     * Constructor for Persistence
+     * @param client
+     * @param referenciaSuperColunas
+     * @param keyspace
+     */
+    Persistence(Client client, AtomicReference<ColumnFamilyIds> referenciaSuperColunas,String keyspace) {
         this.client = client;
         this.referenciaSuperColunas = referenciaSuperColunas;
+        writeDocumentThread=new Thread(new WriteDocument(lock, referenciaSuperColunas));
     }
 
     /**
@@ -395,4 +416,12 @@ public class Persistence extends BasePersistence {
     public boolean  update(Object object, ConsistencyLevel consistencyLevel) {
          return insert(object, consistencyLevel, true);
     }
+
+    /**
+     * the with synchronized for the KeySpace
+     * @return
+     */
+	synchronized public String getKeySpace() {
+		return keySpace;
+	}
 }

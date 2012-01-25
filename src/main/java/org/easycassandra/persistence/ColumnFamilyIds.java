@@ -28,7 +28,7 @@ public class ColumnFamilyIds implements Serializable {
 	private static final long serialVersionUID = 4263760877341591338L;
 	/**
      * The unit for The Column Family
-     * @see  ColumnFamilyIds
+     * @see  ColumnFamilyIdsTest
      */
     @XmlElementWrapper(name = "columnFamilies")
     private List<ColumnFamilyInformation> columnFamilyInformation;
@@ -39,10 +39,11 @@ public class ColumnFamilyIds implements Serializable {
      * with the name get the column family and increment one value, 
      * if there are not it will be created and start with the value 1
      * @param nameColumnFamily - The name of the Column Family
+     * @param keyStore - 
      * @return -the id of the Column Family
      */
-    public Long getId(String nameColumnFamily) {
-        ColumnFamilyInformation cfr = new ColumnFamilyInformation(nameColumnFamily);
+    public Long getId(String nameColumnFamily,String keyStore) {
+        ColumnFamilyInformation cfr = new ColumnFamilyInformation(nameColumnFamily,keyStore);
 
         if (!columnFamilyInformation.contains(cfr)) {
             columnFamilyInformation.add(cfr);
