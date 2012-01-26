@@ -71,7 +71,7 @@ public class Persistence extends BasePersistence {
     
      */
   
-	protected void retriveObject(String condiction, String condictionValue, List objects, Class persistenceClass, ConsistencyLevelCQL consistencyLevel, int limit) {
+	protected List retriveObject(String condiction, String condictionValue,  Class persistenceClass, ConsistencyLevelCQL consistencyLevel, int limit) {
         try {
             StringBuilder cql = new StringBuilder();
 
@@ -90,12 +90,12 @@ public class Persistence extends BasePersistence {
 
 
             CqlResult executeCqlQuery = executeCQL(cql.toString());
-            objects = listbyQuery(executeCqlQuery, persistenceClass);
+            return listbyQuery(executeCqlQuery, persistenceClass);
         } catch (Exception exception) {
          Logger.getLogger(Persistence.class.getName()).log(Level.SEVERE, null, exception);
-
+         return new ArrayList<>();
         }
-
+       
         
     }
 
@@ -279,14 +279,14 @@ public class Persistence extends BasePersistence {
     @SuppressWarnings("rawtypes")
     public Object findByKey(Object key, Class persistenceClass, ConsistencyLevelCQL consistencyLevel) {
         int limit = 1;
-        List objects = new ArrayList<>();
+        
 
         Field keyField = getKeyField(persistenceClass);
         ByteBuffer keyBuffer = getWriteMap().get(keyField.getType().getName()).getBytebyObject(key);
         String keyString = new UTF8Read().getObjectByByte(keyBuffer).toString();
         String condicao = "KEY";
 
-        retriveObject(condicao, keyString, objects, persistenceClass, consistencyLevel, limit);
+		List objects =  retriveObject(condicao, keyString, persistenceClass, consistencyLevel, limit);
         if (objects.size() > 0) {
             return objects.get(0);
         }
@@ -387,14 +387,12 @@ public class Persistence extends BasePersistence {
      */
     @SuppressWarnings("rawtypes")
     public List findByIndex(Object index, Class objectClass, ConsistencyLevelCQL consistencyLevelCQL, int limit) {
-        List objects = new ArrayList<>();
 
         String indexString = index.toString();
         ColumnValue coluna = getIndexField(objectClass).getAnnotation(ColumnValue.class);
         String condicao = coluna.nome();
-        retriveObject(condicao, indexString, objects, objectClass, consistencyLevelCQL, limit);
+        return retriveObject(condicao, indexString,  objectClass, consistencyLevelCQL, limit);
 
-        return objects;
 
 
     }

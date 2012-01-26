@@ -27,8 +27,8 @@ public class PersonDAOTest {
 
     @Test
     public void retrieveTest() {
-        Person person = dao.retrieve(1l);
-        Assert.assertEquals(person.getId(), Long.valueOf(1));
+        Person person = dao.retrieve(4l);
+        Assert.assertEquals(person.getName(), "Name Person ");
     }
 
     @Test
