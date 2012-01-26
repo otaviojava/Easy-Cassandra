@@ -13,7 +13,7 @@ import java.util.logging.Logger;
  *transform ByteBuffer and String vice versa
  * @author otavio
  */
-public class EncodingUtil {
+public final class EncodingUtil {
 
   
     

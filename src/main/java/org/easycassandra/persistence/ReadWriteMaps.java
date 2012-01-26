@@ -27,7 +27,7 @@ import org.easycassandra.annotations.write.WriteInterface;
  *
  * @author otavio
  */
-class ReadWriteMaps {
+final class ReadWriteMaps {
 
     private static Map<String, WriteInterface> writeMap;
     private static Map<String, ReadInterface> readMap;

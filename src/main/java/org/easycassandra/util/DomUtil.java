@@ -15,7 +15,7 @@ import javax.xml.bind.Unmarshaller;
  *for Read and write a XML Document
  * @author otavio
  */
-public class DomUtil {
+public final class DomUtil {
 
  
     public static final String FILE = "cassandraSuperColunas.xml";

@@ -12,7 +12,7 @@ import java.util.logging.Logger;
  * The class does getter and setter with invoke Dynamic
  * @author otavio
  */
-public class ReflectionUtil {
+public final class ReflectionUtil {
 
 
 

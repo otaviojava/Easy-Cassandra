@@ -22,7 +22,7 @@ import org.easycassandra.util.DomUtil;
  *Class for manage  Connections
  * @author otavio
  */
-public class EasyCassandraManager {
+public final class EasyCassandraManager {
 
    
 	/**

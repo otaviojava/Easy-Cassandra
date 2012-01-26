@@ -169,8 +169,7 @@ public class Persistence extends BasePersistence {
      * @see  #findAll(java.lang.Class, org.easycassandra.ConsistencyLevelCQL, int) 
      * @return the list with Object is retrive
      */
-    @SuppressWarnings("rawtypes")
-	public List findAll(Class persistenceClass) {
+    public List findAll(Class persistenceClass) {
         return findAll(persistenceClass, ConsistencyLevelCQL.ONE, DEFAULT_VALUE);
     }
 
@@ -208,7 +207,7 @@ public class Persistence extends BasePersistence {
      */
     @SuppressWarnings("rawtypes")
     public List findAll(Class persistenceClass, ConsistencyLevelCQL consistencyLevel, int limit) {
-        List list = new ArrayList<>();
+        
 
         try {
 
@@ -220,13 +219,13 @@ public class Persistence extends BasePersistence {
             cql.append(" USING ").append(consistencyLevel.getValue()).append(" ");   //padra One
             cql.append("LIMIT ").append(limit);//padrao 10000
             CqlResult executeCqlQuery = executeCQL(cql.toString());
-            list = listbyQuery(executeCqlQuery, persistenceClass);
+            return listbyQuery(executeCqlQuery, persistenceClass);
         } catch (Exception exception) {
             Logger.getLogger(Persistence.class.getName()).log(Level.SEVERE, null, exception);
 
         }
 
-        return list;
+        return new ArrayList<>();
     }
 
     /**

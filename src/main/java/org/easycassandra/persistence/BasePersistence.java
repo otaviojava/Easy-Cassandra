@@ -53,7 +53,7 @@ class BasePersistence {
      * field for lock or unlock for run 
      * the Thread
      */
-     private  static   AtomicBoolean LOCK_WRITE= new AtomicBoolean(false);
+     private  static   AtomicBoolean LOCKWRITE= new AtomicBoolean(false);
     
     /**
      * Thread for write the id in the Document
@@ -120,7 +120,7 @@ class BasePersistence {
      * @param annotation
      * @return 
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    
     private Field getField(Class object, Class annotation) {
 
         for (Field field : object.getDeclaredFields()) {
@@ -179,8 +179,8 @@ class BasePersistence {
             if (chave.auto() && autoEnable) {
                 id = referenciaSuperColunas.get().getId(colunaFamilia,keyStore);
               
-                if(!LOCK_WRITE.get()){
-                	LOCK_WRITE.set(true);
+                if(!LOCKWRITE.get()){
+                	LOCKWRITE.set(true);
                 	writeDocumentThread.start();
                 }
               
@@ -434,13 +434,13 @@ class BasePersistence {
      * @param lockWrite the LOCK_WRITE to set
      */
     public static void setLockWrite(AtomicBoolean lockWrite) {
-        LOCK_WRITE= lockWrite;
+        LOCKWRITE= lockWrite;
     }
 
       /**
      * @param LOCK_WRITE_VALUE the LOCK_WRITE to set
      */
     public static AtomicBoolean getLockWrite() {
-        return LOCK_WRITE;
+        return LOCKWRITE;
     }
 }
