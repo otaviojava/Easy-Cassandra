@@ -171,7 +171,6 @@ class BasePersistence {
      * @param persistenceClass - Class of the object viewed
      * @return the Field if there are not will be return null
      */
-    @SuppressWarnings("rawtypes" )
     protected Field getIndexField(Class persistenceClass) {
         return getField(persistenceClass, IndexValue.class);
     }
@@ -221,7 +220,6 @@ class BasePersistence {
  * @see DecoratorColumnNames
  * @see BasePersistence#getColumnNames(java.lang.Class) 
  */
-    @SuppressWarnings({ "rawtypes" })
     protected DecoratorColumnNames columnNames(Class object) {
 
         try {
@@ -240,7 +238,6 @@ class BasePersistence {
      * @throws InstantiationException
      * @throws IllegalAccessException 
      */
-    @SuppressWarnings({ "rawtypes" })
     protected DecoratorColumnNames getColumnNames(Class object) throws InstantiationException, IllegalAccessException {
         DecoratorColumnNames names = new DecoratorColumnNames();
         Field[] fields = object.getDeclaredFields();

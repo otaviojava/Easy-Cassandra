@@ -204,7 +204,6 @@ public class Persistence extends BasePersistence {
      * @param limit - lenght the list
      * @return the list with Object is retrive
      */
-    @SuppressWarnings("rawtypes")
     public List findAll(Class persistenceClass, ConsistencyLevelCQL consistencyLevel, int limit) {
         
 
@@ -236,7 +235,6 @@ public class Persistence extends BasePersistence {
      * @throws InstantiationException
      * @throws IllegalAccessException 
      */
-    @SuppressWarnings("rawtypes")
     public List listbyQuery(CqlResult resultCQL, Class persistenceClass) throws InstantiationException, IllegalAccessException  {
         List<Map<String, ByteBuffer>> listMap = new ArrayList<>();
 
@@ -263,7 +261,6 @@ public class Persistence extends BasePersistence {
      * @return - The object from key
      * @see #findByKey(java.lang.Object, java.lang.Class, org.easycassandra.ConsistencyLevelCQL) 
      */
-    @SuppressWarnings("rawtypes")
     public Object findByKey(Object key, Class persistenceClass) {
         return findByKey(key, persistenceClass, ConsistencyLevelCQL.ONE);
     }
@@ -275,7 +272,6 @@ public class Persistence extends BasePersistence {
      * @param consistencyLevel - The consistency Level
      * @return - The object from key
      */
-    @SuppressWarnings("rawtypes")
     public Object findByKey(Object key, Class persistenceClass, ConsistencyLevelCQL consistencyLevel) {
         int limit = 1;
         
@@ -301,7 +297,6 @@ public class Persistence extends BasePersistence {
      * @param objectClass  - The Kind of class
      * @return the result of deletion
      */
-    @SuppressWarnings("rawtypes")
     public boolean  deleteByKeyValue(Object keyValue, Class objectClass) {
     	
         ByteBuffer keyBuffer = getWriteManager().convert(keyValue);
