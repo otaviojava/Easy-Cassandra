@@ -282,7 +282,8 @@ public class Persistence extends BasePersistence {
         
 
         Field keyField = getKeyField(persistenceClass);
-        ByteBuffer keyBuffer = getWriteMap().get(keyField.getType().getName()).getBytebyObject(key);
+        
+        ByteBuffer keyBuffer = getWriteManager().convert(key);
         String keyString = new UTF8Read().getObjectByByte(keyBuffer).toString();
         String condicao = "KEY";
 
@@ -304,7 +305,8 @@ public class Persistence extends BasePersistence {
      */
     @SuppressWarnings("rawtypes")
     public boolean  deleteByKeyValue(Object keyValue, Class objectClass) {
-        ByteBuffer keyBuffer = getWriteMap().get(getKeyField(objectClass).getType().getName()).getBytebyObject(keyValue);
+    	
+        ByteBuffer keyBuffer = getWriteManager().convert(keyValue);
         String keyString = new UTF8Read().getObjectByByte(keyBuffer).toString();
 
 
@@ -318,7 +320,7 @@ public class Persistence extends BasePersistence {
      */
     public boolean  delete(Object keyObject) {
         Field keyField = getKeyField(keyObject.getClass());
-        ByteBuffer keyBuffer = getWriteMap().get(keyField.getType().getName()).getBytebyObject(ReflectionUtil.getMethod(keyObject, keyField));
+        ByteBuffer keyBuffer = getWriteManager().convert(ReflectionUtil.getMethod(keyObject, keyField));
         String keyString = new UTF8Read().getObjectByByte(keyBuffer).toString();
 
       return  runDeleteCqlCommand(keyString, keyObject.getClass());
@@ -337,14 +339,13 @@ public class Persistence extends BasePersistence {
 
         StringBuilder cql = new StringBuilder();
         cql.append("delete ");
-        cql.append(columnNames(persistenceClass));
         cql.append(" from ");
         cql.append(getColumnFamilyName(persistenceClass));
         cql.append(" where KEY = '");
         cql.append(keyValue);
         cql.append("'");
         CqlResult cqlResult = executeCQL(cql.toString());
-           return cqlResult!=null;
+        return cqlResult!=null;
     }
 
     //find index

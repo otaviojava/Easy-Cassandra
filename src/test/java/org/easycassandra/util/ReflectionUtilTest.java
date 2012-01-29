@@ -1,10 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.easycassandra.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
+
 import junit.framework.Assert;
 import org.junit.Test;
 
@@ -37,6 +36,23 @@ public class ReflectionUtilTest {
         }
         ReflectionUtil.setMethod(objectTest, field,value);
         Assert.assertEquals(ReflectionUtil.getMethod(objectTest, field), value);
+    }
+    
+    @Test
+    public void valueofTest(){
+    	
+    	Assert.assertEquals(Long.valueOf("2"), ReflectionUtil.valueOf(Long.class, "2"));
+    }
+    
+    @Test
+    public void valueofIntTest(){
+    	
+    	Assert.assertEquals(Integer.valueOf("2"), ReflectionUtil.valueOf(Integer.class, "2"));
+    }
+    
+    @Test
+    public void valueofCharTest(){
+    	Assert.assertEquals(Character.valueOf('a'), ReflectionUtil.valueOf(Character.class,'a',char.class ));
     }
 
     public class ObjectTest {

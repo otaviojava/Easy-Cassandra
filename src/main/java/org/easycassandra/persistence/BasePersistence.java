@@ -20,8 +20,10 @@ import org.easycassandra.annotations.IndexValue;
 import org.easycassandra.annotations.KeyValue;
 import org.easycassandra.annotations.read.EnumRead;
 import org.easycassandra.annotations.read.ReadInterface;
+import org.easycassandra.annotations.read.ReadManager;
 import org.easycassandra.annotations.write.EnumWrite;
 import org.easycassandra.annotations.write.WriteInterface;
+import org.easycassandra.annotations.write.WriteManager;
 import org.easycassandra.util.EncodingUtil;
 import org.easycassandra.util.ReflectionUtil;
 
@@ -44,6 +46,19 @@ class BasePersistence {
      * @see ReadInterface
      */
     private Map<String, ReadInterface> readMap;
+    
+    /**
+     * Class for read Byte
+     * @see ReadManager
+     */
+    private ReadManager readManager;
+    
+    /**
+     * Class for write Byte
+     * @see WriteManager
+     */
+    private WriteManager writeManager;
+    
     /**
      * Class with information about Column Family managed by Easy-Cassandra
      */
@@ -74,6 +89,8 @@ class BasePersistence {
     public BasePersistence() {
         writeMap = ReadWriteMaps.getWriteMap();
         readMap = ReadWriteMaps.getReadMap();
+        writeManager=new WriteManager(writeMap);
+        readManager =new ReadManager(readMap);
 
     }
 /**
@@ -172,7 +189,6 @@ class BasePersistence {
         Field keyField = getKeyField(object.getClass());
         String colunaFamilia = getColumnFamilyName(object.getClass());
         if (keyField != null) {
-            ByteBuffer data = null;
             KeyValue chave = keyField.getAnnotation(KeyValue.class);
 
             Long id = null;
@@ -188,8 +204,9 @@ class BasePersistence {
             } else {
                 id = (Long) ReflectionUtil.getMethod(object, keyField);
             }
-            data = getWriteMap().get(keyField.getType().getName()).getBytebyObject(id);
-            return data;
+           
+            
+            return  getWriteManager().convert(id);
 
         }
 
@@ -305,9 +322,8 @@ class BasePersistence {
             column.setTimestamp(timeStamp);
             column.setName(EncodingUtil.stringToByte(coluna));
 
-
-            ByteBuffer byteBuffer = getWriteMap().get(field.getType().getName()).getBytebyObject(subObject);
-            column.setValue(byteBuffer);
+            
+            column.setValue(getWriteManager().convert(subObject));
 
             return column;
         } else {
@@ -354,14 +370,15 @@ class BasePersistence {
 
             if (field.getAnnotation(KeyValue.class) != null) {
                 ByteBuffer byteBuffer = listMap.get("KEY");
-
-                ReflectionUtil.setMethod(bean, field, getReadMap().get(field.getType().getName()).getObjectByByte(byteBuffer));
+                
+                ReflectionUtil.setMethod(bean, field, getReadManager().convert(byteBuffer, field.getType()));
                 continue;
             } else if (field.getAnnotation(ColumnValue.class) != null) {
                 
                 ByteBuffer byteBuffer = listMap.get(getColumnNanme(field));
                 if (byteBuffer != null) {
-                    ReflectionUtil.setMethod(bean, field, getReadMap().get(field.getType().getName()).getObjectByByte(byteBuffer));
+                	
+                    ReflectionUtil.setMethod(bean, field, getReadManager().convert(byteBuffer, field.getType()));
                 }
 
             } else if (field.getAnnotation(EmbeddedValue.class) != null) {
@@ -395,21 +412,27 @@ class BasePersistence {
 		return keyStore;
 	}
 
-    /**
-     * @return the writeMap
-     */
-    public Map<String, WriteInterface> getWriteMap() {
-        return writeMap;
-    }
 
-    /**
-     * @return the readMap
-     */
-    public Map<String, ReadInterface> getReadMap() {
-        return readMap;
-    }
 
+	 /**
+	  * get of readManager 
+	  * @see BasePersistence#readManager
+	  * @return the readManager
+	  */
+    public ReadManager getReadManager() {
+		return readManager;
+	}
+	
     /**
+     * get of writeManager
+     * @see BasePersistence#writeManager
+     * @return the writeManager
+     */
+	public WriteManager getWriteManager() {
+		return writeManager;
+	}
+	
+	/**
      * @param referenciaSuperColunas the referenciaSuperColunas to set
      */
     public void setReferenciaSuperColunas(AtomicReference<ColumnFamilyIds> referenciaSuperColunas) {

@@ -2,8 +2,8 @@ package org.easycassandra.annotations.readwrite;
 
 import junit.framework.Assert;
 
-import org.easycassandra.annotations.read.StringRead;
-import org.easycassandra.annotations.write.StringWrite;
+import org.easycassandra.annotations.read.DefaultRead;
+import org.easycassandra.annotations.write.DefaultWrite;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,15 +14,15 @@ import org.junit.Test;
  */
 public class StringReadWriteTest implements ReadWriteTest{
 
-    private StringRead StringRead;
+    private DefaultRead StringRead;
     
-    private StringWrite StringWrite;
+    private DefaultWrite defaultWrite;
     
     @Override
     @Test
     public void getObjectByByteAfirmativeTest(){
     String nameTest="Easy-Cassandra";
-    String stringTest=(String) StringRead.getObjectByByte(StringWrite.getBytebyObject(nameTest));
+    String stringTest=(String) StringRead.getObjectByByte(defaultWrite.getBytebyObject(nameTest),String.class);
     Assert.assertEquals(stringTest, nameTest);
        
     }
@@ -31,7 +31,7 @@ public class StringReadWriteTest implements ReadWriteTest{
     @Test
     public void getObjectByByteNegativeTest(){
     String nameTest="Easy-Cassandra";
-    String stringTest=(String) StringRead.getObjectByByte(StringWrite.getBytebyObject("java"));
+    String stringTest=(String) StringRead.getObjectByByte(defaultWrite.getBytebyObject("java"),String.class);
     Assert.assertFalse(stringTest.equals(nameTest));
        
     }
@@ -39,7 +39,7 @@ public class StringReadWriteTest implements ReadWriteTest{
     @Override
     @Before
     public void init(){
-    StringRead=new StringRead();
-    StringWrite =new StringWrite();
+    StringRead=new DefaultRead();
+    defaultWrite =new DefaultWrite();
     }
 }

@@ -2,8 +2,8 @@ package org.easycassandra.annotations.readwrite;
 
 import junit.framework.Assert;
 
-import org.easycassandra.annotations.read.BooleanRead;
-import org.easycassandra.annotations.write.BooleanWrite;
+import org.easycassandra.annotations.read.DefaultRead;
+import org.easycassandra.annotations.write.DefaultWrite;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,14 +14,14 @@ import org.junit.Test;
  */
 public class BooleanReadWriteTest implements ReadWriteNumber{
 
-    private BooleanRead booleanRead;
+    private DefaultRead defaultRead;
     
-    private BooleanWrite booleanWrite;
+    private DefaultWrite defaultWrite;
     
     @Override
     @Test
     public void primitiveAfirmativeTest(){
-    boolean booleanTest=(Boolean) booleanRead.getObjectByByte(booleanWrite.getBytebyObject(true));
+    boolean booleanTest=(Boolean) defaultRead.getObjectByByte(defaultWrite.getBytebyObject(true),Boolean.class);
     Assert.assertTrue(booleanTest);
        
     }
@@ -29,7 +29,7 @@ public class BooleanReadWriteTest implements ReadWriteNumber{
     @Override
     @Test
     public void primitiveNegativeTest(){
-    boolean booleanTest=(Boolean) booleanRead.getObjectByByte(booleanWrite.getBytebyObject(false));
+    boolean booleanTest=(Boolean) defaultRead.getObjectByByte(defaultWrite.getBytebyObject(false),Boolean.class);
     Assert.assertFalse(booleanTest);
        
     }
@@ -37,7 +37,7 @@ public class BooleanReadWriteTest implements ReadWriteNumber{
 	@Override
 	@Test
 	public void objectAfirmativeTest() {
-		  	Boolean booleanTest=(Boolean) booleanRead.getObjectByByte(booleanWrite.getBytebyObject(Boolean.TRUE));
+		  	Boolean booleanTest=(Boolean) defaultRead.getObjectByByte(defaultWrite.getBytebyObject(Boolean.TRUE),Boolean.class);
 		    Assert.assertTrue(booleanTest);
 		
 	}
@@ -45,7 +45,7 @@ public class BooleanReadWriteTest implements ReadWriteNumber{
 	@Override
 	@Test
 	public void objectNegativeTest() {
-		   Boolean booleanTest=(Boolean) booleanRead.getObjectByByte(booleanWrite.getBytebyObject(Boolean.FALSE));
+		   Boolean booleanTest=(Boolean) defaultRead.getObjectByByte(defaultWrite.getBytebyObject(Boolean.FALSE),Boolean.class);
 		    Assert.assertFalse(booleanTest);
 		
 	}
@@ -54,8 +54,8 @@ public class BooleanReadWriteTest implements ReadWriteNumber{
     @Override
     @Before
     public void init(){
-    booleanRead=new BooleanRead();
-    booleanWrite =new BooleanWrite();
+    defaultRead=new DefaultRead();
+    defaultWrite =new DefaultWrite();
     }
 
 }

@@ -18,6 +18,7 @@ public class PersonDAOTest {
     public void insertTest() {
         System.out.println("Inserindo exemplo");
         Person person = getPerson();
+        person.setName("otavio teste");
         person.setId(2l);
         Address address = getAddress();
         person.setAddress(address);
@@ -28,7 +29,7 @@ public class PersonDAOTest {
     @Test
     public void retrieveTest() {
         Person person = dao.retrieve(4l);
-        Assert.assertEquals(person.getName(), "Name Person ");
+        Assert.assertEquals(person.getName(), "otavio teste");
     }
 
     @Test
@@ -42,7 +43,7 @@ public class PersonDAOTest {
     @Test
     public void removefromRowKeyTest() {
 
-        Assert.assertTrue(dao.removeFromRowKey(new Long(1)));
+        Assert.assertTrue(dao.removeFromRowKey(new Long(2)));
 
     }
 

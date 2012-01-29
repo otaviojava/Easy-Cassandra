@@ -63,11 +63,49 @@ public final class ReflectionUtil {
         }
         return true;
   }
+    
+    
+    /**
+     * method for use the value Of of the Object, for this the class must be 
+     * the static method value of and return a new instance of itself
+     * @param classValue -  the reference of the Class
+     * @param value -the value
+     * @param refence - the Class Reference
+     * @return the instance of the object
+     */
+	public static Object valueOf(Class classValue, Object value,Class refence) {
+		 MethodType methodType= MethodType.methodType(classValue,refence);
+		  MethodHandle methodHandle;
+		try {
+			methodHandle = MethodHandles.publicLookup().findStatic(classValue, "valueOf", methodType);
+			MethodHandle printer=MethodHandles.insertArguments(methodHandle, 0, value);
+		
+			return printer.invoke();
+		}catch (Throwable exception) {
+            Logger.getLogger(ReflectionUtil.class.getName()).log(Level.SEVERE, null, exception);
+            return null;
+        }
+		
+		
+	}
+	
+	/**
+	 * @see ReflectionUtil#valueOf(Class, Object, Class)
+	 * @param classValue
+	 * @param value
+	 * @return
+	 */
+	public static Object valueOf(Class classValue, Object value) {
+		return valueOf(classValue, value, value.getClass());
+	}
+    
 
     /**
      * Singleton
      */
     private ReflectionUtil(){
     }
+
+
     
 }

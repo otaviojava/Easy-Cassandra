@@ -1,24 +1,24 @@
 package org.easycassandra.annotations.write;
 
 import java.nio.ByteBuffer;
+
 import org.easycassandra.util.EncodingUtil;
 
 /**
- *for Write Long
- * @see Long
+ *for Write Object in mode default
+ *it only execute the toString Method
+ * @see String
  * @author otavio
  */
-public class LongWrite implements WriteInterface {
+public class DefaultWrite implements WriteInterface{
 
     @Override
     public ByteBuffer getBytebyObject(Object object) {
-     
-       
-            Long l= (Long)object;
+    
+          
             
           
-          return EncodingUtil.stringToByte(l.toString()); 
-       
+          return EncodingUtil.stringToByte(object.toString()); 
+      
     }
-    
 }

@@ -4,6 +4,12 @@ Easily programming with this framework, the Easy Cassandra
 The EasyCassandra uses the Thrift implementation and has like the main objective be one simple ORM( Object relational manager). It need the jdk 7 for run, because some parts in your code was replaced reflection for invoke dynamic. So will have a behavior faster than other framework.
 
 
+Version: 1.0.4
+* more performance
+* less memory
+* now is supported all primitives types
+* now is supported Byte, character, Short, BigInteger and BigDecimal
+
 Version: 1.0.3
 * Fixes bug with result
 * update for Thrift 1.0.6

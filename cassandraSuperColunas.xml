@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<References>
-    <columnFamilies>
-        <columnFamilyInformation id="1" columnFamilyName="index" keyStore="keystore"/>
-    </columnFamilies>
-</References>
