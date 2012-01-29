@@ -40,12 +40,12 @@ class BasePersistence {
      * Key value of write for The Cassandra persistence
      * @see  WriteInterface
      */
-    private final Map<String, WriteInterface> writeMap;
+    private static Map<String, WriteInterface> writeMap;
     /**
      * Key Valeu of read for The Cassnadra persistence
      * @see ReadInterface
      */
-    private final Map<String, ReadInterface> readMap;
+    private static Map<String, ReadInterface> readMap;
     
     /**
      * Class for read Byte
@@ -160,7 +160,6 @@ class BasePersistence {
      * @param persistenceClass - Class of the object viewed
      * @return the Field if there are not will be return null
      */
-    @SuppressWarnings("rawtypes")
     protected Field getKeyField(Class persistenceClass) {
 
         return getField(persistenceClass, KeyValue.class);

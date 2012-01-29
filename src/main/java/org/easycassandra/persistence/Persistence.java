@@ -193,7 +193,6 @@ public class Persistence extends BasePersistence {
      * @see  #findAll(java.lang.Class, org.easycassandra.ConsistencyLevelCQL, int) 
      * @return the list with Object is retrive
      */
-    @SuppressWarnings("rawtypes")
     public List findAll(Class persistenceClass, ConsistencyLevelCQL consistencyLevel) {
         return findAll(persistenceClass, consistencyLevel, DEFAULT_VALUE);
     }
