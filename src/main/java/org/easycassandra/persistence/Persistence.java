@@ -181,7 +181,7 @@ public class Persistence extends BasePersistence {
      * @see  #findAll(java.lang.Class, org.easycassandra.ConsistencyLevelCQL, int) 
      * @return the list with Object is retrive
      */    
-    @SuppressWarnings("rawtypes")
+    
 	public List findAll(Class persistenceClass, int limit) {
         return findAll(persistenceClass, ConsistencyLevelCQL.ONE, limit);
     }
@@ -281,8 +281,7 @@ public class Persistence extends BasePersistence {
         int limit = 1;
         
 
-        Field keyField = getKeyField(persistenceClass);
-        
+           
         ByteBuffer keyBuffer = getWriteManager().convert(key);
         String keyString = new UTF8Read().getObjectByByte(keyBuffer).toString();
         String condicao = "KEY";

@@ -3,9 +3,6 @@ package org.easycassandra.annotations.read;
 import java.nio.ByteBuffer;
 import java.util.Map;
 
-import org.easycassandra.annotations.write.DefaultWrite;
-import org.easycassandra.util.EncodingUtil;
-import org.easycassandra.util.ReflectionUtil;
 
 /**
  * This class see and verify the Object to transform Byte to Object

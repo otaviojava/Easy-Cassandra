@@ -68,7 +68,7 @@ class BasePersistence {
      * field for lock or unlock for run 
      * the Thread
      */
-     private  static   AtomicBoolean LOCKWRITE= new AtomicBoolean(false);
+     private  static   AtomicBoolean DOCUMENTDAEMON= new AtomicBoolean(false);
     
     /**
      * Thread for write the id in the Document
@@ -160,7 +160,7 @@ class BasePersistence {
      * @param persistenceClass - Class of the object viewed
      * @return the Field if there are not will be return null
      */
-    @SuppressWarnings({ "rawtypes" })
+    @SuppressWarnings("rawtypes")
     protected Field getKeyField(Class persistenceClass) {
 
         return getField(persistenceClass, KeyValue.class);
@@ -172,7 +172,7 @@ class BasePersistence {
      * @param persistenceClass - Class of the object viewed
      * @return the Field if there are not will be return null
      */
-    @SuppressWarnings({ "rawtypes" })
+    @SuppressWarnings("rawtypes" )
     protected Field getIndexField(Class persistenceClass) {
         return getField(persistenceClass, IndexValue.class);
     }
@@ -195,8 +195,8 @@ class BasePersistence {
             if (chave.auto() && autoEnable) {
                 id = referenciaSuperColunas.get().getId(colunaFamilia,keyStore);
               
-                if(!LOCKWRITE.get()){
-                	LOCKWRITE.set(true);
+                if(!DOCUMENTDAEMON.get()){
+                	DOCUMENTDAEMON.set(true);
                 	writeDocumentThread.start();
                 }
               
@@ -457,13 +457,13 @@ class BasePersistence {
      * @param lockWrite the LOCK_WRITE to set
      */
     public static void setLockWrite(AtomicBoolean lockWrite) {
-        LOCKWRITE= lockWrite;
+        DOCUMENTDAEMON= lockWrite;
     }
 
       /**
      * @param LOCK_WRITE_VALUE the LOCK_WRITE to set
      */
     public static AtomicBoolean getLockWrite() {
-        return LOCKWRITE;
+        return DOCUMENTDAEMON;
     }
 }
