@@ -327,7 +327,6 @@ public class Persistence extends BasePersistence {
      * @param persistenceClass - The kind object
      * @return the result of deletion
      */
-    @SuppressWarnings("rawtypes")
     protected boolean  runDeleteCqlCommand(String keyValue, Class persistenceClass) {
 
         StringBuilder cql = new StringBuilder();
@@ -352,7 +351,6 @@ public class Persistence extends BasePersistence {
      * @return list retrieve from the value index
      * 
      */
-    @SuppressWarnings("rawtypes")
     public List findByIndex(Object index, Class objectClass) {
         return findByIndex(index, objectClass, ConsistencyLevelCQL.ONE);
     }
@@ -366,7 +364,6 @@ public class Persistence extends BasePersistence {
      * The default lenght list is 10.000
      * @return list retrieve from the value index
      */
-    @SuppressWarnings("rawtypes")
     public List findByIndex(Object index, Class objectClass, ConsistencyLevelCQL consistencyLevel) {
         return findByIndex(index, objectClass, consistencyLevel, DEFAULT_VALUE);
     }
@@ -379,7 +376,6 @@ public class Persistence extends BasePersistence {
      * @param limit - The length of List
      * @return  list retrieve from the value index
      */
-    @SuppressWarnings("rawtypes")
     public List findByIndex(Object index, Class objectClass, ConsistencyLevelCQL consistencyLevelCQL, int limit) {
 
         String indexString = index.toString();
