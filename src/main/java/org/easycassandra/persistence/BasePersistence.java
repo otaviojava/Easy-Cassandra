@@ -40,12 +40,12 @@ class BasePersistence {
      * Key value of write for The Cassandra persistence
      * @see  WriteInterface
      */
-    private Map<String, WriteInterface> writeMap;
+    private final Map<String, WriteInterface> writeMap;
     /**
      * Key Valeu of read for The Cassnadra persistence
      * @see ReadInterface
      */
-    private Map<String, ReadInterface> readMap;
+    private final Map<String, ReadInterface> readMap;
     
     /**
      * Class for read Byte
@@ -68,7 +68,7 @@ class BasePersistence {
      * field for lock or unlock for run 
      * the Thread
      */
-     private  static   AtomicBoolean DOCUMENTDAEMON= new AtomicBoolean(false);
+     private  static   AtomicBoolean documentDaemon= new AtomicBoolean(false);
     
     /**
      * Thread for write the id in the Document
@@ -195,8 +195,8 @@ class BasePersistence {
             if (chave.auto() && autoEnable) {
                 id = referenciaSuperColunas.get().getId(colunaFamilia,keyStore);
               
-                if(!DOCUMENTDAEMON.get()){
-                	DOCUMENTDAEMON.set(true);
+                if(!documentDaemon.get()){
+                	documentDaemon.set(true);
                 	writeDocumentThread.start();
                 }
               
@@ -457,13 +457,13 @@ class BasePersistence {
      * @param lockWrite the LOCK_WRITE to set
      */
     public static void setLockWrite(AtomicBoolean lockWrite) {
-        DOCUMENTDAEMON= lockWrite;
+        documentDaemon= lockWrite;
     }
 
       /**
      * @param LOCK_WRITE_VALUE the LOCK_WRITE to set
      */
     public static AtomicBoolean getLockWrite() {
-        return DOCUMENTDAEMON;
+        return documentDaemon;
     }
 }
