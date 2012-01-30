@@ -54,7 +54,7 @@ public class AnnotationsTest {
 
     @Test
     public void countColumnValueTest() {
-        int objective = 2;
+        int objective = 3;
         int counter = 0;
 
         for (Field field : Person.class.getDeclaredFields()) {

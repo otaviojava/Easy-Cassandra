@@ -4,6 +4,7 @@
  */
 package org.easycassandra.bean;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.Objects;
 import org.easycassandra.annotations.ColumnFamilyValue;
@@ -22,7 +23,7 @@ public class Person implements Serializable {
 
     private static final long serialVersionUID = 3L;
     
-    @KeyValue(auto=true)
+    @KeyValue
     private Long id;
     
     @IndexValue
@@ -32,8 +33,12 @@ public class Person implements Serializable {
     @ColumnValue(nome = "born")
     private Integer year;
     
+    
     @EnumeratedValue(nome="sex")
     private Sex sex;
+    
+    @ColumnValue(nome = "file")
+    private File personalFile;
     
     @EmbeddedValue
     private Address address;
@@ -78,7 +83,16 @@ public class Person implements Serializable {
         this.sex = sex;
     }
 
-    public boolean equals(Object obj) {
+    
+    public File getPersonalFile() {
+		return personalFile;
+	}
+
+	public void setPersonalFile(File personalFile) {
+		this.personalFile = personalFile;
+	}
+
+	public boolean equals(Object obj) {
         if (obj == null) {
             return false;
         }
@@ -94,8 +108,8 @@ public class Person implements Serializable {
 
     public int hashCode() {
         int hash = 3;
-        hash = 97 * hash + Objects.hashCode(this.id);
-        return hash;
+        return 97 * hash + Objects.hashCode(this.id);
+        
     }
     
     

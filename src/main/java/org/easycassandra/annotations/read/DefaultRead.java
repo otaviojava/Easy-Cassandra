@@ -11,7 +11,7 @@ public static final String CHARACTER_FULL="java.lang.Character";
 public static final String BIGDECIMAL_FULL="java.math.BigDecimal";
 public static final String BIGINTEGER_FULL="java.math.BigInteger";
 
-	public Object getObjectByByte(ByteBuffer byteBuffer,Class qualifieldName){
+	public Object getObjectByByte(ByteBuffer byteBuffer,@SuppressWarnings("rawtypes") Class qualifieldName){
 		switch (qualifieldName.getName()) {
 		case STRING_FULL:
 			return EncodingUtil.byteToString(byteBuffer);

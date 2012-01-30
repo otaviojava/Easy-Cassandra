@@ -1,6 +1,7 @@
 package org.easycassandra.annotations.write;
 
 import java.nio.ByteBuffer;
+import java.nio.file.Path;
 import java.util.Map;
 
 /**
@@ -13,6 +14,8 @@ public class WriteManager {
 
 	private DefaultWrite defaultWrite;
 	
+	private PathWrite pathWrite;
+	
 	private Map<String, WriteInterface> writeMap;
 	
 	
@@ -20,7 +23,10 @@ public class WriteManager {
 		WriteInterface writeInterface=writeMap.get(value.getClass().getName());
 		if(writeInterface !=null){
 			return writeInterface.getBytebyObject(value);
+		}else if(value instanceof Path){
+			return pathWrite.getBytebyObject(value);
 		}
+		
 		return defaultWrite.getBytebyObject(value);
 		
 	}
@@ -29,6 +35,7 @@ public class WriteManager {
 	public WriteManager(Map<String, WriteInterface> writeMap) {
 		this.writeMap = writeMap;
 		 defaultWrite=new DefaultWrite();
+		 pathWrite=new PathWrite();
 	}
 
 

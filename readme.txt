@@ -3,6 +3,9 @@ Easy-Cassandra
 Easily programming with this framework, the Easy Cassandra
 The EasyCassandra uses the Thrift implementation and has like the main objective be one simple ORM( Object relational manager). It need the jdk 7 for run, because some parts in your code was replaced reflection for invoke dynamic. So will have a behavior faster than other framework.
 
+Version: 1.0.5
+* Can now store files
+* Support java.io.File and java.nio.file.Path
 
 Version: 1.0.4
 * more performance

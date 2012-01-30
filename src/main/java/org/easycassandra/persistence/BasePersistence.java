@@ -104,9 +104,9 @@ class BasePersistence {
         ColumnFamilyValue colunaFamilia = (ColumnFamilyValue) object.getAnnotation(ColumnFamilyValue.class);
 
         if (colunaFamilia != null) {
-            return colunaFamilia.nome();
+            return colunaFamilia.nome().equals("") ?object.getSimpleName():colunaFamilia.nome();
         }
-        return null;
+        return object.getSimpleName();
     }
     /**
      * verifies that the name of the annotation is empty
@@ -189,8 +189,9 @@ class BasePersistence {
         if (keyField != null) {
             KeyValue chave = keyField.getAnnotation(KeyValue.class);
 
-            Long id = null;
+         
             if (chave.auto() && autoEnable) {
+            	Long id = null;
                 id = referenciaSuperColunas.get().getId(colunaFamilia,keyStore);
               
                 if(!documentDaemon.get()){
@@ -199,12 +200,15 @@ class BasePersistence {
                 }
               
                 ReflectionUtil.setMethod(object, keyField, id);
-            } else {
-                id = (Long) ReflectionUtil.getMethod(object, keyField);
-            }
+              
+               
+            } 
+                
+                return  getWriteManager().convert(ReflectionUtil.getMethod(object, keyField));
+            
            
             
-            return  getWriteManager().convert(id);
+            
 
         }
 
@@ -225,7 +229,7 @@ class BasePersistence {
         try {
             return getColumnNames(object);
         } catch (IllegalAccessException | InstantiationException exception) {
-  Logger.getLogger(BasePersistence.class.getName()).log(Level.SEVERE, null, exception);
+        	Logger.getLogger(BasePersistence.class.getName()).log(Level.SEVERE, null, exception);
             return null;
         }
     }

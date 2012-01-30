@@ -12,9 +12,16 @@ import java.util.Map;
 public class ReadManager {
 	
 	/**
-	 * 
+	 * the default value
+	 * @see DefaultRead
 	 */
 	private DefaultRead defaultRead;
+	
+	/**
+	 * For read value Path
+	 * @see java#<
+	 */
+	private PathRead pathRead;
 	
 /**
  *Map with reference for transform Byte in Object
@@ -29,9 +36,8 @@ private Map<String, ReadInterface> readMap;
  * @param qualifieldName - the full name of the class
  * @return the object if not exist null
  */
-public Object convert(ByteBuffer byteBuffer,Class qualifieldName){
+public Object convert(ByteBuffer byteBuffer,@SuppressWarnings("rawtypes") Class qualifieldName){
 	ReadInterface readInterface=readMap.get(qualifieldName.getName());
-	
 	if(readInterface!=null){
 		return readInterface.getObjectByByte(byteBuffer);
 	}
@@ -41,7 +47,8 @@ public Object convert(ByteBuffer byteBuffer,Class qualifieldName){
 
 	public ReadManager(Map<String, ReadInterface> readMap) {
 		this.readMap=readMap;
-		defaultRead=new DefaultRead();	
+		defaultRead=new DefaultRead();
+		pathRead=new PathRead();
 	}
 
 }
