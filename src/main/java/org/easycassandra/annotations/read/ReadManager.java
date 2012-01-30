@@ -17,11 +17,7 @@ public class ReadManager {
 	 */
 	private DefaultRead defaultRead;
 	
-	/**
-	 * For read value Path
-	 * @see java#<
-	 */
-	private PathRead pathRead;
+	
 	
 /**
  *Map with reference for transform Byte in Object
@@ -48,7 +44,7 @@ public Object convert(ByteBuffer byteBuffer,@SuppressWarnings("rawtypes") Class 
 	public ReadManager(Map<String, ReadInterface> readMap) {
 		this.readMap=readMap;
 		defaultRead=new DefaultRead();
-		pathRead=new PathRead();
+		
 	}
 
 }

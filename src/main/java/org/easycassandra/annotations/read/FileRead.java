@@ -10,8 +10,8 @@ public class FileRead implements ReadInterface{
 	@Override
 	public Object getObjectByByte(ByteBuffer buffer) {
 		String value=EncodingUtil.byteToString(buffer);
-		String nameFile=value.substring(0,value.indexOf("|"));
-		String[] byteString=value.substring(value.indexOf("|")+1,value.lastIndexOf(",")).split(",");
+		String nameFile=value.substring(0,value.indexOf('|'));
+		String[] byteString=value.substring(value.indexOf('|')+1,value.lastIndexOf(',')).split(",");
 		byte[]  bytes=new byte[byteString.length];
 		
 		

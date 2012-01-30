@@ -12,6 +12,8 @@ import java.util.logging.Logger;
 
 
 public final class FileUtil {
+ 
+    private static final int BUFFER_FILE = 512;
 
 
 
@@ -28,7 +30,7 @@ public final class FileUtil {
 		try {
 
 			fos = new FileOutputStream(arquivo);
-			buf = new byte[512];
+			buf = new byte[BUFFER_FILE];
 
 			input = new ByteArrayInputStream(data);
 			while ((read = input.read(buf)) != -1) {
@@ -61,12 +63,9 @@ public final class FileUtil {
 			inputStream.close();
 
 			byte[] arquivoByte = new byte[bytes.length];
-			for (int i = 0; i < bytes.length; i++) {
-				arquivoByte[i] = bytes[i];
-
-			}
-
-			return arquivoByte;
+                        System.arraycopy(bytes, 0, arquivoByte, 0, bytes.length);
+                        
+		        return arquivoByte;
 
 		} catch (IOException exception) {
 			Logger.getLogger(FileUtil.class.getName()).log(Level.SEVERE, null,
