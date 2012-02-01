@@ -31,7 +31,7 @@ public class BooleanReadWriteTest implements ReadWriteNumber{
     public void primitiveNegativeTest(){
     boolean booleanTest=(Boolean) defaultRead.getObjectByByte(defaultWrite.getBytebyObject(false),Boolean.class);
     Assert.assertFalse(booleanTest);
-       
+     
     }
   
 	@Override

@@ -281,7 +281,7 @@ public class Persistence extends BasePersistence {
         String keyString = new UTF8Read().getObjectByByte(keyBuffer).toString();
         String condicao = "KEY";
 
-		List objects =  retriveObject(condicao, keyString, persistenceClass, consistencyLevel, limit);
+	List objects =  retriveObject(condicao, keyString, persistenceClass, consistencyLevel, limit);
         if (objects.size() > 0) {
             return objects.get(0);
         }
