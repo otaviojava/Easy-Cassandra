@@ -51,5 +51,11 @@
           <foaf:mbox rdf:resource="mailto:otaviojava@java.net"/>
       </foaf:Person>
     </maintainer>
+    <asfext:implements><asfext:Standard>
+      <asfext:title>java 7</asfext:title>
+      <asfext:body>JCP</asfext:body>
+      <asfext:id>JSR 336</asfext:id>
+      <asfext:url rdf:resource="http://jcp.org/en/jsr/detail?id=336"/>
+    </asfext:Standard></asfext:implements>
   </Project>
 </rdf:RDF>
