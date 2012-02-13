@@ -1,3 +1,17 @@
+/*
+ * Copyright 2012 Otávio Gonçalves de Santana (otaviojava)
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package org.easycassandra.util;
 
 import java.lang.invoke.MethodHandle;
@@ -21,7 +35,7 @@ public final class ReflectionUtil {
      * Return The Object from the Field
      * @param object
      * @param field
-     * @return 
+     * @return - the field value in Object
      */
     public static Object getMethod(Object object, Field field) {
        
@@ -43,7 +57,7 @@ public final class ReflectionUtil {
      * @param object
      * @param field
      * @param value
-     * @return 
+     * @return - if the operation was execute with sucess
      */
     public static boolean setMethod(Object object, Field field, Object value) {
       
@@ -93,7 +107,7 @@ public final class ReflectionUtil {
 	 * @see ReflectionUtil#valueOf(Class, Object, Class)
 	 * @param classValue
 	 * @param value
-	 * @return
+	 * @return the value of value
 	 */
 	public static Object valueOf(Class classValue, Object value) {
 		return valueOf(classValue, value, value.getClass());

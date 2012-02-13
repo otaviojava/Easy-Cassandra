@@ -20,7 +20,7 @@ public class PersonDAOTest {
 	        System.out.println("Inserindo exemplo");
 	        Person person = getPerson();
 	        person.setName("otavio teste");
-	        person.setId(2l);
+	        person.setId(4l);
 	        Address address = getAddress();
 	        person.setAddress(address);
 
@@ -30,7 +30,7 @@ public class PersonDAOTest {
 	    @Test
 	    public void retrieveTest() {
 	        Person person = dao.retrieve(4l);
-	        Assert.assertEquals(person.getName(), "Name Person ");
+	        Assert.assertEquals(person.getName(), "otavio teste");
 	    }
 
 	    @Test
@@ -76,7 +76,7 @@ public class PersonDAOTest {
 	        System.out.println("Inserindo exemplo");
 	        Person person = getPerson();
 	        person.setName("otavio teste");
-	        person.setId(2l);
+	        person.setId(4l);
 	        Address address = getAddress();
 	        person.setAddress(address);
 	        person.setPersonalFile(new File("readme.txt"));

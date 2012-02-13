@@ -24,7 +24,7 @@ public class PathReadTest {
 	
 	@Test
 	public void getObjectByByteSizeTest(){
-		Path file =Paths.get("/home/otavio/documento.html");
+		Path file =Paths.get("readme.txt");
 		ByteBuffer byffer=fileWrite.getBytebyObject(file);
 		Assert.assertEquals(((Path)fileRead.getObjectByByte(byffer)).toFile().length(),file.toFile().length());	
 	}

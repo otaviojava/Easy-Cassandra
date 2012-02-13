@@ -23,7 +23,7 @@ public class FileReadTest {
 	
 	@Test
 	public void getObjectByByteSizeTest(){
-		File file =new File("/home/otavio/documento.html");
+		File file =new File("readme.txt");
 		ByteBuffer byffer=fileWrite.getBytebyObject(file);
 		Assert.assertEquals(((File)fileRead.getObjectByByte(byffer)).length(),file.length());	
 	}

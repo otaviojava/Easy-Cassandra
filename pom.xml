@@ -32,9 +32,7 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
             </plugin>
  
-            
-            
-        </plugins>
+          </plugins>
     </build>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -45,7 +43,7 @@
 	<dependency>
 		<groupId>org.apache.cassandra</groupId>
 		<artifactId>cassandra-thrift</artifactId>
-		<version>1.0.6</version>
+		<version>1.0.7</version>
 	 </dependency>
         
                 
@@ -57,4 +55,14 @@
         </dependency>
         
     </dependencies>
+    
+    <licenses>
+        <license>
+            <name>Apache 2</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+          
+        </license>
+</licenses>
+    
 </project>
