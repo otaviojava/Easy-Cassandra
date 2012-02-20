@@ -1,4 +1,4 @@
-package org.easycassandra.bean;
+package org.easycassandra.bean.model;
 
 import java.nio.file.Path;
 

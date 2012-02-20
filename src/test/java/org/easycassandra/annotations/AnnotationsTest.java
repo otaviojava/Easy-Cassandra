@@ -6,7 +6,8 @@ package org.easycassandra.annotations;
 
 import java.lang.reflect.Field;
 import junit.framework.Assert;
-import org.easycassandra.bean.Person;
+
+import org.easycassandra.bean.model.Person;
 import org.junit.Test;
 
 /**

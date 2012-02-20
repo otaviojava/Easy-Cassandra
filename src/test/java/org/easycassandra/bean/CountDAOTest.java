@@ -2,6 +2,8 @@ package org.easycassandra.bean;
 
 import junit.framework.Assert;
 
+import org.easycassandra.bean.dao.CountDAO;
+import org.easycassandra.bean.model.Count;
 import org.junit.Test;
 
 

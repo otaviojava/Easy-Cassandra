@@ -2,6 +2,8 @@ package org.easycassandra.bean;
 
 import java.nio.file.Paths;
 
+import org.easycassandra.bean.dao.TwitterDao;
+import org.easycassandra.bean.model.Twitter;
 import org.junit.Assert;
 import org.junit.Test;
 

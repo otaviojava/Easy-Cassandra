@@ -1,4 +1,4 @@
-package org.easycassandra.bean;
+package org.easycassandra.bean.dao;
 
 import java.util.List;
 
@@ -45,7 +45,8 @@ public abstract class AbstractDao<T> {
 
 	    }
 
-	    public T retrieve(Object id) {
+	    @SuppressWarnings("unchecked")
+		public T retrieve(Object id) {
 
 
 	        return (T) persistence.findByKey(id, baseClass);
@@ -67,5 +68,9 @@ public abstract class AbstractDao<T> {
 	        return persistence.findByIndex(index, baseClass);
 
 	    }
+	    
+	    public Long count() {
+			return persistence.count(baseClass);
+		}
 
 }

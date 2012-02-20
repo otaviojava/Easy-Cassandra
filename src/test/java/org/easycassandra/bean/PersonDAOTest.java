@@ -2,9 +2,10 @@ package org.easycassandra.bean;
 
 import java.io.File;
 
-import org.easycassandra.bean.Address;
-import org.easycassandra.bean.Person;
-import org.easycassandra.bean.Sex;
+import org.easycassandra.bean.dao.PersonDAO;
+import org.easycassandra.bean.model.Address;
+import org.easycassandra.bean.model.Person;
+import org.easycassandra.bean.model.Sex;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -88,6 +89,17 @@ public class PersonDAOTest {
 	    public void retrieveFileTest() {
 	        Person person = dao.retrieve(4l);
 	        Assert.assertEquals(person.getPersonalFile().length(), new File("readme.txt").length());
+	    }
+	    
+	    @Test
+	    public void countNotNullTest(){
+	    	
+	    	Assert.assertNotNull(dao.count());
+	    }
+	    
+	    @Test
+	    public void countTest(){
+	    	Assert.assertEquals(Long.valueOf(dao.listAll().size()), dao.count());
 	    }
 
 	    private Address getAddress() {

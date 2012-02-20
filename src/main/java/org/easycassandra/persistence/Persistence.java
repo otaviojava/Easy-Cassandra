@@ -38,6 +38,7 @@ import org.apache.cassandra.thrift.TimedOutException;
 import org.apache.cassandra.thrift.UnavailableException;
 import org.apache.thrift.TException;
 import org.easycassandra.ConsistencyLevelCQL;
+import org.easycassandra.EasyCassandraException;
 import org.easycassandra.annotations.ColumnValue;
 import org.easycassandra.annotations.read.UTF8Read;
 import org.easycassandra.util.EncodingUtil;
@@ -88,9 +89,8 @@ public class Persistence extends BasePersistence {
         try {
             StringBuilder cql = new StringBuilder();
 
-            cql.append("select KEY, ");
+            cql.append("select * ");
 
-            cql.append(columnNames(persistenceClass));
             cql.append(" from ");
             cql.append(getColumnFamilyName(persistenceClass));
             cql.append(" USING ").append(consistencyLevel.getValue()).append(" ");   //padra One
@@ -127,7 +127,7 @@ public class Persistence extends BasePersistence {
     /**
      * the method for insert the Object
      * @param object - the  Object for be insert in Cassandra 
-     * @param consistencyLevel - Level consistency for be insering
+     * @param consistencyLevel - Level consistency for be insering in Thrift
      * @return the result of insertion
      */
     public boolean  insert(Object object, ConsistencyLevel consistencyLevel) {
@@ -137,8 +137,8 @@ public class Persistence extends BasePersistence {
     /**
      * the method for insert the Object
      * @param object - the  Object for be insert in Cassandra 
-     * @param consistencyLevel -Level consistency for be insering
-     * @param autoEnable -
+     * @param consistencyLevel -Level consistency for be insering in Thrift
+     * @param autoEnable - if use the auto_increment or not
      * @return the result of insertion
      */
     public boolean  insert(Object object, ConsistencyLevel consistencyLevel, boolean autoEnable) {
@@ -154,12 +154,39 @@ public class Persistence extends BasePersistence {
                 client.insert(rowid, columnParent, column, consistencyLevel);
 
             }
-        } catch (IOException | InvalidRequestException | UnavailableException | TimedOutException | TException exception) {
-            Logger.getLogger(Persistence.class.getName()).log(Level.SEVERE, null, exception);
+        } catch (IOException | InvalidRequestException | UnavailableException | TimedOutException |EasyCassandraException | TException exception) {
+            Logger logger=Logger.getLogger(Persistence.class.getName());
+            logger.log(Level.SEVERE, null, exception);
+            if(createColumnFamily(exception,logger)){
+            	logger.log(Level.INFO, "Column Family created with success, now trying execute the command again");
+            	return insert(object,consistencyLevel,autoEnable);
+            }
             return false;
         }
         return true;
     }
+    
+    /**
+     * the method for insert the Object
+     * @param object - the  Object for be insert in Cassandra 
+     * @param consistencyLevel - Level consistency for be insering
+     * @return the result of insertion
+     */
+    public boolean  insert(Object object, ConsistencyLevelCQL consistencyLevel) {
+    	return insert(object, consistencyLevel.toConsistencyLevel(), true);
+    }
+    
+    /**
+     * the method for insert the Object
+     * @param object - the  Object for be insert in Cassandra 
+     * @param consistencyLevel -Level consistency for be insering
+     * @param autoEnable - if use the auto_increment or not
+     * @return the result of insertion
+     */
+    public boolean  insert(Object object, ConsistencyLevelCQL consistencyLevel, boolean autoEnable) {
+    	return insert(object, consistencyLevel.toConsistencyLevel(), autoEnable);
+    }
+    
 
     /**
      * @param cql - Cassandra Query Language 
@@ -169,7 +196,15 @@ public class Persistence extends BasePersistence {
         try {
             return client.execute_cql_query(ByteBuffer.wrap(cql.getBytes()), Compression.NONE);
         } catch (InvalidRequestException | UnavailableException | TimedOutException | SchemaDisagreementException | TException exception) {
-        Logger.getLogger(Persistence.class.getName()).log(Level.SEVERE, null, exception);
+        Logger logger=Logger.getLogger(Persistence.class.getName());
+        logger.log(Level.SEVERE, null, exception);
+        
+        if(createColumnFamily(exception,logger)){
+        	logger.log(Level.WARNING, "Column Family created with success, now trying execute the command again");
+        	return executeCQL(cql);
+        }
+        
+        
         }
         return null;
     }
@@ -223,8 +258,7 @@ public class Persistence extends BasePersistence {
         try {
 
             StringBuilder cql = new StringBuilder();
-            cql.append(" select  KEY, ");
-            cql.append(columnNames(persistenceClass));
+            cql.append(" select  * ");
             cql.append(" from ");
             cql.append(getColumnFamilyName(persistenceClass));
             cql.append(" USING ").append(consistencyLevel.getValue()).append(" ");   //padra One
@@ -233,7 +267,7 @@ public class Persistence extends BasePersistence {
             return listbyQuery(executeCqlQuery, persistenceClass);
         } catch (Exception exception) {
             Logger.getLogger(Persistence.class.getName()).log(Level.SEVERE, null, exception);
-
+            
         }
 
         return new ArrayList<>();
@@ -392,8 +426,19 @@ public class Persistence extends BasePersistence {
     public List findByIndex(Object index, Class objectClass, ConsistencyLevelCQL consistencyLevelCQL, int limit) {
 
         String indexString = index.toString();
-        ColumnValue coluna = getIndexField(objectClass).getAnnotation(ColumnValue.class);
-        String condicao = coluna.nome();
+       Field indexField= getIndexField(objectClass);
+       if(indexField==null){
+    	   
+    	  try{
+    	   throw new EasyCassandraException("You must use annotation @org.easycassandra.annotations.IndexValue in some field of the Class:" +objectClass.getName()+ " for list by index ");
+    	  }catch (EasyCassandraException exception) {
+    		  Logger.getLogger(Persistence.class.getName()).log(Level.SEVERE, null, exception);
+    		  return null;
+		}
+    	 
+       }
+        		
+        String condicao = getColumnName(indexField);
         return retriveObject(condicao, indexString,  objectClass, consistencyLevelCQL, limit);
 
 
@@ -421,5 +466,39 @@ public class Persistence extends BasePersistence {
          return insert(object, consistencyLevel, true);
     }
 
-  
+	public Long count(Class<?> clazz) {
+		 StringBuilder cql = new StringBuilder();
+	        cql.append("SELECT count(*) ");
+	        cql.append(" from ");
+	        cql.append(getColumnFamilyName(clazz));
+	        
+	        CqlResult cqlResult = executeCQL(cql.toString());
+	        return cqlResult.rows.get(0).getColumns().get(0).value.asLongBuffer().get();
+	        
+	}
+
+  // treatment exception
+	
+	/**
+	 * 
+	 * @param exception
+	 * @return
+	 */
+    private boolean createColumnFamily(Exception exception, Logger logger) {
+    	logger.log(Level.WARNING, "Verify if exist and trying create the Column Family");
+		if (exception instanceof InvalidRequestException) {
+			if (((InvalidRequestException) exception).getWhy().contains(
+					"unconfigured columnfamily ")) {
+				logger.log(Level.INFO, "not exist column Family, now try make it");
+				String columnFamily = ((InvalidRequestException) exception)
+						.getWhy().replace("unconfigured columnfamily ", "");
+				String query = " CREATE COLUMNFAMILY " + columnFamily
+						+ " (KEY text PRIMARY KEY); ";
+				return executeCQL(query) != null;
+			}
+		}
+
+		return false;
+
+	}
 }

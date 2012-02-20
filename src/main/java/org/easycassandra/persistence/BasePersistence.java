@@ -26,6 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.cassandra.thrift.Column;
+import org.easycassandra.EasyCassandraException;
 import org.easycassandra.annotations.ColumnFamilyValue;
 import org.easycassandra.annotations.ColumnValue;
 import org.easycassandra.annotations.EmbeddedValue;
@@ -128,7 +129,7 @@ class BasePersistence {
      * @param field - field for viewd
      * @return The name inside annotations or the field's name
      */
-    private String getColumnNanme(Field field) {
+    protected String getColumnName(Field field) {
         return field.getAnnotation(ColumnValue.class).nome().equals("") ?field.getName():field.getAnnotation(ColumnValue.class).nome();
         
     }
@@ -160,7 +161,7 @@ class BasePersistence {
             } else if (field.getAnnotation(EmbeddedValue.class) != null) {
 
 
-                return getField(ReflectionUtil.getMethod(object, field).getClass(), annotation);
+                return getField(field.getType(), annotation);
 
             }
 
@@ -196,9 +197,13 @@ class BasePersistence {
      * @return -The value of the KeyRow in ByteBuffer format
      * @see KeyValue
      * @throws IOException 
+     * @{@link EasyCassandraException - for operation in EasyCassandra
      */
-    protected ByteBuffer getKey(Object object, boolean autoEnable) throws IOException {
+    protected ByteBuffer getKey(Object object, boolean autoEnable) throws IOException,EasyCassandraException {
         Field keyField = getKeyField(object.getClass());
+        if(keyField==null){
+        	throw new EasyCassandraException("You must use annotation @org.easycassandra.annotations.KeyValue in some field of the Class: "+object.getClass().getName()+"  for be the keyrow in Cassandra");
+        }
         String colunaFamilia = getColumnFamilyName(object.getClass());
         if (keyField != null) {
             KeyValue chave = keyField.getAnnotation(KeyValue.class);
@@ -230,50 +235,7 @@ class BasePersistence {
         return null;
     }
     
-/**
- * The names of the fields with annotations of the Easy-Cassandra
- * It uses the getColumnNames in the Try
- * @param object - the object viewed
- * @return  the DecoratorColumnNames
- * @see DecoratorColumnNames
- * @see BasePersistence#getColumnNames(java.lang.Class) 
- */
-    protected DecoratorColumnNames columnNames(Class object) {
 
-        try {
-            return getColumnNames(object);
-        } catch (IllegalAccessException | InstantiationException exception) {
-        	Logger.getLogger(BasePersistence.class.getName()).log(Level.SEVERE, null, exception);
-            return null;
-        }
-    }
-
-    /**
-     * The names of the fields with annotations of the Easy-Cassandra
-     * @param object -- the object viewed
-     * @return -  the DecoratorColumnNames
-     * @see DecoratorColumnNames
-     * @throws InstantiationException
-     * @throws IllegalAccessException 
-     */
-    protected DecoratorColumnNames getColumnNames(Class object) throws InstantiationException, IllegalAccessException {
-        DecoratorColumnNames names = new DecoratorColumnNames();
-        Field[] fields = object.getDeclaredFields();
-
-        for (Field field : fields) {
-            if (field.getAnnotation(KeyValue.class) != null) {
-                continue;
-            } else if (field.getAnnotation(ColumnValue.class) != null || field.getAnnotation(EnumeratedValue.class) != null) {
-                names.add(field.getAnnotation(ColumnValue.class) != null ? getColumnNanme(field) : getEnumeratedName(field));
-            } else if (field.getAnnotation(EmbeddedValue.class) != null) {
-                 names.addAll(getColumnNames(field.getType()).getNames());
-            }
-
-
-        }
-
-        return names;
-    }
 //columns Utils
 
     /**
@@ -292,7 +254,7 @@ class BasePersistence {
             }
             if (field.getAnnotation(ColumnValue.class) != null) {
                 
-                Column column = makeColumn(timeStamp, getColumnNanme(field), object, field);
+                Column column = makeColumn(timeStamp, getColumnName(field), object, field);
                 if (column != null) {
                     columns.add(column);
                 }
@@ -389,7 +351,7 @@ class BasePersistence {
                 continue;
             } else if (field.getAnnotation(ColumnValue.class) != null) {
                 
-                ByteBuffer byteBuffer = listMap.get(getColumnNanme(field));
+                ByteBuffer byteBuffer = listMap.get(getColumnName(field));
                 if (byteBuffer != null) {
                 	
                     ReflectionUtil.setMethod(bean, field, getReadManager().convert(byteBuffer, field.getType()));
@@ -417,6 +379,8 @@ class BasePersistence {
         }
     }
     
+    
+
     
       /**
      * the with synchronized for the KeySpace

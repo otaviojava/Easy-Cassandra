@@ -1,4 +1,6 @@
-package org.easycassandra.bean;
+package org.easycassandra.bean.dao;
+
+import org.easycassandra.bean.model.Person;
 
 
 /**
@@ -11,5 +13,7 @@ public class PersonDAO extends AbstractDao<Person>{
 		super(Person.class);
 		
 	}
+
+	
 
 }

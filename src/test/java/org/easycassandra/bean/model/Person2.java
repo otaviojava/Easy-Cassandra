@@ -2,31 +2,29 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.easycassandra.bean;
+package org.easycassandra.bean.model;
 
 import java.io.File;
 import java.io.Serializable;
 import java.util.Objects;
+
 import org.easycassandra.annotations.ColumnFamilyValue;
 import org.easycassandra.annotations.ColumnValue;
 import org.easycassandra.annotations.EmbeddedValue;
 import org.easycassandra.annotations.EnumeratedValue;
-import org.easycassandra.annotations.IndexValue;
-import org.easycassandra.annotations.KeyValue;
 
 /**
  *
  * @author otavio
  */
 @ColumnFamilyValue(nome = "person")
-public class Person implements Serializable {
+public class Person2 implements Serializable {
 
     private static final long serialVersionUID = 3L;
     
-    @KeyValue
     private Long id;
     
-    @IndexValue
+    
     @ColumnValue(nome = "name")
     private String name;
     
@@ -99,7 +97,7 @@ public class Person implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Person other = (Person) obj;
+        final Person2 other = (Person2) obj;
         if (!Objects.equals(this.id, other.id)) {
             return false;
         }
