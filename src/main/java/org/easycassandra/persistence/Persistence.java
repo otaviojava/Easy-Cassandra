@@ -151,7 +151,7 @@ public class Persistence extends BasePersistence {
                 client.insert(rowid, columnParent, column, consistencyLevel);
 
             }
-        } catch (IOException | InvalidRequestException | UnavailableException | TimedOutException |EasyCassandraException | TException exception) {
+        } catch (Exception exception) {
             Logger logger=Logger.getLogger(Persistence.class.getName());
             logger.log(Level.SEVERE, null, exception);
             if(createColumnFamily(exception,logger)){
