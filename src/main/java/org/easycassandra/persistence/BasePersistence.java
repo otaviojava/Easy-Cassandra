@@ -14,7 +14,6 @@
  */
 package org.easycassandra.persistence;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -190,7 +189,6 @@ class BasePersistence {
      * @param autoEnable - if the Keyvaleu auto is enable
      * @return -The value of the KeyRow in ByteBuffer format
      * @see KeyValue
-     * @throws IOException 
      * @{@link EasyCassandraException - for operation in EasyCassandra
      */
     protected ByteBuffer getKey(Object object, boolean autoEnable){
