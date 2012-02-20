@@ -24,15 +24,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.apache.cassandra.thrift.Column;
 import org.easycassandra.EasyCassandraException;
-import org.easycassandra.annotations.ColumnFamilyValue;
-import org.easycassandra.annotations.ColumnValue;
-import org.easycassandra.annotations.EmbeddedValue;
-import org.easycassandra.annotations.EnumeratedValue;
-import org.easycassandra.annotations.IndexValue;
-import org.easycassandra.annotations.KeyValue;
+import org.easycassandra.annotations.*;
 import org.easycassandra.annotations.read.EnumRead;
 import org.easycassandra.annotations.read.ReadInterface;
 import org.easycassandra.annotations.read.ReadManager;
@@ -199,7 +193,7 @@ class BasePersistence {
      * @throws IOException 
      * @{@link EasyCassandraException - for operation in EasyCassandra
      */
-    protected ByteBuffer getKey(Object object, boolean autoEnable) throws Exception {
+    protected ByteBuffer getKey(Object object, boolean autoEnable) throws EasyCassandraException {
         Field keyField = getKeyField(object.getClass());
         if(keyField==null){
         	throw new EasyCassandraException("You must use annotation @org.easycassandra.annotations.KeyValue in some field of the Class: "+object.getClass().getName()+"  for be the keyrow in Cassandra");
