@@ -199,7 +199,7 @@ class BasePersistence {
      * @throws IOException 
      * @{@link EasyCassandraException - for operation in EasyCassandra
      */
-    protected ByteBuffer getKey(Object object, boolean autoEnable) throws IOException,EasyCassandraException {
+    protected ByteBuffer getKey(Object object, boolean autoEnable) throws Exception {
         Field keyField = getKeyField(object.getClass());
         if(keyField==null){
         	throw new EasyCassandraException("You must use annotation @org.easycassandra.annotations.KeyValue in some field of the Class: "+object.getClass().getName()+"  for be the keyrow in Cassandra");

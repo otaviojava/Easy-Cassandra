@@ -16,12 +16,12 @@ package org.easycassandra.annotations.write;
 
 import java.nio.ByteBuffer;
 import java.util.Calendar;
-import java.util.Date;
+
 import org.easycassandra.util.EncodingUtil;
 
 /**
  *for Write Bate
- * @see Date
+ * @see java#util#Date
  * @author otavio
  */
 public class CalendarWrite implements WriteInterface {

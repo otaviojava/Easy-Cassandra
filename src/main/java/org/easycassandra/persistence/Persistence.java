@@ -39,7 +39,6 @@ import org.apache.cassandra.thrift.UnavailableException;
 import org.apache.thrift.TException;
 import org.easycassandra.ConsistencyLevelCQL;
 import org.easycassandra.EasyCassandraException;
-import org.easycassandra.annotations.ColumnValue;
 import org.easycassandra.annotations.read.UTF8Read;
 import org.easycassandra.util.EncodingUtil;
 import org.easycassandra.util.ReflectionUtil;
@@ -89,9 +88,7 @@ public class Persistence extends BasePersistence {
         try {
             StringBuilder cql = new StringBuilder();
 
-            cql.append("select * ");
-
-            cql.append(" from ");
+            cql.append("select * from ");    
             cql.append(getColumnFamilyName(persistenceClass));
             cql.append(" USING ").append(consistencyLevel.getValue()).append(" ");   //padra One
             cql.append(" where ");
@@ -486,16 +483,14 @@ public class Persistence extends BasePersistence {
 	 */
     private boolean createColumnFamily(Exception exception, Logger logger) {
     	logger.log(Level.WARNING, "Verify if exist and trying create the Column Family");
-		if (exception instanceof InvalidRequestException) {
-			if (((InvalidRequestException) exception).getWhy().contains(
-					"unconfigured columnfamily ")) {
-				logger.log(Level.INFO, "not exist column Family, now try make it");
-				String columnFamily = ((InvalidRequestException) exception)
-						.getWhy().replace("unconfigured columnfamily ", "");
-				String query = " CREATE COLUMNFAMILY " + columnFamily
-						+ " (KEY text PRIMARY KEY); ";
-				return executeCQL(query) != null;
-			}
+		if (exception instanceof InvalidRequestException&&((InvalidRequestException) exception).getWhy().contains("unconfigured columnfamily ")) {
+		
+                    logger.log(Level.INFO, "not exist column Family, now try make it");
+                    String columnFamily = ((InvalidRequestException) exception).getWhy().replace("unconfigured columnfamily ", "");
+                    String query = " CREATE COLUMNFAMILY " + columnFamily
+                            + " (KEY text PRIMARY KEY); ";
+                    return executeCQL(query) != null;
+		
 		}
 
 		return false;
