@@ -32,7 +32,7 @@ public class Person2 implements Serializable {
     private Integer year;
     
     
-    @EnumeratedValue(nome="sex")
+    @EnumeratedValue
     private Sex sex;
     
     @ColumnValue(nome = "file")

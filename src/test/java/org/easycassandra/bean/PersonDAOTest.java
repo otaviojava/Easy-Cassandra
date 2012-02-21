@@ -1,6 +1,8 @@
 package org.easycassandra.bean;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.easycassandra.bean.dao.PersonDAO;
 import org.easycassandra.bean.model.Address;
@@ -102,6 +104,18 @@ public class PersonDAOTest {
 	    	Assert.assertEquals(Long.valueOf(dao.listAll().size()), dao.count());
 	    }
 
+	    @Test
+	    public void inKeyTest(){
+	    	for(int index=10;index<15;index++){
+	    		Person person=getPerson();
+	    		person.setId(Long.valueOf(10l));
+	    		person.setAddress(getAddress());
+	    		dao.insert(person);
+	    	}
+	    	Assert.assertEquals(dao.findKeyIn(11l,12l,13l,14,15l).size(), 5);
+	    }
+	    
+	    
 	    private Address getAddress() {
 	        Address address = new Address();
 	        address.setCep("40243-543");

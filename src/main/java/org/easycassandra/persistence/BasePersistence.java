@@ -23,16 +23,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.cassandra.thrift.Column;
+
 import org.easycassandra.EasyCassandraException;
-import org.easycassandra.annotations.*;
+import org.easycassandra.annotations.ColumnValue;
+import org.easycassandra.annotations.EmbeddedValue;
+import org.easycassandra.annotations.EnumeratedValue;
+import org.easycassandra.annotations.KeyValue;
 import org.easycassandra.annotations.read.EnumRead;
 import org.easycassandra.annotations.read.ReadInterface;
 import org.easycassandra.annotations.read.ReadManager;
-import org.easycassandra.annotations.write.EnumWrite;
+import org.easycassandra.annotations.read.UTF8Read;
 import org.easycassandra.annotations.write.WriteInterface;
 import org.easycassandra.annotations.write.WriteManager;
-import org.easycassandra.util.EncodingUtil;
 import org.easycassandra.util.ReflectionUtil;
 
 /**
@@ -59,13 +61,13 @@ class BasePersistence {
      * Class for read Byte
      * @see ReadManager
      */
-    private ReadManager readManager;
+    private static ReadManager readManager;
     
     /**
      * Class for write Byte
      * @see WriteManager
      */
-    private WriteManager writeManager;
+    private static WriteManager writeManager;
     
     /**
      * Class with information about Column Family managed by Easy-Cassandra
@@ -88,115 +90,36 @@ class BasePersistence {
      */
     private  String keyStore;
     
-
+static{
+	 writeMap = ReadWriteMaps.getWriteMap();
+     readMap = ReadWriteMaps.getReadMap();
+}
     /**
      * Construtor for inicialize the readMap and the WriteMap
      * @see BasePersistence#writeMap
      * @see BasePersistence#readMap
      */
     public BasePersistence() {
-        writeMap = ReadWriteMaps.getWriteMap();
-        readMap = ReadWriteMaps.getReadMap();
+       
         writeManager=new WriteManager(writeMap);
         readManager =new ReadManager(readMap);
 
     }
-/**
- * Get The Column name from an Object
- * @param object - Class of the object viewed
- * @return The name of Column name if there are not will be return null
- */
     
-	protected String getColumnFamilyName(Class object) {
-
-        ColumnFamilyValue colunaFamilia = (ColumnFamilyValue) object.getAnnotation(ColumnFamilyValue.class);
-
-        if (colunaFamilia != null) {
-            return colunaFamilia.nome().equals("") ?object.getSimpleName():colunaFamilia.nome();
-        }
-        return object.getSimpleName();
-    }
-    /**
-     * verifies that the name of the annotation is empty
-     * if you take the field name
-     * @param field - field for viewd
-     * @return The name inside annotations or the field's name
-     */
-    protected String getColumnName(Field field) {
-        return field.getAnnotation(ColumnValue.class).nome().equals("") ?field.getName():field.getAnnotation(ColumnValue.class).nome();
-        
-    }
-
-    /**
-     * verifies that the name of the annotation is empty
-     * if you take the field name
-     * @param field
-     * @return The name inside annotations or the field's name
-     */
-    private String getEnumeratedName(Field field) {
-        return field.getAnnotation(EnumeratedValue.class).nome().equals("") ?field.getName():field.getAnnotation(EnumeratedValue.class).nome();
-        
-    }
-
-    /**
-     * Get the Field of the Object from  annotation 
-     * if there are not return will be null
-     * @param object -  Class of the object viewed
-     * @param annotation
-     * @return 
-     */
-    
-    private Field getField(Class object, Class annotation) {
-
-        for (Field field : object.getDeclaredFields()) {
-            if (field.getAnnotation(annotation) != null) {
-                return field;
-            } else if (field.getAnnotation(EmbeddedValue.class) != null) {
-
-
-                return getField(field.getType(), annotation);
-
-            }
-
-        }
-        return null;
-    }
-
-    /**
-     *  Return the Field with the KeyValue Annotations
-     * @see KeyValue
-     * @param persistenceClass - Class of the object viewed
-     * @return the Field if there are not will be return null
-     */
-    protected Field getKeyField(Class persistenceClass) {
-
-        return getField(persistenceClass, KeyValue.class);
-    }
-
-     /**
-     *  Return the Field with the IndexValue Annotations
-     * @see IndexValue
-     * @param persistenceClass - Class of the object viewed
-     * @return the Field if there are not will be return null
-     */
-    protected Field getIndexField(Class persistenceClass) {
-        return getField(persistenceClass, IndexValue.class);
-    }
-
     /**
      * Return the ByteBuffer with the KeyValue
      * @param object - the object viewed
-     * @param autoEnable - if the Keyvaleu auto is enable
+     * @param autoEnable - if the Keyvalue auto is enable
      * @return -The value of the KeyRow in ByteBuffer format
      * @see KeyValue
      * @{@link EasyCassandraException - for operation in EasyCassandra
      */
     protected ByteBuffer getKey(Object object, boolean autoEnable){
-        Field keyField = getKeyField(object.getClass());
+        Field keyField = ColumnUtil.getKeyField(object.getClass());
         if(keyField==null){
         	throw new EasyCassandraException("You must use annotation @org.easycassandra.annotations.KeyValue in some field of the Class: "+object.getClass().getName()+"  for be the keyrow in Cassandra");
         }
-        String colunaFamilia = getColumnFamilyName(object.getClass());
+        String colunaFamilia = ColumnUtil.getColumnFamilyName(object.getClass());
         if (keyField != null) {
             KeyValue chave = keyField.getAnnotation(KeyValue.class);
 
@@ -229,76 +152,27 @@ class BasePersistence {
     
 
 //columns Utils
-
+ 
+    
     /**
-     * create columns based on annotations in Easy-Cassandra
-     * @param object - the object viewed
-     * @return - List of the Column
+     * Create values for query
+     * e.g: (key1,key2...)
+     * @param keys - the values
+     * @return - the String for query in
      */
-    protected List<Column> getColumns(Object object) {
-        Long timeStamp = System.currentTimeMillis();
-        List<Column> columns = new ArrayList<>();
-        Field[] fields = object.getClass().getDeclaredFields();
-
-        for (Field field : fields) {
-            if (field.getAnnotation(KeyValue.class) != null) {
-                continue;
-            }
-            if (field.getAnnotation(ColumnValue.class) != null) {
-                
-                Column column = makeColumn(timeStamp, getColumnName(field), object, field);
-                if (column != null) {
-                    columns.add(column);
-                }
-            } else if (field.getAnnotation(EmbeddedValue.class) != null) {
-                if (ReflectionUtil.getMethod(object, field) != null) {
-                    columns.addAll(getColumns(ReflectionUtil.getMethod(object, field)));
-                }
-            } else if (field.getAnnotation(EnumeratedValue.class) != null) {
-                Column column = new Column();
-                column.setTimestamp(timeStamp);
-                column.setName(EncodingUtil.stringToByte(getEnumeratedName(field)));
-
-
-                ByteBuffer byteBuffer = new EnumWrite().getBytebyObject(ReflectionUtil.getMethod(object, field));
-                column.setValue(byteBuffer);
-
-
-                if (column != null) {
-                    columns.add(column);
-                }
-            }
-
-        }
-        return columns;
-    }
-
-    /**
-     * Create a column for persist in Cassandra
-     * @param timeStamp - time in the Column
-     * @param coluna - name in the Column
-     * @param object -  the object viewed
-     * @param field - the Field viewed
-     * @return the column for the Cassandra
-     */
-    protected Column makeColumn(long timeStamp, String coluna, Object object, Field field) {
-
-        Object subObject = ReflectionUtil.getMethod(object, field);
-        if (subObject != null) {
-            Column column = new Column();
-
-            column.setTimestamp(timeStamp);
-            column.setName(EncodingUtil.stringToByte(coluna));
-
-            
-            column.setValue(getWriteManager().convert(subObject));
-
-            return column;
-        } else {
-            return null;
-        }
-    }
-
+	protected String createValuesIn(Object... keys) {
+		UTF8Read ufRead=new UTF8Read();
+    	StringBuilder keyNames=new StringBuilder();
+    	keyNames.append(" (");
+    	String condicion="";
+    	for(Object key:keys){
+    	ByteBuffer keyBuffer = getWriteManager().convert(key);
+    	keyNames.append(" "+condicion+"'"+ufRead.getObjectByByte(keyBuffer).toString()+"'");
+    	condicion=",";
+    	}
+		return  keyNames.substring(0, keyNames.length())+") ";
+	}
+    
     //read objetct
     /**
      * The List Of the Class with information from Cassandra
@@ -343,7 +217,7 @@ class BasePersistence {
                 continue;
             } else if (field.getAnnotation(ColumnValue.class) != null) {
                 
-                ByteBuffer byteBuffer = listMap.get(getColumnName(field));
+                ByteBuffer byteBuffer = listMap.get(ColumnUtil.getColumnName(field));
                 if (byteBuffer != null) {
                 	
                     ReflectionUtil.setMethod(bean, field, getReadManager().convert(byteBuffer, field.getType()));
@@ -358,7 +232,7 @@ class BasePersistence {
                 ReflectionUtil.setMethod(bean, field, subObject);
             } else if (field.getAnnotation(EnumeratedValue.class) != null) {
 
-                ByteBuffer bb = listMap.get(getEnumeratedName(field));
+                ByteBuffer bb = listMap.get(ColumnUtil.getEnumeratedName(field));
                 if (bb != null) {
 
                     Object[] enums = field.getType().getEnumConstants();
@@ -389,7 +263,7 @@ class BasePersistence {
 	  * @see BasePersistence#readManager
 	  * @return the readManager
 	  */
-    public ReadManager getReadManager() {
+    public static ReadManager getReadManager() {
 		return readManager;
 	}
 	
@@ -398,7 +272,7 @@ class BasePersistence {
      * @see BasePersistence#writeManager
      * @return the writeManager
      */
-	public WriteManager getWriteManager() {
+	public static WriteManager getWriteManager() {
 		return writeManager;
 	}
 	
@@ -423,7 +297,7 @@ class BasePersistence {
         this.keyStore = keyStore;
     }
          
-           /**
+    /**
      * @param lockWrite the LOCK_WRITE to set
      */
     public static void setLockWrite(AtomicBoolean lockWrite) {

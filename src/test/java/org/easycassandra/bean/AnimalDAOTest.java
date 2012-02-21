@@ -16,6 +16,7 @@ public class AnimalDAOTest {
 	       Animal animal=new Animal();
 	       animal.setName("Lion");
 	       animal.setRace("I know no");
+	       animal.setCountry("Brazil");
            Assert.assertTrue(dao.insert(animal));
 	        
 	     
@@ -29,7 +30,7 @@ public class AnimalDAOTest {
 	    }
 	  	@Test
 	  	public void listIndexInitializeTest(){
-	  		Assert.assertNotNull(dao.listByIndex("Brazil"));
+	  		Assert.assertEquals(dao.listByIndex("Brazil").size(),1);
 	  	}
 	  
     

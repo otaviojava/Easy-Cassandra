@@ -5,7 +5,7 @@
 
     <groupId>otaviojava</groupId>
     <artifactId>EasyCassandra</artifactId>
-    <version>1.0.7</version>
+    <version>1.0.8-Snapshot</version>
     <packaging>jar</packaging>
 
     <name>EasyCassandra</name>

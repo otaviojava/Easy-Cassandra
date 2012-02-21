@@ -2,6 +2,7 @@ package org.easycassandra.bean.dao;
 
 import java.util.List;
 
+import org.easycassandra.bean.model.Person;
 import org.easycassandra.persistence.EasyCassandraManager;
 import org.easycassandra.persistence.Persistence;
 
@@ -73,4 +74,10 @@ public abstract class AbstractDao<T> {
 			return persistence.count(baseClass);
 		}
 
+	    public List<T> findKeyIn(Object... key) {
+	    	 return persistence.findByKeyIn( baseClass,key);
+		}
+	    
+	    
+	    
 }
