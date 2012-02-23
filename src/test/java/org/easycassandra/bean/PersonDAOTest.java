@@ -114,8 +114,21 @@ public class PersonDAOTest {
 	    	}
 	    	Assert.assertEquals(dao.findKeyIn(11l,12l,13l,14,15l).size(), 5);
 	    }
+	   
+	    @Test
+	    public void executeUpdateCqlTest(){
+	    	Assert.assertTrue(dao.executeUpdateCql("select * from Person"));
+	    }
 	    
+	    @Test
+	    public void executeUpdateCqlFailTest(){
+	    	Assert.assertFalse(dao.executeUpdateCql("selectErrorSyntax * from Person "));
+	    }
 	    
+	    @Test
+	    public void executeCqlTest(){
+	    	Assert.assertNotNull(dao.executeCql("select * from person"));
+	    }
 	    private Address getAddress() {
 	        Address address = new Address();
 	        address.setCep("40243-543");
@@ -134,6 +147,8 @@ public class PersonDAOTest {
 	        return person;
 
 	    }
+	    
+	    
 	    
 	    
     

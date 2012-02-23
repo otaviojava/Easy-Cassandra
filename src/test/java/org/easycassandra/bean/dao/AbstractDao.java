@@ -1,8 +1,9 @@
 package org.easycassandra.bean.dao;
 
 import java.util.List;
+import java.util.Map;
 
-import org.easycassandra.bean.model.Person;
+import org.easycassandra.ConsistencyLevelCQL;
 import org.easycassandra.persistence.EasyCassandraManager;
 import org.easycassandra.persistence.Persistence;
 
@@ -16,13 +17,14 @@ public abstract class AbstractDao<T> {
 	  
 	    public AbstractDao(Class<T> baseClass) {
 	    	this.baseClass=baseClass;
+	    	
 	        persistence = EasyCassandraManager.getPersistence("javabahia", "localhost", 9160);
 	    }
 
 	    public boolean insert(T bean) {
 
 
-	        return persistence.insert(bean);
+	        return persistence.insert(bean,ConsistencyLevelCQL.ONE);
 
 	    }
 
@@ -41,7 +43,6 @@ public abstract class AbstractDao<T> {
 
 	    public boolean update(T bean) {
 
-
 	        return persistence.update(bean);
 
 	    }
@@ -49,15 +50,13 @@ public abstract class AbstractDao<T> {
 	    @SuppressWarnings("unchecked")
 		public T retrieve(Object id) {
 
-
-	        return (T) persistence.findByKey(id, baseClass);
+	    	return (T) persistence.findByKey(id, baseClass);
 
 
 	    }
 
 	    @SuppressWarnings("unchecked")
 	    public List<T> listAll() {
-
 
 	        return persistence.findAll(baseClass);
 
@@ -74,10 +73,18 @@ public abstract class AbstractDao<T> {
 			return persistence.count(baseClass);
 		}
 
-	    public List<T> findKeyIn(Object... key) {
+	    @SuppressWarnings("unchecked")
+		public List<T> findKeyIn(Object... key) {
 	    	 return persistence.findByKeyIn( baseClass,key);
 		}
 	    
+	    public boolean executeUpdateCql(String string) {
+			
+			return persistence.executeUpdateCql(string);
+		}
 	    
+	    public List<Map<String, String>> executeCql(String string) {
+			return persistence.executeCql(string);
+		}
 	    
 }
