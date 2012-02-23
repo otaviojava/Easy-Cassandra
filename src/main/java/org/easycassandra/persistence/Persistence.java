@@ -612,8 +612,16 @@ public class Persistence extends BasePersistence {
 		return false;
 	}
     
-    
     /**
+     * get the Cassandra's Client used in the Class
+     * @return
+     */
+    public Client getClient() {
+		return client;
+	}
+
+
+	/**
      * Class for Store information about the index and the Column name
      * @author otavio
      *
