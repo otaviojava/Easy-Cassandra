@@ -15,6 +15,7 @@
 package org.easycassandra.persistence;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -40,7 +41,7 @@ public class ColumnFamilyInformation implements Serializable {
      * the number of the id Column Family
      */
     @XmlAttribute
-    private Long id;
+    private BigInteger id;
     
     
     /**
@@ -55,8 +56,9 @@ public class ColumnFamilyInformation implements Serializable {
     @XmlAttribute
     private String keyStore;
 
-    public Long increment() {
-        return ++id;
+    public BigInteger increment() {
+    	id=id.add(BigInteger.ONE);
+        return id;
     }
 
     public String getColumnFamilyName() {
@@ -68,14 +70,14 @@ public class ColumnFamilyInformation implements Serializable {
     }
 
     public ColumnFamilyInformation() {
-        id = new Long(0);
+        id = BigInteger.valueOf(0l);
     }
 
-    public Long getId() {
+    public BigInteger getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(BigInteger id) {
         this.id = id;
     }
 
@@ -89,7 +91,7 @@ public class ColumnFamilyInformation implements Serializable {
 	}
 
 	public ColumnFamilyInformation(String columnFamilyName,String keyStore) {
-        id = new Long(0);
+        id = BigInteger.valueOf(0l);
         this.columnFamilyName = columnFamilyName;
         this.keyStore=keyStore;
     }

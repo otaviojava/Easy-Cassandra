@@ -1,6 +1,6 @@
 package org.easycassandra.bean;
 
-import org.easycassandra.bean.dao.AnimalDAO;
+import org.easycassandra.bean.dao.PersistenceDao;
 import org.easycassandra.bean.model.Animal;
 import org.junit.Assert;
 import org.junit.Test;
@@ -10,7 +10,7 @@ import org.junit.Test;
 * @author otavio
 */
 public class AnimalDAOTest {
-	  private AnimalDAO dao = new AnimalDAO();
+	  private PersistenceDao<Animal> dao = new PersistenceDao<>(Animal.class);
 	  	@Test
 	    public void insertErrorTest() {
 	       Animal animal=new Animal();
@@ -21,7 +21,13 @@ public class AnimalDAOTest {
 	        
 	     
 	    }
-	  	
+	  	@Test
+	  	public void insertNullError(){
+	  		Animal animal=new Animal();
+		       animal.setRace("I know no");
+		       animal.setCountry("Brazil");
+	           Assert.assertFalse(dao.insert(animal));
+	  	}
 	  	@Test
 	    public void listErrorTest() {
 	        Assert.assertNotNull(dao.listAll());

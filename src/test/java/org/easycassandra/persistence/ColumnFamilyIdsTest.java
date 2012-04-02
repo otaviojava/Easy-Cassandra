@@ -1,5 +1,7 @@
 package org.easycassandra.persistence;
 
+import java.math.BigInteger;
+
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -10,7 +12,7 @@ public class ColumnFamilyIdsTest {
 	public void getIdTest(){
 		ColumnFamilyIds columnFamilyIds=new ColumnFamilyIds();
 		columnFamilyIds.getId("index","keystore");
-		Assert.assertEquals(columnFamilyIds.getId("index","keystore"),Long.valueOf(2));
+		Assert.assertEquals(columnFamilyIds.getId("index","keystore"),BigInteger.ONE.add(BigInteger.ONE));
 	}
 	
 	@Test

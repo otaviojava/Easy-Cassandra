@@ -5,34 +5,47 @@
 package org.easycassandra.bean.model;
 
 import java.io.Serializable;
+import java.math.BigInteger;
+import java.util.Calendar;
+import java.util.Date;
 
 import org.easycassandra.annotations.ColumnFamilyValue;
 import org.easycassandra.annotations.ColumnValue;
 import org.easycassandra.annotations.KeyValue;
+import org.easycassandra.annotations.TimeStampValue;
 
 /**
  *
  * @author otavio
  */
-@ColumnFamilyValue(nome = "autocount")
+@ColumnFamilyValue(name = "autocount")
 public class Count implements Serializable {
 
     private static final long serialVersionUID = 3L;
     
     @KeyValue(auto=true)
-    private Long id;
+    private BigInteger id;
     
   
-    @ColumnValue(nome = "name")
+    @ColumnValue(name = "name")
     private String name;
+    
+    @TimeStampValue
+    private Long timeStampLong;
 
-
-	public Long getId() {
+    @TimeStampValue
+    private Date timeStampDate;
+    
+    @TimeStampValue
+    private Calendar timeStampCalendar;
+    
+    
+	public BigInteger getId() {
 		return id;
 	}
 
 
-	public void setId(Long id) {
+	public void setId(BigInteger id) {
 		this.id = id;
 	}
 
@@ -47,41 +60,38 @@ public class Count implements Serializable {
 	}
 
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		return result;
+	public Long getTimeStampLong() {
+		return timeStampLong;
 	}
 
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Count other = (Count) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		return true;
+	public void setTimeStampLong(Long timeStampLong) {
+		this.timeStampLong = timeStampLong;
 	}
-    
-  
-    
-    
+
+
+	public Date getTimeStampDate() {
+		return timeStampDate;
+	}
+
+
+	public void setTimeStampDate(Date timeStampDate) {
+		this.timeStampDate = timeStampDate;
+	}
+
+
+	public Calendar getTimeStampCalendar() {
+		return timeStampCalendar;
+	}
+
+
+	public void setTimeStampCalendar(Calendar timeStampCalendar) {
+		this.timeStampCalendar = timeStampCalendar;
+	}
+
+
+
+	
     
     
 }

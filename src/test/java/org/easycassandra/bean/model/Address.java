@@ -15,16 +15,16 @@ import org.easycassandra.annotations.ColumnValue;
 public class Address implements Serializable {
     private static final long serialVersionUID = 1L;
     
-    @ColumnValue(nome="state")
+    @ColumnValue(name="state")
     private String state;
     
-    @ColumnValue(nome="cyte")
+    @ColumnValue(name="cyte")
     private String city;
     
-    @ColumnValue(nome="street")
+    @ColumnValue(name="street")
     private String street;
     
-    @ColumnValue(nome="cep")
+    @ColumnValue(name="cep")
     private String cep;
 
     public String getCep() {

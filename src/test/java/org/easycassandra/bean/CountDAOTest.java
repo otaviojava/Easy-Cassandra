@@ -2,7 +2,7 @@ package org.easycassandra.bean;
 
 import junit.framework.Assert;
 
-import org.easycassandra.bean.dao.CountDAO;
+import org.easycassandra.bean.dao.PersistenceDao;
 import org.easycassandra.bean.model.Count;
 import org.junit.Test;
 
@@ -13,7 +13,7 @@ import org.junit.Test;
 */
 public class CountDAOTest {
 
-    private CountDAO dao = new CountDAO();
+	private PersistenceDao<Count> dao = new PersistenceDao<>(Count.class);
     
     
     @Test
@@ -35,4 +35,22 @@ public class CountDAOTest {
     }
     
     
+    
+    @Test
+    public void timeStampLongTest(){
+    	Count count=dao.retrieve(2l);
+    	Assert.assertNotNull(count.getTimeStampLong());
+    }
+    
+    @Test
+    public void timeStampDateTest(){
+    	Count count=dao.retrieve(2l);
+    	Assert.assertNotNull(count.getTimeStampDate());
+    }
+    
+    @Test
+    public void timeStampCalendarTest(){
+    	Count count=dao.retrieve(2l);
+    	Assert.assertNotNull(count.getTimeStampCalendar());
+    }
 }

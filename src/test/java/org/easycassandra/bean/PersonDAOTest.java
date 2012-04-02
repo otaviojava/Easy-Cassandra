@@ -1,10 +1,8 @@
 package org.easycassandra.bean;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.easycassandra.bean.dao.PersonDAO;
+import org.easycassandra.bean.dao.PersistenceDao;
 import org.easycassandra.bean.model.Address;
 import org.easycassandra.bean.model.Person;
 import org.easycassandra.bean.model.Sex;
@@ -16,8 +14,7 @@ import org.junit.Test;
 * @author otavio
 */
 public class PersonDAOTest {
-	  private PersonDAO dao = new PersonDAO();
-
+	private PersistenceDao<Person> dao = new PersistenceDao<>(Person.class);
 	    @Test
 	    public void insertTest() {
 	        System.out.println("Inserindo exemplo");

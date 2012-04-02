@@ -17,7 +17,7 @@ import org.easycassandra.annotations.EnumeratedValue;
  *
  * @author otavio
  */
-@ColumnFamilyValue(nome = "person")
+@ColumnFamilyValue(name = "person")
 public class Person2 implements Serializable {
 
     private static final long serialVersionUID = 3L;
@@ -25,17 +25,17 @@ public class Person2 implements Serializable {
     private Long id;
     
     
-    @ColumnValue(nome = "name")
+    @ColumnValue(name = "name")
     private String name;
     
-    @ColumnValue(nome = "born")
+    @ColumnValue(name = "born")
     private Integer year;
     
     
     @EnumeratedValue
     private Sex sex;
     
-    @ColumnValue(nome = "file")
+    @ColumnValue(name = "file")
     private File personalFile;
     
     @EmbeddedValue

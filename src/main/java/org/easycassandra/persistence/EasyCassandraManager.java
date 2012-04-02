@@ -15,7 +15,9 @@
 package org.easycassandra.persistence;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,11 +51,17 @@ public final class EasyCassandraManager {
      */
     private static AtomicReference<ColumnFamilyIds> referenceSuperColunms;
     
+    /**
+     * Describe the family columns Objects
+     */
+    private static Map<String, DescribeFamilyObject> familyObjects;
+    
     static {
     	conections=new ArrayList<>();
     	referenceSuperColunms=new AtomicReference<>();
     	ReadDocument readDocument=new ReadDocument();
     	referenceSuperColunms.set(readDocument.read());
+    	familyObjects=new HashMap<>();
     }
 
     /**
@@ -103,8 +111,26 @@ public final class EasyCassandraManager {
         return persistence;
     }
 
-    
-
+    /**
+     * Add object for CQL in objects
+     * @param classColumnFamily
+     * @return
+     */
+	public static boolean addFamilyObject(Class<?> classColumnFamily) {
+		DescribeFamilyObject describeFamilyObject=new DescribeFamilyObject(classColumnFamily);
+		familyObjects.put(describeFamilyObject.getColumnFamilyName().toLowerCase(), describeFamilyObject);
+		return true;
+	}
+    /**
+     * Return the DescribeFamilyObject
+     * @param string - name of Column Family
+     * @return 
+     */
+	 static DescribeFamilyObject getFamily(String string) {
+			
+		return familyObjects.get(string.toLowerCase());
+	}
+   
 
 
     /**
@@ -122,4 +148,15 @@ public final class EasyCassandraManager {
     
     private EasyCassandraManager(){
     }
+
+
+    
+    
+    
+    
+
+ 
+
+  
+
 }

@@ -15,11 +15,14 @@
 package org.easycassandra.persistence;
 
 import java.lang.reflect.Field;
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.cassandra.thrift.Column;
+import org.easycassandra.EasyCassandraException;
 import org.easycassandra.annotations.ColumnFamilyValue;
 import org.easycassandra.annotations.ColumnValue;
 import org.easycassandra.annotations.EmbeddedValue;
@@ -49,7 +52,7 @@ import org.easycassandra.util.ReflectionUtil;
 	         ColumnFamilyValue colunaFamilia = (ColumnFamilyValue) object.getAnnotation(ColumnFamilyValue.class);
 
 	         if (colunaFamilia != null) {
-	             return colunaFamilia.nome().equals("") ?object.getSimpleName():colunaFamilia.nome();
+	             return colunaFamilia.name().equals("") ?object.getSimpleName():colunaFamilia.name();
 	         }
 	         return object.getSimpleName();
 	     }
@@ -62,9 +65,10 @@ import org.easycassandra.util.ReflectionUtil;
 	     * @return The name inside annotations or the field's name
 	     */
 	    public static String getColumnName(Field field) {
-	        return field.getAnnotation(ColumnValue.class).nome().equals("") ?field.getName():field.getAnnotation(ColumnValue.class).nome();
+	        return field.getAnnotation(ColumnValue.class).name().equals("") ?field.getName():field.getAnnotation(ColumnValue.class).name();
 	        
 	    }
+	    
 	    
 
 	    /**
@@ -74,7 +78,7 @@ import org.easycassandra.util.ReflectionUtil;
 	     * @return The name inside annotations or the field's name
 	     */
 	    public static String getEnumeratedName(Field field) {
-	        return field.getAnnotation(EnumeratedValue.class).nome().equals("") ?field.getName():field.getAnnotation(EnumeratedValue.class).nome();
+	        return field.getAnnotation(EnumeratedValue.class).name().equals("") ?field.getName():field.getAnnotation(EnumeratedValue.class).name();
 	        
 	    }
 	    
@@ -193,7 +197,84 @@ import org.easycassandra.util.ReflectionUtil;
 	             return null;
 	         }
 	     }	
+
+	     /**
+	      * The method for set the new KeyValue in auto counting mode
+	      * @param object - the object
+	      * @param keyField - the key
+	      * @param colunaFamilia - the name of column
+	      * @param referenciaSuperColumns - reference of super column
+	      * @param keyStore - the name of key Store
+	      */
+	     public static void setAutoCoutingKeyValue(Object object, Field keyField, String colunaFamilia,AtomicReference<ColumnFamilyIds> referenciaSuperColumns,String keyStore) {
+	    	if(!contains(keyField.getType())){
+	    		throw new EasyCassandraException(" There are not supported auto counting  for this class, see: java.lang.String, java.lang.Long, java.lang.Integer, java.lang.Byte, java.lang.Short, java.math.BigInteger ");
+	    	}
+	    
+	    	Object  id = referenciaSuperColumns.get().getId(colunaFamilia,keyStore);
+			if(String.class.equals(keyField.getType())){
+			id=id.toString();	
+			}
+			else if(!BigInteger.class.equals(keyField.getType())){
+			id =ReflectionUtil.valueOf(keyField.getType(), id.toString());
+			}
+			ReflectionUtil.setMethod(object, keyField, id);
+		}
 	     
+	     /**
+	      * Verify is the key Class are supported
+	      * @param clazz - the class for verify
+	      * @return if Easy-Cassandra has supported or not
+	      */
+	     private static boolean contains(Class<?> clazz){
+	    	 Class<?>[] classes= {String.class,Long.class,Integer.class,Byte.class,Short.class,BigInteger.class};
+	    	 
+	    	 for(Class<?> claZZ:classes){
+	    		 if(clazz.equals(claZZ)){
+	    			 return true;
+	    		 }
+	    		 
+	    	 }
+	    	 
+	    	 return false;
+	     }
+	     
+	    /**
+	     * verify if this is key of the column
+	     * @param field
+	     * @return
+	     */
+	     public static boolean isKeyField(Field field){
+	    	return field.getAnnotation(KeyValue.class)!=null;
+	     }
+	     
+	     /**
+		     * verify if this is secundary index of the column
+		     * @param field
+		     * @return
+		     */
+		     public static boolean isSecundaryIndexField(Field field){
+		    	return field.getAnnotation(IndexValue.class)!=null;
+		     }
+		     
+	     
+	    /**
+	     * verify if this is a normal column
+	     * @param field
+	     * @return
+	     */
+	     public static boolean isNormalField(Field field){
+	    	return field.getAnnotation(ColumnValue.class)!=null;
+	     }
+	     
+	     /**
+		     * verify if this is a enum column
+		     * @param field
+		     * @return
+		     */
+		     public static boolean isEnumField(Field field){
+		    	return field.getAnnotation(EnumeratedValue.class)!=null;
+		     }
 	     
 	     
 	private ColumnUtil(){

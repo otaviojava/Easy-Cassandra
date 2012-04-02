@@ -14,7 +14,7 @@ public class Twitter {
 	    private String name;
 	    
 	  
-	    @ColumnValue(nome = "name")
+	    @ColumnValue(name = "name")
 	    private String twitte;
 	    
 	    

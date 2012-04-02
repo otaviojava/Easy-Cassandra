@@ -23,8 +23,18 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.apache.cassandra.thrift.Cassandra.Client;
-import org.apache.cassandra.thrift.*;
+import org.apache.cassandra.thrift.Column;
+import org.apache.cassandra.thrift.ColumnParent;
+import org.apache.cassandra.thrift.Compression;
+import org.apache.cassandra.thrift.ConsistencyLevel;
+import org.apache.cassandra.thrift.CqlResult;
+import org.apache.cassandra.thrift.CqlRow;
+import org.apache.cassandra.thrift.InvalidRequestException;
+import org.apache.cassandra.thrift.SchemaDisagreementException;
+import org.apache.cassandra.thrift.TimedOutException;
+import org.apache.cassandra.thrift.UnavailableException;
 import org.apache.thrift.TException;
 import org.easycassandra.ConsistencyLevelCQL;
 import org.easycassandra.EasyCassandraException;
@@ -59,7 +69,9 @@ public class Persistence extends BasePersistence {
         this.client = client;
         setReferenciaSuperColunas(referenciaSuperColunas);
         setKeyStore(keyStore);
-        setWriteDocumentThread(new Thread(new WriteDocument(getLockWrite(), referenciaSuperColunas)));
+        Thread thread=new Thread(new WriteDocument(referenciaSuperColunas));
+        thread.setDaemon(true);
+        thread.start();
     }
 
     protected List retriveObject(String condiction, String condictionValue,  Class persistenceClass, ConsistencyLevelCQL consistencyLevel, int limit,IndexColumnName...index) {
@@ -149,6 +161,7 @@ public class Persistence extends BasePersistence {
             	logger.log(Level.INFO, "Column Family created with success, now trying execute the command again");
             	return insert(object,consistencyLevel,autoEnable);
             }
+            logger.getLogger(Persistence.class.getName()).log(Level.SEVERE, null, exception);
             return false;
         }
         return true;
@@ -315,10 +328,12 @@ public class Persistence extends BasePersistence {
         for (CqlRow row : resultCQL.rows) {
             Map<String, ByteBuffer> mapColumn = new HashMap<>();
 
-            for (Column cl : row.getColumns()) {
-
-                mapColumn.put(EncodingUtil.byteToString(cl.name), cl.value);
-
+            for (Column column : row.getColumns()) {
+            	if(column.timestamp!=-1){
+            		mapColumn.put("TIMESTAMP", EncodingUtil.stringToByte(String.valueOf(column.timestamp)));
+            	}
+                mapColumn.put(EncodingUtil.byteToString(column.name), column.value);
+                
             }
             listMap.add(mapColumn);
         }
@@ -467,7 +482,7 @@ public class Persistence extends BasePersistence {
      * @param objectClass - Kind the Object
      * @param consistencyLevel - The consistency Level
      * @see #findByIndex(java.lang.Object, java.lang.Class, org.easycassandra.ConsistencyLevelCQL, int) 
-     * The default lenght list is 10.000
+     * The default length list is 10.000
      * @return list retrieve from the value index
      */
     public List findByIndex(Object index, Class objectClass, ConsistencyLevelCQL consistencyLevel) {

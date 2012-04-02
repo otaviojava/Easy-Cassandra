@@ -70,5 +70,55 @@ public class ColumnUtilTest {
 		Assert.assertNull(ColumnUtil.getIndexField(Address.class));
 	}
 
+	@Test
+	public void isKeyFieldTest(){
+		
+		Assert.assertTrue(ColumnUtil.isKeyField(Person.class.getDeclaredFields()[1]));		
+	}
+	
+	@Test
+	public void isKeyFieldTestFail(){
+		
+		Assert.assertFalse(ColumnUtil.isKeyField(Person.class.getDeclaredFields()[2]));		
+	}
+	
+	@Test
+	public void isNormalFieldTest(){
+		
+		Assert.assertTrue(ColumnUtil.isNormalField(Person.class.getDeclaredFields()[2]));		
+	}
+	
+	@Test
+	public void isNormalFieldTestFail(){
+		
+		Assert.assertFalse(ColumnUtil.isNormalField(Person.class.getDeclaredFields()[1]));		
+	}
+	
+	
+	@Test
+	public void isSecundaryIndexFieldTest(){
+		
+		Assert.assertTrue(ColumnUtil.isSecundaryIndexField(Person.class.getDeclaredFields()[2]));		
+	}
+	
+	@Test
+	public void isSecundaryIndexFieldTestFail(){
+		
+		Assert.assertFalse(ColumnUtil.isSecundaryIndexField(Person.class.getDeclaredFields()[1]));		
+	}
+	
+
+	@Test
+	public void isEnumFieldTest(){
+		
+		Assert.assertTrue(ColumnUtil.isEnumField(Person.class.getDeclaredFields()[4]));		
+	}
+	
+	@Test
+	public void isEnumFieldTestFail(){
+		
+		Assert.assertFalse(ColumnUtil.isEnumField(Person.class.getDeclaredFields()[1]));		
+	}
+	
 	
 }

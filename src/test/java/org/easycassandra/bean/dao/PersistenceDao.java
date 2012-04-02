@@ -7,7 +7,7 @@ import org.easycassandra.ConsistencyLevelCQL;
 import org.easycassandra.persistence.EasyCassandraManager;
 import org.easycassandra.persistence.Persistence;
 
-public abstract class AbstractDao<T> {
+public  class PersistenceDao<T> {
 	
 	   private Persistence persistence;
 	   
@@ -15,7 +15,7 @@ public abstract class AbstractDao<T> {
 	   private Class baseClass;
 
 	  
-	    public AbstractDao(Class<T> baseClass) {
+	    public PersistenceDao(Class<T> baseClass) {
 	    	this.baseClass=baseClass;
 	    	
 	        persistence = EasyCassandraManager.getPersistence("javabahia", "localhost", 9160);

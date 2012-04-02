@@ -31,6 +31,6 @@ public @interface ColumnFamilyValue {
      * if this no used the value is the field's name
      * @return the name of the Column Family 
      */
-     String nome() default "";
+     String name() default "";
     
 }

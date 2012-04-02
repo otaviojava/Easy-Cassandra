@@ -19,7 +19,7 @@ public class AnnotationsTest {
     @Test
     public void readColumnFamilyTest() {
         String value = "person";
-        Assert.assertEquals(value, Person.class.getAnnotation(ColumnFamilyValue.class).nome());
+        Assert.assertEquals(value, Person.class.getAnnotation(ColumnFamilyValue.class).name());
 
     }
 

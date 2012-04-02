@@ -19,7 +19,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,6 +28,7 @@ import org.easycassandra.annotations.ColumnValue;
 import org.easycassandra.annotations.EmbeddedValue;
 import org.easycassandra.annotations.EnumeratedValue;
 import org.easycassandra.annotations.KeyValue;
+import org.easycassandra.annotations.TimeStampValue;
 import org.easycassandra.annotations.read.EnumRead;
 import org.easycassandra.annotations.read.ReadInterface;
 import org.easycassandra.annotations.read.ReadManager;
@@ -74,16 +74,6 @@ class BasePersistence {
      */
     private AtomicReference<ColumnFamilyIds> referenciaSuperColunas;
     
-    /**
-     * field for lock or unlock for run 
-     * the Thread
-     */
-     private  static   AtomicBoolean documentDaemon= new AtomicBoolean(false);
-    
-    /**
-     * Thread for write the id in the Document
-     */
-    private Thread writeDocumentThread;
     
     /**
      * name of keyspace where the Client is
@@ -125,20 +115,15 @@ static{
 
          
             if (chave.auto() && autoEnable) {
-            	Long id = null;
-                id = referenciaSuperColunas.get().getId(colunaFamilia,keyStore);
-              
-                if(!documentDaemon.get()){
-                	documentDaemon.set(true);
-                	writeDocumentThread.start();
-                }
-              
-                ReflectionUtil.setMethod(object, keyField, id);
-              
-               
+            	ColumnUtil.setAutoCoutingKeyValue(object, keyField, colunaFamilia,referenciaSuperColunas,keyStore);
             } 
+            
+            Object keyValue=ReflectionUtil.getMethod(object, keyField);
+            if(keyValue==null){
+            	throw new EasyCassandraException("The key value must be not empty or null");
+            }
                 
-                return  getWriteManager().convert(ReflectionUtil.getMethod(object, keyField));
+                return  getWriteManager().convert(keyValue);
             
            
             
@@ -149,6 +134,8 @@ static{
 
         return null;
     }
+
+
     
 
 //columns Utils
@@ -242,6 +229,13 @@ static{
                 }
 
             }
+            else  if (field.getAnnotation(TimeStampValue.class) != null) {
+            	   ByteBuffer byteBuffer = listMap.get("TIMESTAMP");
+                   if (byteBuffer != null) {
+                   	
+                       ReflectionUtil.setMethod(bean, field, getReadManager().convert(byteBuffer, field.getType()));
+                   }
+            }
         }
     }
     
@@ -283,32 +277,11 @@ static{
         this.referenciaSuperColunas = referenciaSuperColunas;
     }
 
-    /**
-     * @param writeDocumentThread the writeDocumentThread to set
-     */
-    public void setWriteDocumentThread(Thread writeDocumentThread) {
-        this.writeDocumentThread = writeDocumentThread;
-    }
 
     /**
      * @param keyStore the keyStore to set
      */
     public void setKeyStore(String keyStore) {
         this.keyStore = keyStore;
-    }
-         
-    /**
-     * @param lockWrite the LOCK_WRITE to set
-     */
-    public static void setLockWrite(AtomicBoolean lockWrite) {
-        documentDaemon= lockWrite;
-    }
-
-     /**
-      *  the LOCK_WRITE to get
-      * @return the LockWrite
-      */
-    public static AtomicBoolean getLockWrite() {
-        return documentDaemon;
     }
 }

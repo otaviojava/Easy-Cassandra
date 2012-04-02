@@ -15,6 +15,7 @@
 package org.easycassandra.persistence;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -52,7 +53,7 @@ public class ColumnFamilyIds implements Serializable {
      * @param keyStore - 
      * @return -the id of the Column Family
      */
-    public Long getId(String nameColumnFamily,String keyStore) {
+    public BigInteger getId(String nameColumnFamily,String keyStore) {
         ColumnFamilyInformation cfr = new ColumnFamilyInformation(nameColumnFamily,keyStore);
 
         if (!columnFamilyInformation.contains(cfr)) {

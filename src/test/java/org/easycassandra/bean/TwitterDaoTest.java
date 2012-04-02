@@ -2,15 +2,14 @@ package org.easycassandra.bean;
 
 import java.nio.file.Paths;
 
-import org.easycassandra.bean.dao.TwitterDao;
+import org.easycassandra.bean.dao.PersistenceDao;
 import org.easycassandra.bean.model.Twitter;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class TwitterDaoTest {
 
-	private TwitterDao dao=new TwitterDao();
-	
+	private PersistenceDao<Twitter> dao = new PersistenceDao<>(Twitter.class);	
 	
 	@Test
 	public void insertTest(){
