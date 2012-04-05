@@ -118,7 +118,7 @@ public final class EasyCassandraManager {
      */
 	public static boolean addFamilyObject(Class<?> classColumnFamily) {
 		DescribeFamilyObject describeFamilyObject=new DescribeFamilyObject(classColumnFamily);
-		familyObjects.put(describeFamilyObject.getColumnFamilyName().toLowerCase(), describeFamilyObject);
+		familyObjects.put(describeFamilyObject.getClassFamily().getSimpleName(), describeFamilyObject);
 		return true;
 	}
     /**
@@ -128,7 +128,7 @@ public final class EasyCassandraManager {
      */
 	 static DescribeFamilyObject getFamily(String string) {
 			
-		return familyObjects.get(string.toLowerCase());
+		return familyObjects.get(string);
 	}
    
 

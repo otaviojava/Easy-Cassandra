@@ -20,13 +20,14 @@ public class EasyCassandraManagerTest {
 	}
 	
 	@Test
-	public void addColumnFamily(){
+	public void addColumnFamilyTest(){
 		
 		Assert.assertTrue(EasyCassandraManager.addFamilyObject(Person.class));
 	}
 	
 	@Test
-	public void getFamilyObject(){
+	public void getFamilyObjectTest(){
 		Assert.assertNotNull(EasyCassandraManager.getFamily("Person"));
 	}
+	
 }

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.easycassandra.ConsistencyLevelCQL;
 import org.easycassandra.persistence.EasyCassandraManager;
+import org.easycassandra.persistence.JCassandra;
 import org.easycassandra.persistence.Persistence;
 
 public  class PersistenceDao<T> {
@@ -86,5 +87,12 @@ public  class PersistenceDao<T> {
 	    public List<Map<String, String>> executeCql(String string) {
 			return persistence.executeCql(string);
 		}
+
+		public JCassandra createJCassandra(String cql) {
+			
+			return persistence.createJCassandra(cql);
+		}
+	    
+	    
 	    
 }

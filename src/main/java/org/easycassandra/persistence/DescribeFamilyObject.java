@@ -14,7 +14,11 @@ import java.util.Map;
 	 * Name of Column family
 	 */
 	private String columnFamilyName;
-	
+	/**
+	 * map when key is column in Cassandra database
+	 * and the value is the Object's name
+	 */
+	private Map<String, String> columnName;
 	
 	private  Class<?> classFamily; 
 	
@@ -33,9 +37,19 @@ import java.util.Map;
 			DescribeField describeField=new DescribeField();
 			describeField.setTypeField(field);
 			describeField.setName(field.getName());
-			fields.put(describeField.getName().toLowerCase(), describeField);
+			columnName.put(describeField.getRealCqlName(), describeField.getName());
+			fields.put(describeField.getName(), describeField);
 		}
 		
+	}
+	
+	/**
+	 * return the Object's name
+	 * @param column
+	 * @return
+	 */
+	public String getFieldsName(String column){
+		return columnName.get(column);
 	}
 	/**
 	 * key-value for DescribeField
@@ -44,9 +58,9 @@ import java.util.Map;
 	 */
 	public DescribeField getField(String value){
 		
-		return fields.get(value.toLowerCase());
+		return fields.get(value);
 	}
-	{fields=new HashMap<>();}
+	
 	
 	public String getColumnFamilyName() {
 		return columnFamilyName;
@@ -72,5 +86,5 @@ import java.util.Map;
 		this.fields = fields;
 	}
 	
-	
+	{fields=new HashMap<>(); columnName=new HashMap<>();}
 }

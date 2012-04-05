@@ -228,7 +228,7 @@ public class Persistence extends BasePersistence {
      * @return  the result executing query
      * @param the name of index
      */
-    private CqlResult executeCommandCQL(String cql,IndexColumnName...index) {
+     CqlResult executeCommandCQL(String cql,IndexColumnName...index) {
         try {
             return client.execute_cql_query(ByteBuffer.wrap(cql.getBytes()), Compression.NONE);
         } catch (InvalidRequestException | UnavailableException | TimedOutException | SchemaDisagreementException | TException exception) {
@@ -673,6 +673,24 @@ public class Persistence extends BasePersistence {
     	
     	
     }
+
+    /**
+     * Create 
+     * @param cql
+     * @return
+     */
+	public JCassandra createJCassandra(String cql) {
+		JCassandraImpl jCassandra=null;
+				try{
+						jCassandra=new JCassandraImpl(cql);
+						jCassandra.setPersistence(this);
+				}
+				catch (EasyCassandraException exception) {
+					Logger.getLogger(Persistence.class.getName()).log(Level.WARNING, "Column Family created with success, now trying execute the command again");
+				}
+		
+		return jCassandra;
+	}
 
 
 	

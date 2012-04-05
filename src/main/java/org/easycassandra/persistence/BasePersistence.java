@@ -222,10 +222,7 @@ static{
                 ByteBuffer bb = listMap.get(ColumnUtil.getEnumeratedName(field));
                 if (bb != null) {
 
-                    Object[] enums = field.getType().getEnumConstants();
-                    Integer index = (Integer) new EnumRead().getObjectByByte(bb);
-
-                    ReflectionUtil.setMethod(bean, field, enums[index]);
+                    ReflectionUtil.setMethod(bean, field, new EnumRead(field.getType()).getObjectByByte(bb));
                 }
 
             }

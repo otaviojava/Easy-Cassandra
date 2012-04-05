@@ -5,6 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.easycassandra.annotations.read.EnumRead;
+import org.easycassandra.persistence.DescribeField.TypeField;
+import org.easycassandra.util.EncodingUtil;
 
 
 /**
@@ -12,18 +18,51 @@ import java.util.StringTokenizer;
  * @author otavio
  *
  */
-public class JCassandraImpl {  
-    
+ class JCassandraImpl implements JCassandra {  
+   /**
+    * Class for run the queries
+    */
+	private Persistence persistence;
+	/**
+	 * 
+	 */
+	private StringBuilder cql;
 	
-   public boolean interpret(String expression) {
-	   InformationQuery informationCQL=new InformationQuery();
+	/**
+	 * information about the query 
+	 */
+	private InformationQuery informationCQL;
+	
+	/**
+	 * to start the position
+	 */
+	private int startPosition=0;
+	/**
+	 * maxResult in query
+	 */
+	private int maxResult=-1;
+	/**
+	 * set Persistence in Jcassandra Class	
+	 * @param persistence
+	 */
+	public void setPersistence(Persistence persistence) {
+		this.persistence=persistence;
+		
+	}
+	
+	/**
+	 * Constructor method
+	 * @param expression
+	 */
+	JCassandraImpl(String expression) {
+	   informationCQL=new InformationQuery();
+	   
        
        StringTokenizer expressionTokens =  new StringTokenizer(cqlQuery(expression));
        
        //in the future inner class
        Period period=Period.BEFORE_SELECT;
-       boolean needsComma=false;
-       boolean needsCondition=false;
+    
        
        //end of inner class
        while (expressionTokens.hasMoreTokens())
@@ -53,11 +92,10 @@ public class JCassandraImpl {
 			period=Period.WHERE;
 			break;
 		case ",":
-			if(!needsComma){
-			   throw new EasyCassandraException(" Syntax error: unnecessary comma ");
-			}
-			needsComma=false;
-		case "count":
+			isNeedComma();
+			break;
+		case "count(*)":
+			informationCQL.countMode=true;
 		break;
 		case "<":
 		case ">":
@@ -66,36 +104,68 @@ public class JCassandraImpl {
 		case ">=":
 		case "and":
 		case "or":
-		needsCondition=false;
+			informationCQL.needsCondition=false;
 		break;
 		default:
-			if(Period.SELECT.equals(period)){
-				if(needsComma){
-					  throw new EasyCassandraException(" Syntax error: need separate the attributes with ',' ");	
-				}
-				informationCQL.variable.add(actualExpression);
-				needsComma=true;
-			}
-			else if(Period.WHERE.equals(period)){
-				if(needsCondition){
-					  throw new EasyCassandraException(" Syntax error: need condiction in query ");	
-				}
-				
-				informationCQL.addVariable(actualExpression);
-				needsCondition=true;
-			}
+			defaultCondition(period, actualExpression);
 			
 			break;
 		}
-           //in the future methods trates excpecionts
-           if(Period.BEFORE_SELECT.equals(period)){
-        	   throw new EasyCassandraException(" Syntax error: the CQL must begin with the select command ");
-           }
+           isStartCorrect(period);
+        	
+           
+       
+         
         
        }
+       verifySyntax(informationCQL);
+       cql=new StringBuilder(expression);
+      
+       
+   }
 
+	private void isNeedComma() {
+		if(!informationCQL.needsComma){
+		   throw new EasyCassandraException(" Syntax error: unnecessary comma ");
+		}
+		informationCQL.needsComma=false;
+	}
 
-       if(!informationCQL.iscondition){
+	private void isStartCorrect(Period period) {
+		if(Period.BEFORE_SELECT.equals(period)){
+           	   throw new EasyCassandraException(" Syntax error: the CQL must begin with the select command ");
+              }
+	}
+/**
+ * Execute when enter in default option 
+ * @param period
+ * @param actualExpression
+ */
+	private void defaultCondition(Period period, String actualExpression) {
+		if(Period.SELECT.equals(period)){
+			if(informationCQL.needsComma){
+				  throw new EasyCassandraException(" Syntax error: need separate the attributes with ',' ");	
+			}
+			informationCQL.variable.add(actualExpression);
+			informationCQL.needsComma=true;
+		}
+		else if(Period.WHERE.equals(period)){
+			if(informationCQL.needsCondition){
+				  throw new EasyCassandraException(" Syntax error: need condiction in query ");	
+			}
+			
+			informationCQL.addVariable(actualExpression);
+			informationCQL.needsCondition=true;
+		}
+	}
+/**
+ * 
+ * @param informationCQL
+ */
+private void verifySyntax(final InformationQuery informationCQL) {
+	
+	
+	if(!informationCQL.iscondition){
     	   throw new EasyCassandraException(" Syntax error:  "); 
        }
        DescribeFamilyObject describeFamilyObject=EasyCassandraManager.getFamily(informationCQL.columnFamily);
@@ -109,12 +179,15 @@ public class JCassandraImpl {
        }
        
        for(String key:informationCQL.variabledMap.keySet()){
-      	 if(describeFamilyObject.getField(informationCQL.variabledMap.get(key).variableName)==null){
+    	   DescribeField describeField=describeFamilyObject.getField(informationCQL.variabledMap.get(key).variableName);
+      	 if(describeField==null){
       		 throw new EasyCassandraException(" Syntax error: unknown column "+informationCQL.variabledMap.get(key).variableName+" in  Column Family "+informationCQL.columnFamily); 
       	 }  
+      	 if(TypeField.INDEX.equals(describeField.getTypeField())||TypeField.INDEX.equals(describeField.getTypeField())){
+      		 throw new EasyCassandraException("The field "+describeField.getName()+" must be a key or index for be in condition"); 
+      	 }
          }
-       return true;
-   }
+}
    
    private String cqlQuery(String cql){
 	  
@@ -133,7 +206,7 @@ public class JCassandraImpl {
 			   firtTime++;
 		   }
 	  
-	   return newCql.toString().trim().toLowerCase();
+	   return newCql.toString().trim();
    }
   
    /**
@@ -142,11 +215,22 @@ public class JCassandraImpl {
     *
     */
    class InformationQuery{
-	   /**
+	
+
+	/**
 	    * Name of the column Family
 	    */
 	private   String columnFamily;
+	
+	/**
+	 * all object checked
+	 */
 	private   boolean allObject;
+	/**
+	 * using count in select
+	 */
+	private boolean countMode;
+	
 	   /**
 	    * name of the variables
 	    */
@@ -155,6 +239,15 @@ public class JCassandraImpl {
 	    * verify if is condition or variable
 	    */
 	private   boolean iscondition=true;
+	/**
+	 * need the character ','
+	 */
+	private   boolean needsComma=false;
+	/**
+	 * need the condition
+	 */
+    private  boolean needsCondition=false;
+	
 	   /**
 	    * 
 	    */
@@ -206,4 +299,147 @@ public class JCassandraImpl {
     *
     */
    enum Period{BEFORE_SELECT,SELECT,FROM,AFTER_FROM,WHERE}
+   
+   
+@Override
+public List<?> getResultList() {
+	DescribeFamilyObject describeFamilyObject= EasyCassandraManager.getFamily(informationCQL.columnFamily);
+	String cqlNew = replaceToCQLName(describeFamilyObject);
+	List<?> list=null;
+	if(informationCQL.countMode){
+		List<Long> longList=new ArrayList<>();
+		longList.add(persistence.executeCommandCQL(cqlNew.toString()).rows.get(0).getColumns().get(0).value.asLongBuffer().get());
+		list=longList;
+	}
+	else if(informationCQL.allObject){
+		
+        list=executeAll(describeFamilyObject, cqlNew);
+	}else{
+		list=executeSomeFields(describeFamilyObject, cqlNew);
+	}
+	
+	runStartPosition(list);
+	runMaxResult(list);
+	 return list;
+}
+/**
+ * run the max resulst
+ * @param list
+ */
+private void runMaxResult(List<?> list) {
+	if(maxResult==-1){
+		return;	
+	}
+	while(list.size()>maxResult){
+		list.remove(list.size()-1);
+	}
+}
+/**
+ * run the start position
+ * @param list
+ */
+private void runStartPosition(List<?> list) {
+	for(int index=0;index<startPosition;index++){
+		if(index>list.size()){
+			break;
+		}
+		list.remove(0);
+	}
+}
+/**
+ * When the query has only fields in the objects
+ * @param describeFamilyObject
+ * @param cql
+ * @return
+ */
+private List<?> executeSomeFields(DescribeFamilyObject describeFamilyObject,
+		String cql) {
+	List<Map<String, Object>> listCql= new ArrayList<>();
+	for(Map<String, String> resultSet:persistence.executeCql(cql)){
+		Map<String, Object> resulMap=new HashMap<>();
+		for(String key: resultSet.keySet()){
+			
+			
+			DescribeField describeField= describeFamilyObject.getField(describeFamilyObject.getFieldsName(key));
+			if(describeField.getClassField().isEnum()){
+				 
+                 resulMap.put(describeField.getName(),new EnumRead(describeField.getClassField()).getObjectByByte(EncodingUtil.stringToByte(resultSet.get(key))));
+			}else{
+			resulMap.put(describeField.getName(), Persistence.getReadManager().convert(EncodingUtil.stringToByte(resultSet.get(key)), describeField.getClassField()));
+			}
+		}
+		listCql.add(resulMap);
+	}
+	return listCql;
+}
+
+/**
+ * when the query is for all fields in object
+ * @param describeFamilyObject
+ * @param cql
+ * @return
+ */
+private List<?> executeAll(DescribeFamilyObject describeFamilyObject, String cql) {
+	try {
+		return persistence.listbyQuery(persistence.executeCommandCQL(cql),describeFamilyObject.getClassFamily());
+	} catch (InstantiationException | IllegalAccessException exception) {
+	    Logger.getLogger(Persistence.class.getName()).log(Level.SEVERE, null, exception);
+	}
+	return new ArrayList<>();
+}
+
+
+@Override
+public Object getSingleResult() {
+	List<?> list=getResultList();
+	if(list.size()>0){
+	return list.get(0);
+	}
+	return null;
+}
+/**
+ * replace the objects name to column's name
+ * @param describeFamilyObject
+ * @return cql with column's name
+ */
+private String replaceToCQLName(DescribeFamilyObject describeFamilyObject) {
+	String aux=cql.toString().replace(describeFamilyObject.getClassFamily().getSimpleName(), describeFamilyObject.getColumnFamilyName());
+	  for(String column:informationCQL.variable){
+	    	 if(aux.contains(column)){
+	    		 aux=aux.replace(column, describeFamilyObject.getField(column).getRealCqlName()); 
+	    	 }  
+	       }
+	       
+	       for(String key:informationCQL.variabledMap.keySet()){
+	    	   DescribeField describeField=describeFamilyObject.getField(informationCQL.variabledMap.get(key).variableName);
+	      	 if(aux.contains(key)){
+	      		 aux=aux.replace(key, describeField.getRealCqlName()); 
+	      	 }  
+	       }
+	return aux;
+}
+
+@Override
+public void setFirstResult(int startPosition) {
+isNegativeValue(startPosition);
+this.startPosition=startPosition;
+}
+/**
+ * Verify is the value is negative
+ * @param startPosition
+ */
+private void isNegativeValue(int startPosition) {
+	if(startPosition<0){
+		throw new EasyCassandraException("Illegal Argument: The argument must be not a negative value");
+	}
+}
+
+@Override
+public void setMaxResults(int maxResult) {
+	isNegativeValue(maxResult);
+	this.maxResult=maxResult;
+	
+}
+
+
 }

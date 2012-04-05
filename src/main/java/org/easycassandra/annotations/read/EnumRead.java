@@ -15,6 +15,7 @@
 package org.easycassandra.annotations.read;
 
 import java.nio.ByteBuffer;
+
 import org.easycassandra.util.EncodingUtil;
 
 /**
@@ -22,12 +23,22 @@ import org.easycassandra.util.EncodingUtil;
  * @author otavio
  */
 public class EnumRead implements ReadInterface {
-    
+	private Object[] enums;
+	public EnumRead(Class<?> enumereted){
+		this.enums = enumereted.getEnumConstants();
+		
+	}
    @Override
     public Object getObjectByByte(ByteBuffer buffer) {
     
             String integerString = EncodingUtil.byteToString(buffer);
-            return Integer.parseInt(integerString);
+            try{
+             	
+             	return enums[Integer.parseInt(integerString)];
+            }catch(NumberFormatException exception){
+            	
+            }
+            return enums[0];
         
     }  
     

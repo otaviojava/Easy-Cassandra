@@ -126,6 +126,8 @@ public class PersonDAOTest {
 	    public void executeCqlTest(){
 	    	Assert.assertNotNull(dao.executeCql("select * from person"));
 	    }
+	    
+	 
 	    private Address getAddress() {
 	        Address address = new Address();
 	        address.setCep("40243-543");
@@ -144,9 +146,7 @@ public class PersonDAOTest {
 	        return person;
 
 	    }
-	    
-	    
-	    
+	
 	    
     
     

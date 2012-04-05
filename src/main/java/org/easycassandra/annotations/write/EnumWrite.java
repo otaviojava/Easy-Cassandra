@@ -15,6 +15,7 @@
 package org.easycassandra.annotations.write;
 
 import java.nio.ByteBuffer;
+
 import org.easycassandra.util.EncodingUtil;
 
 /**
