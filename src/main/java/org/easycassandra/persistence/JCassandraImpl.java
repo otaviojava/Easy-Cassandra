@@ -308,7 +308,7 @@ public List<?> getResultList() {
 	List<?> list=null;
 	if(informationCQL.countMode){
 		List<Long> longList=new ArrayList<>();
-		longList.add(persistence.executeCommandCQL(cqlNew.toString()).rows.get(0).getColumns().get(0).value.asLongBuffer().get());
+		longList.add(persistence.executeCommandCQL(cqlNew).rows.get(0).getColumns().get(0).value.asLongBuffer().get());
 		list=longList;
 	}
 	else if(informationCQL.allObject){
