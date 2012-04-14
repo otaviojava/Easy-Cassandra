@@ -33,6 +33,13 @@
     <programming-language>Java</programming-language>
     <category rdf:resource="http://projects.apache.org/category/database" />
     <release>
+        
+        <Version>
+            <name>Easy-Cassandra</name>
+            <created>2012-04-14</created>
+            <revision>1.0.9-SNAPSHOT</revision>
+      </Version>
+        
          <Version>
         <name>Easy-Cassandra</name>
         <created>2012-03-25</created>
