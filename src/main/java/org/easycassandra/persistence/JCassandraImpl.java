@@ -1,16 +1,43 @@
+/*
+ * Copyright 2012 Otávio Gonçalves de Santana (otaviojava)
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package org.easycassandra.persistence;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.persistence.FlushModeType;
+import javax.persistence.LockModeType;
+import javax.persistence.Parameter;
+import javax.persistence.Query;
+import javax.persistence.TemporalType;
+
+import org.easycassandra.EasyCassandraException;
 import org.easycassandra.annotations.read.EnumRead;
+import org.easycassandra.annotations.read.UTF8Read;
 import org.easycassandra.persistence.DescribeField.TypeField;
 import org.easycassandra.util.EncodingUtil;
+import org.easycassandra.util.ReflectionUtil;
 
 
 /**
@@ -19,7 +46,8 @@ import org.easycassandra.util.EncodingUtil;
  *
  */
  class JCassandraImpl implements JCassandra {  
-   /**
+   private static final String NOT_SUPPORTED_YET = "Not supported yet.";
+/**
     * Class for run the queries
     */
 	private Persistence persistence;
@@ -77,8 +105,12 @@ import org.easycassandra.util.EncodingUtil;
            switch (actualExpression) {
            
          
-           
+           case "update":	
+   			period=Period.SELECT;
+   			informationCQL.isUpdate=true;
+   			break; 
 		case "select":
+		case "delete":
 			period=Period.SELECT;
 			break;
 		case "*":
@@ -97,6 +129,7 @@ import org.easycassandra.util.EncodingUtil;
 		case "count(*)":
 			informationCQL.countMode=true;
 		break;
+		case "set":
 		case "<":
 		case ">":
 		case "=":
@@ -113,14 +146,16 @@ import org.easycassandra.util.EncodingUtil;
 		}
            isStartCorrect(period);
         	
-           
+       	if(Period.SELECT.equals(period)&&informationCQL.isUpdate){
+			period=Period.FROM;
+		} 
        
          
         
        }
        verifySyntax(informationCQL);
        cql=new StringBuilder(expression);
-      
+       informationCQL.toVariableNameKey();
        
    }
 
@@ -131,10 +166,11 @@ import org.easycassandra.util.EncodingUtil;
 		informationCQL.needsComma=false;
 	}
 
-	private void isStartCorrect(Period period) {
+	private void isStartCorrect( Period period) {
 		if(Period.BEFORE_SELECT.equals(period)){
            	   throw new EasyCassandraException(" Syntax error: the CQL must begin with the select command ");
               }
+	
 	}
 /**
  * Execute when enter in default option 
@@ -148,6 +184,11 @@ import org.easycassandra.util.EncodingUtil;
 			}
 			informationCQL.variable.add(actualExpression);
 			informationCQL.needsComma=true;
+		}
+		else if(Period.AFTER_FROM.equals(period)&&informationCQL.isUpdate){
+			
+			informationCQL.addSet(actualExpression);
+			
 		}
 		else if(Period.WHERE.equals(period)){
 			if(informationCQL.needsCondition){
@@ -179,14 +220,21 @@ private void verifySyntax(final InformationQuery informationCQL) {
        }
        
        for(String key:informationCQL.variabledMap.keySet()){
-    	   DescribeField describeField=describeFamilyObject.getField(informationCQL.variabledMap.get(key).variableName);
+    	   DescribeField describeField;
+    	   if(informationCQL.isUpdate){
+    		   describeField=describeFamilyObject.getField(informationCQL.variabledMap.get(key).getName().replace(InformationQuery.UPDATE_STRING, ""));
+    	   }else{
+    		   describeField=describeFamilyObject.getField(informationCQL.variabledMap.get(key).getName());
+    	   }
       	 if(describeField==null){
-      		 throw new EasyCassandraException(" Syntax error: unknown column "+informationCQL.variabledMap.get(key).variableName+" in  Column Family "+informationCQL.columnFamily); 
+      		 throw new EasyCassandraException(" Syntax error: unknown column "+informationCQL.variabledMap.get(key).getName()+" in  Column Family "+informationCQL.columnFamily); 
       	 }  
-      	 if(TypeField.INDEX.equals(describeField.getTypeField())||TypeField.INDEX.equals(describeField.getTypeField())){
+      	 if(!TypeField.KEY.equals(describeField.getTypeField())&&!TypeField.INDEX.equals(describeField.getTypeField())){
       		 throw new EasyCassandraException("The field "+describeField.getName()+" must be a key or index for be in condition"); 
       	 }
+      	 
          }
+      
 }
    
    private String cqlQuery(String cql){
@@ -217,6 +265,8 @@ private void verifySyntax(final InformationQuery informationCQL) {
    class InformationQuery{
 	
 
+	private static final String UPDATE_STRING = "UPDATE";
+
 	/**
 	    * Name of the column Family
 	    */
@@ -230,6 +280,10 @@ private void verifySyntax(final InformationQuery informationCQL) {
 	 * using count in select
 	 */
 	private boolean countMode;
+	/**
+	 * is update
+	 */
+	private boolean isUpdate;
 	
 	   /**
 	    * name of the variables
@@ -239,6 +293,7 @@ private void verifySyntax(final InformationQuery informationCQL) {
 	    * verify if is condition or variable
 	    */
 	private   boolean iscondition=true;
+	
 	/**
 	 * need the character ','
 	 */
@@ -257,42 +312,86 @@ private void verifySyntax(final InformationQuery informationCQL) {
 	    * The key is name of the fields
 	    */
 	   private Map<String,VariableConditions> variabledMap;
-	 
-	 void addVariable(String value){
+	   /**
+	    * map of the where conditions
+	    */
+	   private Map<String,VariableConditions> whereMap;
+	
+	   
+	   void addSet(String value){
 		 if(iscondition){
-			 variableConditions.variableName=value;
+		
+				 variableConditions.setName(value+UPDATE_STRING);
+		
+		 
+			 
 		 }else{
-			 variableConditions.condition=value;
-			 variabledMap.put(variableConditions.variableName, variableConditions);
+			 variableConditions.setCondition(value);
+			 variabledMap.put(variableConditions.getName(), variableConditions);
 			 variableConditions=new VariableConditions();
 		 }
+		 
+		 iscondition=!iscondition;
+		 }
+		 void addVariable(String value){
+			 if(iscondition){
+				 
+				 variableConditions.setName(value);
+				 
+				
+				 
+			 }else{
+				 variableConditions.setCondition(value);
+				 variabledMap.put(variableConditions.getName(), variableConditions);
+				 variableConditions=new VariableConditions();
+			 }
 		 
 		
 		 iscondition=!iscondition;
 	 }
-	   {variable=new ArrayList<>(); variabledMap=new HashMap<>();variableConditions=new VariableConditions();}
+	 
+	   /**
+	    * modify the map to be the variable name a key if it contains the first character equals 
+	    */
+	   public void toVariableNameKey(){
+		   DescribeFamilyObject describeFamilyObject=EasyCassandraManager.getFamily(informationCQL.columnFamily);
+		   int position=0;
+		   whereMap=new HashMap<>();
+		   for(String key:variabledMap.keySet()){
+			   String aux=key;
+			   VariableConditions value=variabledMap.get(key);
+			   if(value.getCondition()!=null&&value.getCondition().length()>0&&value.getCondition().charAt(0)==':'){
+				   if(isUpdate){
+					   value.setName(value.getName().replace(UPDATE_STRING, ""));
+					   aux=value.getName();
+				   }
+				   DescribeField describeField=describeFamilyObject.getField(aux);
+				   value.setParameterType(describeField.getClassField());
+				   value.setPosition(position++);
+				   value.setCondition(value.getCondition().trim().substring(1));
+				  
+				   whereMap.put(value.getCondition(), value); 
+			   }
+		   }
+		   
+	   }
+	   {variable=new ArrayList<>(); variabledMap=new HashMap<>();variableConditions=new VariableConditions();whereMap=new HashMap<>();}
+
+	   /**
+	    * Run the map and return the key
+	    * @param variable2
+	    */
+	   public String getKey(VariableConditions variable) {
+		
+		   for(String key: variabledMap.keySet()){
+			   if(variabledMap.get(key).equals(variable)){
+				   return key;
+			   }
+		   }
+		return "";
+	}
    }
    
-   /**
-    * 
-    * @author otavio
-    *
-    */
-   class VariableConditions{
-	   /**
-	    * name of the variable
-	    */
-	  private   String variableName;
-	   /**
-	    * Condition
-	    */
-	  private String condition;
-	   
-
-	   
-	   
-	   
-   }
    /**
     * This enum inform period that is a query
     * @author otavio
@@ -352,25 +451,64 @@ private void runStartPosition(List<?> list) {
  * @param cql
  * @return
  */
-private List<?> executeSomeFields(DescribeFamilyObject describeFamilyObject,
-		String cql) {
+private List<?> executeSomeFields(DescribeFamilyObject describeFamilyObject,String cql) {
 	List<Map<String, Object>> listCql= new ArrayList<>();
+
 	for(Map<String, String> resultSet:persistence.executeCql(cql)){
 		Map<String, Object> resulMap=new HashMap<>();
+		List<String> used=new ArrayList<>();
 		for(String key: resultSet.keySet()){
-			
-			
+			if(used.contains(key)){
+				continue;
+			}
+			runSubObject(describeFamilyObject, resultSet, resulMap, used);
+			if(used.contains(key)){
+				continue;
+			}
 			DescribeField describeField= describeFamilyObject.getField(describeFamilyObject.getFieldsName(key));
 			if(describeField.getClassField().isEnum()){
 				 
                  resulMap.put(describeField.getName(),new EnumRead(describeField.getClassField()).getObjectByByte(EncodingUtil.stringToByte(resultSet.get(key))));
-			}else{
+			}
+			
+			
+			else{
+				if(resultSet.get(key)==null){
+					continue;
+				}
 			resulMap.put(describeField.getName(), Persistence.getReadManager().convert(EncodingUtil.stringToByte(resultSet.get(key)), describeField.getClassField()));
 			}
 		}
 		listCql.add(resulMap);
 	}
 	return listCql;
+}
+
+private void runSubObject(DescribeFamilyObject describeFamilyObject,
+		Map<String, String> resultSet, Map<String, Object> resulMap,
+		List<String> used) {
+	for(String teste:informationCQL.variable){
+		DescribeField describeField= describeFamilyObject.getField(teste);
+		if(describeField.hasChildren()){
+			Object bean=ReflectionUtil.newInstance(describeField.getClassField());
+			if(bean==null){
+				continue;
+			}
+			for(DescribeField suDescribeField:describeField.getChildren()){
+				if(resultSet.get(suDescribeField.getRealCqlName())==null){
+					used.add(suDescribeField.getRealCqlName());
+					continue;
+				}
+				
+				ReflectionUtil.setMethod(bean, ReflectionUtil.getField(suDescribeField.getName().substring(suDescribeField.getName().lastIndexOf(".")+1),describeField.getClassField() ), Persistence.getReadManager().convert(EncodingUtil.stringToByte(resultSet.get(suDescribeField.getRealCqlName())), suDescribeField.getClassField()));
+					
+				used.add(suDescribeField.getRealCqlName());
+			}
+			
+			resulMap.put(teste,bean);
+		}
+		
+	}
 }
 
 /**
@@ -393,9 +531,32 @@ private List<?> executeAll(DescribeFamilyObject describeFamilyObject, String cql
 public Object getSingleResult() {
 	List<?> list=getResultList();
 	if(list.size()>0){
+	if(list.get(0) instanceof HashMap){
+		return hashMapContition(list);
+	}
 	return list.get(0);
 	}
 	return null;
+}
+
+/**
+ * When the single result is a hasmap. This method tranform either array of the objects or a object
+ * @param list
+ * @return
+ */
+@SuppressWarnings({ "rawtypes", "unchecked" })
+private Object hashMapContition(List<?> list) {
+	Map map=(Map) list.get(0);
+	List objects=new ArrayList<>();
+	for(Object object:map.keySet()){
+		if(map.get(object)!=null){
+			objects.add(map.get(object));
+		}
+	}
+	if(objects.size()==1){
+		return objects.get(0);
+	}
+	return objects.toArray();
 }
 /**
  * replace the objects name to column's name
@@ -403,26 +564,35 @@ public Object getSingleResult() {
  * @return cql with column's name
  */
 private String replaceToCQLName(DescribeFamilyObject describeFamilyObject) {
-	String aux=cql.toString().replace(describeFamilyObject.getClassFamily().getSimpleName(), describeFamilyObject.getColumnFamilyName());
+	String newCQL=cql.toString().replace(describeFamilyObject.getClassFamily().getSimpleName(), describeFamilyObject.getColumnFamilyName());
 	  for(String column:informationCQL.variable){
-	    	 if(aux.contains(column)){
-	    		 aux=aux.replace(column, describeFamilyObject.getField(column).getRealCqlName()); 
+	    	 if(newCQL.contains(column)){
+	    		 newCQL=newCQL.replace(column, describeFamilyObject.getField(column).getRealCqlName()); 
 	    	 }  
 	       }
 	       
 	       for(String key:informationCQL.variabledMap.keySet()){
-	    	   DescribeField describeField=describeFamilyObject.getField(informationCQL.variabledMap.get(key).variableName);
-	      	 if(aux.contains(key)){
-	      		 aux=aux.replace(key, describeField.getRealCqlName()); 
+	    	   	    	   
+	    	   DescribeField describeField=describeFamilyObject.getField(informationCQL.variabledMap.get(key).getName());
+	    	 if(informationCQL.isUpdate){
+	    		 String valueAux=key.replace(InformationQuery.UPDATE_STRING, "");
+	    		 if(newCQL.contains(valueAux)){
+		      		 newCQL=newCQL.replace(valueAux, describeField.getRealCqlName()); 
+		      	 }
+	    	 }else{
+	      	 if(newCQL.contains(key)){
+	      		 newCQL=newCQL.replace(key, describeField.getRealCqlName()); 
 	      	 }  
+	    	 }
 	       }
-	return aux;
+	return newCQL;
 }
 
 @Override
-public void setFirstResult(int startPosition) {
+public Query setFirstResult(int startPosition) {
 isNegativeValue(startPosition);
 this.startPosition=startPosition;
+return this;
 }
 /**
  * Verify is the value is negative
@@ -430,16 +600,245 @@ this.startPosition=startPosition;
  */
 private void isNegativeValue(int startPosition) {
 	if(startPosition<0){
-		throw new EasyCassandraException("Illegal Argument: The argument must be not a negative value");
+		throw new IllegalArgumentException("Illegal Argument: The argument must be not a negative value");
 	}
 }
 
 @Override
-public void setMaxResults(int maxResult) {
+public Query setMaxResults(int maxResult) {
 	isNegativeValue(maxResult);
 	this.maxResult=maxResult;
-	
+	return this;
 }
 
+@Override
+public Query setParameter(String name, Object value) {
+	String cqlAux=cql.toString();
+	VariableConditions variable=informationCQL.whereMap.get(name);
+	  verifyErroParameter(value, variable);
+		
+			
+			if(informationCQL.getKey(variable).contains(InformationQuery.UPDATE_STRING)){
+				cqlAux=cql.toString().replace(":"+name, "'"+EncodingUtil.byteToString(Persistence.getWriteManager().convert(value))+"'");
+			
+		
+		}else{
+		String valor=new UTF8Read().toUTF8(EncodingUtil.byteToString(Persistence.getWriteManager().convert(value)));
+		cqlAux=cql.toString().replace(":"+name, "'"+valor+"'");
+		
+		
+		
+		}
+			cql=new StringBuilder(cqlAux);
+			return this;
+}
+/**
+ * Verify if exist error in parameter
+ * @param value
+ * @param variable
+ */
+private void verifyErroParameter(Object value, VariableConditions variable) {
+	if(variable==null){
+		  throw new IllegalArgumentException(" unknown parameter in query "+cql.toString()); 
+	  }
+	  
+
+		if(!value.getClass().equals(EasyCassandraManager.getFamily(informationCQL.columnFamily).getField(variable.getName()).getClassField())){
+			throw new IllegalArgumentException("You have attempted to set a value of type class "+value.getClass().getName()+"  with expected type of class "+EasyCassandraManager.getFamily(informationCQL.columnFamily).getField(variable.getName()).getClassField().getName());		
+		}
+}
+
+@Override
+public int getMaxResults() {
+	return maxResult;
+}
+
+@Override
+public int getFirstResult() {
+	return startPosition;
+}
+
+@Override
+public Set<Parameter<?>> getParameters() {
+	
+	Set<Parameter<?>> set=new HashSet<>();
+	
+	for(String key: informationCQL.whereMap.keySet()){
+	set.add(informationCQL.whereMap.get(key));	
+	}
+	
+	return set;
+}
+
+@Override
+public Parameter<?> getParameter(int position) {
+	isNegativeValue(position);
+	for(Parameter parameter:getParameters()){
+		if(parameter.getPosition().equals(Integer.valueOf(position))){
+			return parameter;
+		}
+	}
+	throw new IllegalArgumentException("unknown parameter to position "+position);
+}
+
+@Override
+public Parameter<?> getParameter(String name) {
+	for(Parameter parameter:getParameters()){
+		if(((VariableConditions)parameter).getCondition().equals(name)){
+			return parameter;
+		}
+	}
+	throw new IllegalArgumentException("unknown parameter to name "+name);
+}
+
+@Override
+public int executeUpdate() {
+	DescribeFamilyObject describeFamilyObject= EasyCassandraManager.getFamily(informationCQL.columnFamily);
+	
+	for(String key:informationCQL.variabledMap.keySet()){
+		if(key.contains(InformationQuery.UPDATE_STRING)){
+			continue;
+		}
+		
+		if(!TypeField.KEY.equals(describeFamilyObject.getField(informationCQL.variabledMap.get(key).getName()).getTypeField())){
+			throw new EasyCassandraException("In  update's command in where condition must be only key");
+		}
+		
+	}
+	
+	String cqlNew = replaceToCQLName(describeFamilyObject);
+	return persistence.executeUpdateCql(cqlNew)?1:0;
+}
+
+@Override
+public Query setHint(String hintName, Object value) {
+	// TODO Auto-generated method stub
+	  throw new UnsupportedOperationException(NOT_SUPPORTED_YET);
+}
+
+@Override
+public Map<String, Object> getHints() {
+	// TODO Auto-generated method stub
+	  throw new UnsupportedOperationException(NOT_SUPPORTED_YET);
+}
+
+@Override
+public <T> Query setParameter(Parameter<T> param, T value) {
+	// TODO Auto-generated method stub
+	  throw new UnsupportedOperationException(NOT_SUPPORTED_YET);
+}
+
+@Override
+public Query setParameter(Parameter<Calendar> param, Calendar value,
+		TemporalType temporalType) {
+	// TODO Auto-generated method stub
+	  throw new UnsupportedOperationException(NOT_SUPPORTED_YET);
+}
+
+@Override
+public Query setParameter(Parameter<Date> param, Date value,
+		TemporalType temporalType) {
+	// TODO Auto-generated method stub
+	  throw new UnsupportedOperationException(NOT_SUPPORTED_YET);
+}
+
+@Override
+public Query setParameter(String name, Calendar value, TemporalType temporalType) {
+	// TODO Auto-generated method stub
+	  throw new UnsupportedOperationException(NOT_SUPPORTED_YET);
+}
+
+@Override
+public Query setParameter(String name, Date value, TemporalType temporalType) {
+	// TODO Auto-generated method stub
+	  throw new UnsupportedOperationException(NOT_SUPPORTED_YET);
+}
+
+@Override
+public Query setParameter(int position, Object value) {
+	// TODO Auto-generated method stub
+	  throw new UnsupportedOperationException(NOT_SUPPORTED_YET);
+}
+
+
+
+@Override
+public <T> Parameter<T> getParameter(String name, Class<T> type) {
+	// TODO Auto-generated method stub
+	  throw new UnsupportedOperationException(NOT_SUPPORTED_YET);
+}
+
+@Override
+public <T> Parameter<T> getParameter(int position, Class<T> type) {
+	// TODO Auto-generated method stub
+	  throw new UnsupportedOperationException(NOT_SUPPORTED_YET);
+}
+
+@Override
+public boolean isBound(Parameter<?> param) {
+	// TODO Auto-generated method stub
+	  throw new UnsupportedOperationException(NOT_SUPPORTED_YET);
+}
+
+@Override
+public <T> T getParameterValue(Parameter<T> param) {
+	// TODO Auto-generated method stub
+	  throw new UnsupportedOperationException(NOT_SUPPORTED_YET);
+}
+
+@Override
+public Object getParameterValue(String name) {
+	// TODO Auto-generated method stub
+	  throw new UnsupportedOperationException(NOT_SUPPORTED_YET);
+}
+
+@Override
+public Object getParameterValue(int position) {
+	// TODO Auto-generated method stub
+	  throw new UnsupportedOperationException(NOT_SUPPORTED_YET);
+}
+
+@Override
+public Query setFlushMode(FlushModeType flushMode) {
+	// TODO Auto-generated method stub
+	  throw new UnsupportedOperationException(NOT_SUPPORTED_YET);
+}
+
+@Override
+public FlushModeType getFlushMode() {
+	// TODO Auto-generated method stub
+	  throw new UnsupportedOperationException(NOT_SUPPORTED_YET);
+}
+
+@Override
+public Query setLockMode(LockModeType lockMode) {
+	// TODO Auto-generated method stub
+	  throw new UnsupportedOperationException(NOT_SUPPORTED_YET);
+}
+
+@Override
+public LockModeType getLockMode() {
+	// TODO Auto-generated method stub
+	  throw new UnsupportedOperationException(NOT_SUPPORTED_YET);
+}
+
+@Override
+public <T> T unwrap(Class<T> cls) {
+	// TODO Auto-generated method stub
+	  throw new UnsupportedOperationException(NOT_SUPPORTED_YET);
+}
+
+@Override
+public Query setParameter(int position, Calendar value,
+		TemporalType temporalType) {
+	// TODO Auto-generated method stub
+	  throw new UnsupportedOperationException(NOT_SUPPORTED_YET);
+}
+
+@Override
+public Query setParameter(int position, Date value, TemporalType temporalType) {
+	// TODO Auto-generated method stub
+	  throw new UnsupportedOperationException(NOT_SUPPORTED_YET);
+}
 
 }

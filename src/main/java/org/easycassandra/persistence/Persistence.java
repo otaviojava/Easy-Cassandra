@@ -675,7 +675,7 @@ public class Persistence extends BasePersistence {
     }
 
     /**
-     * Create 
+     * Create the JCassandra
      * @param cql
      * @return
      */

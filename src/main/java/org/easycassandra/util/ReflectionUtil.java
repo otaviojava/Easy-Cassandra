@@ -113,12 +113,40 @@ public final class ReflectionUtil {
 		return valueOf(classValue, value, value.getClass());
 	}
     
+	/**
+	 * Create new instance of this class
+	 * @param clazz
+	 * @return the new instance that class
+	 */
+	public static Object newInstance(Class<?> clazz){
+		try {
+			return clazz.newInstance();
+		} catch (InstantiationException | IllegalAccessException exception) {
+			Logger.getLogger(ReflectionUtil.class.getName()).log(Level.SEVERE, null, exception);
+            return null;
+		}
+	}
+	
+	/**
+	 * find the Field from the name field
+	 * @param string
+	 * @return the field from the name
+	 */
+	public static Field getField(String string,Class<?> clazz) {
+		for(Field field:clazz.getDeclaredFields()){
+			if(field.getName().equals(string)){
+				return field;
+			}
+		}
+		return null;
+	}
 
     /**
      * Singleton
      */
     private ReflectionUtil(){
     }
+
 
 
     

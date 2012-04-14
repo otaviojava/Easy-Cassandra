@@ -1,3 +1,17 @@
+/*
+ * Copyright 2012 Otávio Gonçalves de Santana (otaviojava)
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package org.easycassandra.persistence;
 
 import java.lang.reflect.Field;
@@ -34,13 +48,40 @@ import java.util.Map;
 			if("serialVersionUID".equals(field.getName())){
 				continue;
 			}
-			DescribeField describeField=new DescribeField();
-			describeField.setTypeField(field);
-			describeField.setName(field.getName());
-			columnName.put(describeField.getRealCqlName(), describeField.getName());
-			fields.put(describeField.getName(), describeField);
+			genereteDescribeField(field,"");
+			
 		}
 		
+	}
+	/**
+	 * Create the describe field
+	 * @param field
+	 * @param level
+	 * @return the describe field object
+	 */
+	private DescribeField genereteDescribeField(Field field,String level) {
+		
+		if(ColumnUtil.isEmbeddedField(field)){
+			DescribeField describeField=new DescribeField();
+			describeField.setTypeField(field);
+			describeField.setName(level.concat(field.getName()));
+			for(Field subField:field.getType().getDeclaredFields()){
+				if("serialVersionUID".equals(subField.getName())){
+					continue;
+				}
+				describeField.add(genereteDescribeField(subField, level.concat(field.getName()+".")));
+			}
+			columnName.put(describeField.getRealCqlName(), describeField.getName());
+			fields.put(describeField.getName(), describeField);
+			return describeField;
+		}
+		
+		DescribeField describeField=new DescribeField();
+		describeField.setTypeField(field);
+		describeField.setName(level.concat(field.getName()));
+		columnName.put(describeField.getRealCqlName(), describeField.getName());
+		fields.put(describeField.getName(), describeField);
+		return describeField;
 	}
 	
 	/**

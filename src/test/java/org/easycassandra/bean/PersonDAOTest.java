@@ -30,7 +30,14 @@ public class PersonDAOTest {
 	    @Test
 	    public void retrieveTest() {
 	        Person person = dao.retrieve(4l);
-	        Assert.assertEquals(person.getName(), "otavio teste");
+	        Assert.assertTrue(person.getName().contains("Otavio"));
+	    }
+	    
+	    @Test
+	    public void retriveSubClassTest(){
+	    	Person person = dao.retrieve(4l);
+	    	
+	    	Assert.assertNotNull(person.getAddress().getCity());
 	    }
 
 	    @Test

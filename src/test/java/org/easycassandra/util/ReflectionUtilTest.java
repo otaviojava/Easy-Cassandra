@@ -1,10 +1,10 @@
 package org.easycassandra.util;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.math.BigDecimal;
 
 import junit.framework.Assert;
+
+import org.easycassandra.bean.model.Person;
 import org.junit.Test;
 
 /**
@@ -54,7 +54,22 @@ public class ReflectionUtilTest {
     public void valueofCharTest(){
     	Assert.assertEquals(Character.valueOf('a'), ReflectionUtil.valueOf(Character.class,'a',char.class ));
     }
-
+    
+    @Test
+    public void newInscateTest(){
+    	Assert.assertNotNull(ReflectionUtil.newInstance(Person.class));
+    }
+    
+    @Test
+    public void getFieldTest(){
+    	Assert.assertNotNull(ReflectionUtil.getField("name",Person.class));
+    }
+    
+    @Test
+    public void getFieldNameTest(){
+    	Field field=ReflectionUtil.getField("name",Person.class);
+    	Assert.assertEquals(field.getName(), Person.class.getDeclaredFields()[2].getName());
+    }
     public class ObjectTest {
 
         private String name;

@@ -2,12 +2,13 @@ package org.easycassandra.bean.model;
 
 import java.io.Serializable;
 
-import org.easycassandra.annotations.ColumnFamilyValue;
-import org.easycassandra.annotations.ColumnValue;
-import org.easycassandra.annotations.IndexValue;
-import org.easycassandra.annotations.KeyValue;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
-@ColumnFamilyValue
+import org.easycassandra.annotations.Index;
+
+@Entity
 public class Animal implements Serializable {
 
 	
@@ -17,15 +18,15 @@ public class Animal implements Serializable {
 	private static final long serialVersionUID = -6438374234472941694L;
 
 
-		@KeyValue
+		@Id
 	    private String name;
 	    
 	  
-	    @ColumnValue
+	    @Column
 	    private String race;
 	    
-	    @IndexValue
-	    @ColumnValue
+	    @Index
+	    @Column
 	    private String country;
 
 

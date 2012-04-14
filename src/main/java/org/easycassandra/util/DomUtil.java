@@ -48,6 +48,7 @@ public final class DomUtil {
             return unmarshaller.unmarshal(file);
             
         } catch (JAXBException exception) {
+        	file.delete();
              Logger.getLogger(DomUtil.class.getName()).log(Level.SEVERE, null, exception);
         }
 

@@ -8,16 +8,16 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.Objects;
 
-import org.easycassandra.annotations.ColumnFamilyValue;
-import org.easycassandra.annotations.ColumnValue;
-import org.easycassandra.annotations.EmbeddedValue;
-import org.easycassandra.annotations.EnumeratedValue;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.Enumerated;
 
 /**
  *
  * @author otavio
  */
-@ColumnFamilyValue(name = "person")
+@Entity(name = "person")
 public class Person2 implements Serializable {
 
     private static final long serialVersionUID = 3L;
@@ -25,20 +25,20 @@ public class Person2 implements Serializable {
     private Long id;
     
     
-    @ColumnValue(name = "name")
+    @Column(name = "name")
     private String name;
     
-    @ColumnValue(name = "born")
+    @Column(name = "born")
     private Integer year;
     
     
-    @EnumeratedValue
+    @Enumerated
     private Sex sex;
     
-    @ColumnValue(name = "file")
+    @Column(name = "file")
     private File personalFile;
     
-    @EmbeddedValue
+    @Embedded
     private Address address;
 
     public Address getAddress() {

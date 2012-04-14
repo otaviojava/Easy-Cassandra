@@ -21,14 +21,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Version;
+
 import org.apache.cassandra.thrift.Column;
 import org.easycassandra.EasyCassandraException;
-import org.easycassandra.annotations.ColumnFamilyValue;
-import org.easycassandra.annotations.ColumnValue;
-import org.easycassandra.annotations.EmbeddedValue;
-import org.easycassandra.annotations.EnumeratedValue;
-import org.easycassandra.annotations.IndexValue;
-import org.easycassandra.annotations.KeyValue;
+import org.easycassandra.annotations.Index;
 import org.easycassandra.annotations.write.EnumWrite;
 import org.easycassandra.util.EncodingUtil;
 import org.easycassandra.util.ReflectionUtil;
@@ -49,7 +52,7 @@ import org.easycassandra.util.ReflectionUtil;
 	     
 	 	public static String getColumnFamilyName(Class<?> object) {
 
-	         ColumnFamilyValue colunaFamilia = (ColumnFamilyValue) object.getAnnotation(ColumnFamilyValue.class);
+	 		Entity colunaFamilia = (Entity) object.getAnnotation(Entity.class);
 
 	         if (colunaFamilia != null) {
 	             return colunaFamilia.name().equals("") ?object.getSimpleName():colunaFamilia.name();
@@ -65,7 +68,7 @@ import org.easycassandra.util.ReflectionUtil;
 	     * @return The name inside annotations or the field's name
 	     */
 	    public static String getColumnName(Field field) {
-	        return field.getAnnotation(ColumnValue.class).name().equals("") ?field.getName():field.getAnnotation(ColumnValue.class).name();
+	        return field.getAnnotation(javax.persistence.Column.class).name().equals("") ?field.getName():field.getAnnotation(javax.persistence.Column.class).name();
 	        
 	    }
 	    
@@ -78,7 +81,10 @@ import org.easycassandra.util.ReflectionUtil;
 	     * @return The name inside annotations or the field's name
 	     */
 	    public static String getEnumeratedName(Field field) {
-	        return field.getAnnotation(EnumeratedValue.class).name().equals("") ?field.getName():field.getAnnotation(EnumeratedValue.class).name();
+	    	if(isNormalField(field)){
+	    	return getColumnName(field);	
+	    	}
+	        return field.getName();
 	        
 	    }
 	    
@@ -91,17 +97,17 @@ import org.easycassandra.util.ReflectionUtil;
 	     */
 	    public static Field getKeyField(Class<?> persistenceClass) {
 
-	        return getField(persistenceClass, KeyValue.class);
+	        return getField(persistenceClass, Id.class);
 	    }
 
 	     /**
 	     *  Return the Field with the IndexValue Annotations
-	     * @see IndexValue
+	     * @see Index
 	     * @param persistenceClass - Class of the object viewed
 	     * @return the Field if there are not will be return null
 	     */
 	    public static Field getIndexField(Class<?> persistenceClass) {
-	        return getField(persistenceClass, IndexValue.class);
+	        return getField(persistenceClass, Index.class);
 	    }
 	    
 	    /**
@@ -117,7 +123,7 @@ import org.easycassandra.util.ReflectionUtil;
 	        for (Field field : object.getDeclaredFields()) {
 	            if (field.getAnnotation(annotation) != null) {
 	                return field;
-	            } else if (field.getAnnotation(EmbeddedValue.class) != null) {
+	            } else if (field.getAnnotation(Embeddable.class) != null) {
 
 
 	                return getField(field.getType(), annotation);
@@ -140,20 +146,20 @@ import org.easycassandra.util.ReflectionUtil;
 	         Field[] fields = object.getClass().getDeclaredFields();
 
 	         for (Field field : fields) {
-	             if (field.getAnnotation(KeyValue.class) != null) {
+	             if (field.getAnnotation(Id.class) != null) {
 	                 continue;
 	             }
-	             if (field.getAnnotation(ColumnValue.class) != null) {
+	             if (field.getAnnotation(javax.persistence.Column.class) != null) {
 	                 
 	                 Column column = makeColumn(timeStamp, ColumnUtil.getColumnName(field), object, field);
 	                 if (column != null) {
 	                     columns.add(column);
 	                 }
-	             } else if (field.getAnnotation(EmbeddedValue.class) != null) {
+	             } else if (field.getAnnotation(Embeddable.class) != null) {
 	                 if (ReflectionUtil.getMethod(object, field) != null) {
 	                     columns.addAll(getColumns(ReflectionUtil.getMethod(object, field)));
 	                 }
-	             } else if (field.getAnnotation(EnumeratedValue.class) != null) {
+	             } else if (field.getAnnotation(Enumerated.class) != null) {
 	                 Column column = new Column();
 	                 column.setTimestamp(timeStamp);
 	                 column.setName(EncodingUtil.stringToByte(ColumnUtil.getEnumeratedName(field)));
@@ -244,17 +250,21 @@ import org.easycassandra.util.ReflectionUtil;
 	     * @param field
 	     * @return
 	     */
-	     public static boolean isKeyField(Field field){
-	    	return field.getAnnotation(KeyValue.class)!=null;
+	     public static boolean isIdField(Field field){
+	    	return field.getAnnotation(Id.class)!=null;
+	     }
+	     @GeneratedValue
+	     public static boolean isGeneratedValue(Field field){
+	    	 return field.getAnnotation(GeneratedValue.class)!=null;
 	     }
 	     
-	     /**
+	     	/**
 		     * verify if this is secundary index of the column
 		     * @param field
 		     * @return
 		     */
 		     public static boolean isSecundaryIndexField(Field field){
-		    	return field.getAnnotation(IndexValue.class)!=null;
+		    	return field.getAnnotation(Index.class)!=null;
 		     }
 		     
 	     
@@ -264,7 +274,7 @@ import org.easycassandra.util.ReflectionUtil;
 	     * @return
 	     */
 	     public static boolean isNormalField(Field field){
-	    	return field.getAnnotation(ColumnValue.class)!=null;
+	    	return field.getAnnotation(javax.persistence.Column.class)!=null;
 	     }
 	     
 	     /**
@@ -273,10 +283,25 @@ import org.easycassandra.util.ReflectionUtil;
 		     * @return
 		     */
 		     public static boolean isEnumField(Field field){
-		    	return field.getAnnotation(EnumeratedValue.class)!=null;
+		    	return field.getAnnotation(Enumerated.class)!=null;
 		     }
+		     /**
+			     * verify if this is a Embedded column
+			     * @param field
+			     * @return
+			     */
+			     public static boolean isEmbeddedField(Field field){
+			    	return field.getAnnotation(Embedded.class)!=null;
+			     }  
 	     
-	     
+			     /**
+				     * verify if this is a Version column
+				     * @param field
+				     * @return
+				     */
+				     public static boolean isVersionField(Field field){
+				    	return field.getAnnotation(Version.class)!=null;
+				     }  
 	private ColumnUtil(){
 		
 		

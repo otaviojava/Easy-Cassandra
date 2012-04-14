@@ -7,40 +7,42 @@ package org.easycassandra.bean.model;
 import java.io.File;
 import java.io.Serializable;
 import java.util.Objects;
-import org.easycassandra.annotations.ColumnFamilyValue;
-import org.easycassandra.annotations.ColumnValue;
-import org.easycassandra.annotations.EmbeddedValue;
-import org.easycassandra.annotations.EnumeratedValue;
-import org.easycassandra.annotations.IndexValue;
-import org.easycassandra.annotations.KeyValue;
+
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.Enumerated;
+import javax.persistence.Id;
+
+import org.easycassandra.annotations.Index;
 
 /**
  *
  * @author otavio
  */
-@ColumnFamilyValue(name = "person")
+@Entity(name = "person")
 public class Person implements Serializable {
 
     private static final long serialVersionUID = 3L;
     
-    @KeyValue
+    @Id
     private Long id;
     
-    @IndexValue
-    @ColumnValue(name = "name")
+    @Index
+    @Column(name = "name")
     private String name;
     
-    @ColumnValue(name = "born")
+    @Column(name = "born")
     private Integer year;
     
     
-    @EnumeratedValue(name="sex")
+    @Enumerated
     private Sex sex;
     
-    @ColumnValue(name = "file")
+    @Column(name = "file")
     private File personalFile;
     
-    @EmbeddedValue
+    @Embedded
     private Address address;
 
     public Address getAddress() {

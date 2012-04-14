@@ -2,6 +2,7 @@ package org.easycassandra.persistence;
 
 import org.easycassandra.bean.model.Person;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class EasyCassandraManagerTest {
@@ -25,9 +26,26 @@ public class EasyCassandraManagerTest {
 		Assert.assertTrue(EasyCassandraManager.addFamilyObject(Person.class));
 	}
 	
+	@BeforeClass
+	public static void  initClass(){
+		EasyCassandraManager.addFamilyObject(Person.class);
+	}
+	
 	@Test
 	public void getFamilyObjectTest(){
 		Assert.assertNotNull(EasyCassandraManager.getFamily("Person"));
+	}
+	
+	@Test
+	public void getFamilyObjectSubFieldTest(){
+		DescribeFamilyObject ao=EasyCassandraManager.getFamily("Person");
+		Assert.assertEquals(ao.getFieldsName("cep"),"address.cep");
+	}
+	
+	@Test
+	public void getFamilyObjectSubClassTest(){
+		DescribeFamilyObject ao=EasyCassandraManager.getFamily("Person");
+		Assert.assertEquals(ao.getFieldsName("state , cyte , street , cep"),"address");
 	}
 	
 }

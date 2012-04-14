@@ -65,10 +65,10 @@ public final class EasyCassandraManager {
     }
 
     /**
-     * Methodo for create the Casansndra's Client
-     * @param keySpace
-     * @param host
-     * @param port
+     * Method for create the Cassandra's Client
+     * @param keySpace - name of keySpace in Cassandra
+     * @param host -   host that Cassandra be
+     * @param port - number of port to communication with Cassandra DataBase
      * @return the Cassandra's  Client
      */
     public static Client getClient(String keySpace, String host, int port) {

@@ -2,23 +2,23 @@ package org.easycassandra.bean.model;
 
 import java.nio.file.Path;
 
-import org.easycassandra.annotations.ColumnFamilyValue;
-import org.easycassandra.annotations.ColumnValue;
-import org.easycassandra.annotations.KeyValue;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
-@ColumnFamilyValue
+@Entity
 public class Twitter {
 
 	
-	 	@KeyValue
+	 	@Id
 	    private String name;
 	    
 	  
-	    @ColumnValue(name = "name")
+	    @Column(name = "name")
 	    private String twitte;
 	    
 	    
-	    @ColumnValue
+	    @Column
 	    private Path path;
 
 		public String getName() {

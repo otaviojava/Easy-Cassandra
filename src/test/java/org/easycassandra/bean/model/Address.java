@@ -6,7 +6,8 @@ package org.easycassandra.bean.model;
 
 import java.io.Serializable;
 import java.util.Objects;
-import org.easycassandra.annotations.ColumnValue;
+
+import javax.persistence.Column;
 
 /**
  *
@@ -15,16 +16,16 @@ import org.easycassandra.annotations.ColumnValue;
 public class Address implements Serializable {
     private static final long serialVersionUID = 1L;
     
-    @ColumnValue(name="state")
+    @Column(name="state")
     private String state;
     
-    @ColumnValue(name="cyte")
+    @Column(name="cyte")
     private String city;
     
-    @ColumnValue(name="street")
+    @Column(name="street")
     private String street;
     
-    @ColumnValue(name="cep")
+    @Column(name="cep")
     private String cep;
 
     public String getCep() {

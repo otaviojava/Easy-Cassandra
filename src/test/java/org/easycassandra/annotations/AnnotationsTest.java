@@ -5,6 +5,11 @@
 package org.easycassandra.annotations;
 
 import java.lang.reflect.Field;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
 import junit.framework.Assert;
 
 import org.easycassandra.bean.model.Person;
@@ -19,7 +24,7 @@ public class AnnotationsTest {
     @Test
     public void readColumnFamilyTest() {
         String value = "person";
-        Assert.assertEquals(value, Person.class.getAnnotation(ColumnFamilyValue.class).name());
+        Assert.assertEquals(value, Person.class.getAnnotation(Entity.class).name());
 
     }
 
@@ -28,7 +33,7 @@ public class AnnotationsTest {
         boolean existKeyValue = false;
         for (Field field : Person.class.getDeclaredFields()) {
 
-            if (field.getAnnotation(KeyValue.class) != null) {
+            if (field.getAnnotation(Id.class) != null) {
 
                 existKeyValue = true;
                 break;
@@ -42,7 +47,7 @@ public class AnnotationsTest {
     public void retrieveKeyValueTest() {
         for (Field field : Person.class.getDeclaredFields()) {
 
-            if (field.getAnnotation(KeyValue.class) != null) {
+            if (field.getAnnotation(Id.class) != null) {
 
                 Assert.assertTrue(true);
                 
@@ -60,7 +65,7 @@ public class AnnotationsTest {
 
         for (Field field : Person.class.getDeclaredFields()) {
 
-            if (field.getAnnotation(ColumnValue.class) != null) {
+            if (field.getAnnotation(Column.class) != null) {
                 counter++;
             }
         }

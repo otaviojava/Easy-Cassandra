@@ -2,6 +2,7 @@ package org.easycassandra.persistence;
 
 import junit.framework.Assert;
 
+import org.easycassandra.EasyCassandraException;
 import org.easycassandra.bean.model.Person;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -98,7 +99,7 @@ public static void init(){
 	@Test(expected=EasyCassandraException.class)
 	public void selectWhereNotIndexOrSecundaryKeyTest(){
 		 
-		  new JCassandraImpl("select name, id from Person where id = :32 and name = 'Person' ");
+		  new JCassandraImpl("select name, id from Person where id = :32 and sex = 'Person' ");
 	}
 	
 	

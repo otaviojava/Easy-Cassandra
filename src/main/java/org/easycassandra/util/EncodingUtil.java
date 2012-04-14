@@ -55,6 +55,9 @@ public final class EncodingUtil {
  * @return the ByteBuffer within String
  */
     public static ByteBuffer stringToByte(String msg) {
+    	if(msg==null){
+    		return null;
+    	}
         try {
             return ENCODER.encode(CharBuffer.wrap(msg));
         } catch (Exception exception) {
@@ -70,6 +73,9 @@ public final class EncodingUtil {
      * @return the String with the byteBuffer value
      */
     public static String byteToString(ByteBuffer buffer) {
+    	if(buffer==null){
+    		return null;
+    	}
         String data = "";
         try {
             int oldPosition = buffer.position();

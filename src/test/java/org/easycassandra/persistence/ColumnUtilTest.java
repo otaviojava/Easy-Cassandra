@@ -6,6 +6,7 @@ import junit.framework.Assert;
 
 import org.easycassandra.bean.model.Address;
 import org.easycassandra.bean.model.Animal;
+import org.easycassandra.bean.model.Count;
 import org.easycassandra.bean.model.Person;
 import org.easycassandra.bean.model.Person2;
 import org.junit.Test;
@@ -73,13 +74,32 @@ public class ColumnUtilTest {
 	@Test
 	public void isKeyFieldTest(){
 		
-		Assert.assertTrue(ColumnUtil.isKeyField(Person.class.getDeclaredFields()[1]));		
+		Assert.assertTrue(ColumnUtil.isIdField(Person.class.getDeclaredFields()[1]));		
 	}
+	
+	@Test
+	public void isGeneratedValueTest(){
+		
+		Assert.assertTrue(ColumnUtil.isGeneratedValue(Count.class.getDeclaredFields()[1]));		
+	}
+	
+	@Test
+	public void isEmbeddedFieldTest(){
+		
+		Assert.assertTrue(ColumnUtil.isEmbeddedField(Person.class.getDeclaredFields()[6]));		
+	}
+	
+	@Test
+	public void isVersionFieldTest(){
+		
+		Assert.assertTrue(ColumnUtil.isVersionField(Count.class.getDeclaredFields()[3]));		
+	}
+	
 	
 	@Test
 	public void isKeyFieldTestFail(){
 		
-		Assert.assertFalse(ColumnUtil.isKeyField(Person.class.getDeclaredFields()[2]));		
+		Assert.assertFalse(ColumnUtil.isIdField(Person.class.getDeclaredFields()[2]));		
 	}
 	
 	@Test

@@ -3,6 +3,13 @@ Easy-Cassandra
 Easily programming with this framework, the Easy Cassandra
 The EasyCassandra uses the Thrift implementation and has like the main objective be one simple ORM( Object relational manager). It need the jdk 7 for run, because some parts in your code was replaced reflection for invoke dynamic. So will have a behavior faster than other framework.
 
+Version: 1.0.9
+
+* Supporting at jpa 2.0 annotation
+* Query with objects
+* Version to retrieve the timestamp of the object
+* Using the JPQL
+
 Version: 1.0.8
 * Select Key from 'in'  CQL command
 * Create automatically the ColumnFamily in Run Time

@@ -9,34 +9,36 @@ import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.easycassandra.annotations.ColumnFamilyValue;
-import org.easycassandra.annotations.ColumnValue;
-import org.easycassandra.annotations.KeyValue;
-import org.easycassandra.annotations.TimeStampValue;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Version;
 
 /**
  *
  * @author otavio
  */
-@ColumnFamilyValue(name = "autocount")
+@Entity(name = "autocount")
 public class Count implements Serializable {
 
     private static final long serialVersionUID = 3L;
     
-    @KeyValue(auto=true)
+    @Id
+    @GeneratedValue
     private BigInteger id;
     
   
-    @ColumnValue(name = "name")
+    @Column(name = "name")
     private String name;
     
-    @TimeStampValue
+    @Version
     private Long timeStampLong;
 
-    @TimeStampValue
+    @Version
     private Date timeStampDate;
     
-    @TimeStampValue
+    @Version
     private Calendar timeStampCalendar;
     
     

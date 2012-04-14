@@ -1,36 +1,26 @@
+/*
+ * Copyright 2012 Otávio Gonçalves de Santana (otaviojava)
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package org.easycassandra.persistence;
 
-import java.util.List;
+import javax.persistence.Query;
 
 /**
- * Inteface to run CQL
+ * Interface used to control query execution.
  * @author otavio
  *
  */
-public interface JCassandra  {
-
-	/**
-	 * Execute a cql and return the result results as a List.
-	 * @return result in list
-	 */
-	List getResultList();
-
-	/**
-	 * Execute a cql that returns a single result.
-	 * @return the single result
-	 */
-	Object getSingleResult();
-	
-	/**
-	 * Set the position of the first result to retrieve.
-	 * @param startPosition -  the start position of the first result, numbered from 0
-	 */
-	void setFirstResult(int startPosition);
-
-	/**
-	 * Set the maximum number of results to retrieve.
-	 * @param maxResult
-	 */
-	void setMaxResults(int maxResult);
-
+public interface JCassandra extends Query  {
+		
 }

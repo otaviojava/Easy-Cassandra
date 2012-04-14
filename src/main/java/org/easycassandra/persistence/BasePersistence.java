@@ -23,12 +23,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
 import org.easycassandra.EasyCassandraException;
-import org.easycassandra.annotations.ColumnValue;
-import org.easycassandra.annotations.EmbeddedValue;
-import org.easycassandra.annotations.EnumeratedValue;
-import org.easycassandra.annotations.KeyValue;
-import org.easycassandra.annotations.TimeStampValue;
 import org.easycassandra.annotations.read.EnumRead;
 import org.easycassandra.annotations.read.ReadInterface;
 import org.easycassandra.annotations.read.ReadManager;
@@ -93,7 +89,6 @@ static{
        
         writeManager=new WriteManager(writeMap);
         readManager =new ReadManager(readMap);
-
     }
     
     /**
@@ -110,11 +105,10 @@ static{
         	throw new EasyCassandraException("You must use annotation @org.easycassandra.annotations.KeyValue in some field of the Class: "+object.getClass().getName()+"  for be the keyrow in Cassandra");
         }
         String colunaFamilia = ColumnUtil.getColumnFamilyName(object.getClass());
-        if (keyField != null) {
-            KeyValue chave = keyField.getAnnotation(KeyValue.class);
+        {
 
          
-            if (chave.auto() && autoEnable) {
+            if (ColumnUtil.isGeneratedValue(keyField)) {
             	ColumnUtil.setAutoCoutingKeyValue(object, keyField, colunaFamilia,referenciaSuperColunas,keyStore);
             } 
             
@@ -130,9 +124,6 @@ static{
             
 
         }
-
-
-        return null;
     }
 
 
@@ -197,12 +188,12 @@ static{
         Field[] fieldsAll = bean.getClass().getDeclaredFields();
         for (Field field : fieldsAll) {
 
-            if (field.getAnnotation(KeyValue.class) != null) {
+            if (ColumnUtil.isIdField(field)) {
                 ByteBuffer byteBuffer = listMap.get("KEY");
                 
                 ReflectionUtil.setMethod(bean, field, getReadManager().convert(byteBuffer, field.getType()));
                 continue;
-            } else if (field.getAnnotation(ColumnValue.class) != null) {
+            } else if (ColumnUtil.isNormalField(field)) {
                 
                 ByteBuffer byteBuffer = listMap.get(ColumnUtil.getColumnName(field));
                 if (byteBuffer != null) {
@@ -210,14 +201,14 @@ static{
                     ReflectionUtil.setMethod(bean, field, getReadManager().convert(byteBuffer, field.getType()));
                 }
 
-            } else if (field.getAnnotation(EmbeddedValue.class) != null) {
+            } else if (ColumnUtil.isEmbeddedField(field)) {
 
                 Object subObject = field.getType().newInstance();
 
                 readObject(listMap, subObject);
 
                 ReflectionUtil.setMethod(bean, field, subObject);
-            } else if (field.getAnnotation(EnumeratedValue.class) != null) {
+            } else if (ColumnUtil.isEmbeddedField(field)) {
 
                 ByteBuffer bb = listMap.get(ColumnUtil.getEnumeratedName(field));
                 if (bb != null) {
@@ -226,7 +217,7 @@ static{
                 }
 
             }
-            else  if (field.getAnnotation(TimeStampValue.class) != null) {
+            else  if (ColumnUtil.isVersionField(field)) {
             	   ByteBuffer byteBuffer = listMap.get("TIMESTAMP");
                    if (byteBuffer != null) {
                    	
