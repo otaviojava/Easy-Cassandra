@@ -38,7 +38,6 @@ import org.apache.cassandra.thrift.UnavailableException;
 import org.apache.thrift.TException;
 import org.easycassandra.ConsistencyLevelCQL;
 import org.easycassandra.EasyCassandraException;
-import org.easycassandra.annotations.read.UTF8Read;
 import org.easycassandra.util.EncodingUtil;
 import org.easycassandra.util.ReflectionUtil;
 
@@ -365,7 +364,7 @@ public class Persistence extends BasePersistence {
         int limit = 1;
            
         ByteBuffer keyBuffer = getWriteManager().convert(key);
-        String keyString = "'"+new UTF8Read().getObjectByByte(keyBuffer).toString()+"'";
+        String keyString = "'"+EncodingUtil.byteToString(Persistence.getWriteManager().convert(key))+"'";
         String condicao = "KEY";
 
         List objects =  retriveObject(condicao, keyString, persistenceClass, consistencyLevel, limit);
@@ -396,13 +395,12 @@ public class Persistence extends BasePersistence {
      * @return - List with object in
      */
     public List findByKeyIn(Class baseClass,ConsistencyLevelCQL consistencyLevel,Object... keys) {
-    	UTF8Read ufRead=new UTF8Read();
     	StringBuilder keyNames=new StringBuilder();
     	keyNames.append(" (");
     	String condicion="";
     	for(Object key:keys){
     	ByteBuffer keyBuffer = getWriteManager().convert(key);
-    	keyNames.append(" "+condicion+"'"+ufRead.getObjectByByte(keyBuffer).toString()+"'");
+    	keyNames.append(" "+condicion+"'"+EncodingUtil.byteToString(Persistence.getWriteManager().convert(key))+"'");
     	condicion=",";
     	}
     	return retriveObject("KEY", keyNames.substring(0, keyNames.length())+") ", baseClass, consistencyLevel, keys.length," in ");
@@ -421,7 +419,7 @@ public class Persistence extends BasePersistence {
     public boolean  deleteByKeyValue(Object keyValue, Class objectClass) {
     	
         ByteBuffer keyBuffer = getWriteManager().convert(keyValue);
-        String keyString = new UTF8Read().getObjectByByte(keyBuffer).toString();
+        String keyString = EncodingUtil.byteToString(Persistence.getWriteManager().convert(keyValue));
 
 
      return   runDeleteCqlCommand(keyString, objectClass);
@@ -434,8 +432,7 @@ public class Persistence extends BasePersistence {
      */
     public boolean  delete(Object keyObject) {
         Field keyField = ColumnUtil.getKeyField(keyObject.getClass());
-        ByteBuffer keyBuffer = getWriteManager().convert(ReflectionUtil.getMethod(keyObject, keyField));
-        String keyString = new UTF8Read().getObjectByByte(keyBuffer).toString();
+        String keyString = EncodingUtil.byteToString(Persistence.getWriteManager().convert(ReflectionUtil.getMethod(keyObject, keyField)));
 
       return  runDeleteCqlCommand(keyString, keyObject.getClass());
 

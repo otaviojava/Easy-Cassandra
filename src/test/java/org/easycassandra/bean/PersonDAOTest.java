@@ -30,7 +30,7 @@ public class PersonDAOTest {
 	    @Test
 	    public void retrieveTest() {
 	        Person person = dao.retrieve(4l);
-	        Assert.assertTrue(person.getName().contains("Otavio"));
+	        Assert.assertTrue(person.getName().contains("Otavio Santana"));
 	    }
 	    
 	    @Test
@@ -65,7 +65,7 @@ public class PersonDAOTest {
 
 	    @Test
 	    public void cantRetrieve() {
-	        Person person = dao.retrieve(new Long(1));
+	        Person person = dao.retrieve(new Long(-1));
 	        Assert.assertNull(person.getName());
 	    }
 

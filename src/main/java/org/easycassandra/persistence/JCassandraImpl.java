@@ -34,7 +34,6 @@ import javax.persistence.TemporalType;
 
 import org.easycassandra.EasyCassandraException;
 import org.easycassandra.annotations.read.EnumRead;
-import org.easycassandra.annotations.read.UTF8Read;
 import org.easycassandra.persistence.DescribeField.TypeField;
 import org.easycassandra.util.EncodingUtil;
 import org.easycassandra.util.ReflectionUtil;
@@ -160,7 +159,7 @@ import org.easycassandra.util.ReflectionUtil;
    }
 
 	private void isNeedComma() {
-		if(!informationCQL.needsComma){
+		if(!informationCQL.needsComma&&!informationCQL.isUpdate){
 		   throw new EasyCassandraException(" Syntax error: unnecessary comma ");
 		}
 		informationCQL.needsComma=false;
@@ -229,7 +228,7 @@ private void verifySyntax(final InformationQuery informationCQL) {
       	 if(describeField==null){
       		 throw new EasyCassandraException(" Syntax error: unknown column "+informationCQL.variabledMap.get(key).getName()+" in  Column Family "+informationCQL.columnFamily); 
       	 }  
-      	 if(!TypeField.KEY.equals(describeField.getTypeField())&&!TypeField.INDEX.equals(describeField.getTypeField())){
+      	 if((!TypeField.KEY.equals(describeField.getTypeField())&&!TypeField.INDEX.equals(describeField.getTypeField()))&&!key.contains(InformationQuery.UPDATE_STRING)){
       		 throw new EasyCassandraException("The field "+describeField.getName()+" must be a key or index for be in condition"); 
       	 }
       	 
@@ -577,7 +576,7 @@ private String replaceToCQLName(DescribeFamilyObject describeFamilyObject) {
 	    	 if(informationCQL.isUpdate){
 	    		 String valueAux=key.replace(InformationQuery.UPDATE_STRING, "");
 	    		 if(newCQL.contains(valueAux)){
-		      		 newCQL=newCQL.replace(valueAux, describeField.getRealCqlName()); 
+		      		 newCQL=newCQL.replace(valueAux+" ", describeField.getRealCqlName()); 
 		      	 }
 	    	 }else{
 	      	 if(newCQL.contains(key)){
@@ -617,18 +616,11 @@ public Query setParameter(String name, Object value) {
 	VariableConditions variable=informationCQL.whereMap.get(name);
 	  verifyErroParameter(value, variable);
 		
-			
-			if(informationCQL.getKey(variable).contains(InformationQuery.UPDATE_STRING)){
-				cqlAux=cql.toString().replace(":"+name, "'"+EncodingUtil.byteToString(Persistence.getWriteManager().convert(value))+"'");
-			
+			cqlAux=cql.toString().replace(":"+name, "'"+EncodingUtil.byteToString(Persistence.getWriteManager().convert(value))+"'");
+
+
+
 		
-		}else{
-		String valor=new UTF8Read().toUTF8(EncodingUtil.byteToString(Persistence.getWriteManager().convert(value)));
-		cqlAux=cql.toString().replace(":"+name, "'"+valor+"'");
-		
-		
-		
-		}
 			cql=new StringBuilder(cqlAux);
 			return this;
 }

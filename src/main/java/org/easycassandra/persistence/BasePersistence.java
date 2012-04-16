@@ -23,14 +23,15 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.xml.crypto.dsig.keyinfo.KeyValue;
 
 import org.easycassandra.EasyCassandraException;
 import org.easycassandra.annotations.read.EnumRead;
 import org.easycassandra.annotations.read.ReadInterface;
 import org.easycassandra.annotations.read.ReadManager;
-import org.easycassandra.annotations.read.UTF8Read;
 import org.easycassandra.annotations.write.WriteInterface;
 import org.easycassandra.annotations.write.WriteManager;
+import org.easycassandra.util.EncodingUtil;
 import org.easycassandra.util.ReflectionUtil;
 
 /**
@@ -139,13 +140,12 @@ static{
      * @return - the String for query in
      */
 	protected String createValuesIn(Object... keys) {
-		UTF8Read ufRead=new UTF8Read();
     	StringBuilder keyNames=new StringBuilder();
     	keyNames.append(" (");
     	String condicion="";
     	for(Object key:keys){
     	ByteBuffer keyBuffer = getWriteManager().convert(key);
-    	keyNames.append(" "+condicion+"'"+ufRead.getObjectByByte(keyBuffer).toString()+"'");
+    	keyNames.append(" "+condicion+"'"+EncodingUtil.byteToString(Persistence.getWriteManager().convert(key)).toString()+"'");
     	condicion=",";
     	}
 		return  keyNames.substring(0, keyNames.length())+") ";

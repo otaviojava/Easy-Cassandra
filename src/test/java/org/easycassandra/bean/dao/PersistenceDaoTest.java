@@ -88,7 +88,13 @@ public class PersistenceDaoTest {
 	    	JCassandra jCassandra=persistence.createJCassandra("select personalFile, sex, id, year from Person");
 	    	
 	    	List<Map<String, Object>> list=jCassandra.getResultList();
-	    	Assert.assertTrue(list.get(3).get("personalFile") instanceof File);
+	    	for(Map<String, Object> map: list){
+	    		if(map.get("personalFile") !=null){
+	    			Assert.assertTrue(map.get("personalFile") instanceof File);
+	    		}
+	    		
+	    	}
+	    	
 	    }
 	    
 	    @SuppressWarnings("unchecked")
@@ -106,7 +112,7 @@ public class PersistenceDaoTest {
 			@Test
 		    public void selectSubFieldTest(){
 		    	 
-		    	JCassandra jCassandra=persistence.createJCassandra("select address.cep from Person where id = 34");
+		    	JCassandra jCassandra=persistence.createJCassandra("select address.cep from Person where id = 10");
 		    	
 		    	String cep=(String) jCassandra.getSingleResult();
 		    	
@@ -117,7 +123,7 @@ public class PersistenceDaoTest {
 			@Test
 		    public void selectSubClassTest(){
 		    	 
-		    	JCassandra jCassandra=persistence.createJCassandra("select address from Person where id = 34");
+		    	JCassandra jCassandra=persistence.createJCassandra("select address from Person where id = 10");
 		    	
 		    	
 		    	
@@ -128,7 +134,7 @@ public class PersistenceDaoTest {
 	    @Test
 	    public void getSingleResultTest(){
 	    	 
-	    	JCassandra jCassandra=persistence.createJCassandra("select * from Person where id = 31 ");
+	    	JCassandra jCassandra=persistence.createJCassandra("select * from Person where id = 1 ");
 	     	Person person=(Person)jCassandra.getSingleResult();
 	    	Assert.assertEquals(person.getId(),Long.valueOf(1l));
 	    }
@@ -267,6 +273,24 @@ public class PersistenceDaoTest {
 	    	Assert.assertTrue(jCassandra.executeUpdate()==1);
 	    }
 	    
+	    @Test
+	    public void executeUpdateUpdate2Test(){
+	    	JCassandra jCassandra=persistence.createJCassandra("update Person set name =:name , year =:year where id =:id ");
+	    	jCassandra.setParameter("id", 4l);
+	    	jCassandra.setParameter("name", "Otavio Santana");
+	    	jCassandra.setParameter("year", 1988);
+	    	Assert.assertTrue(jCassandra.executeUpdate()==1);
+	    }
+	    
+	    @Test
+	    public void executeUpdateUpdateSubFieldTest(){
+	    	JCassandra jCassandra=persistence.createJCassandra("update Person set name =:name , year =:year ,address.city =:city where id =:id ");
+	    	jCassandra.setParameter("id", 4l);
+	    	jCassandra.setParameter("name", "Otavio Santana");
+	    	jCassandra.setParameter("year", 1988);
+	    	jCassandra.setParameter("city", "Salvador");
+	    	Assert.assertTrue(jCassandra.executeUpdate()==1);
+	    }
 	  
 	    @Test
 	    public void executeUpdateDeleteSomeFieldTest(){

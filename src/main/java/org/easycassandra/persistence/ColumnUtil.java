@@ -28,6 +28,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Version;
+import javax.xml.crypto.dsig.keyinfo.KeyValue;
 
 import org.apache.cassandra.thrift.Column;
 import org.easycassandra.EasyCassandraException;
@@ -146,7 +147,9 @@ import org.easycassandra.util.ReflectionUtil;
 	         Field[] fields = object.getClass().getDeclaredFields();
 
 	         for (Field field : fields) {
-	             if (field.getAnnotation(Id.class) != null) {
+	        	 
+	        	 
+	             if (field.getAnnotation(Id.class) != null|| ReflectionUtil.getMethod(object, field)==null) {
 	                 continue;
 	             }
 	             if (field.getAnnotation(javax.persistence.Column.class) != null) {
@@ -155,7 +158,7 @@ import org.easycassandra.util.ReflectionUtil;
 	                 if (column != null) {
 	                     columns.add(column);
 	                 }
-	             } else if (field.getAnnotation(Embeddable.class) != null) {
+	             } else if (field.getAnnotation(Embedded.class) != null) {
 	                 if (ReflectionUtil.getMethod(object, field) != null) {
 	                     columns.addAll(getColumns(ReflectionUtil.getMethod(object, field)));
 	                 }
