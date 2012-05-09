@@ -208,7 +208,7 @@ static{
                 readObject(listMap, subObject);
 
                 ReflectionUtil.setMethod(bean, field, subObject);
-            } else if (ColumnUtil.isEmbeddedField(field)) {
+            } else if (ColumnUtil.isEnumField(field)) {
 
                 ByteBuffer bb = listMap.get(ColumnUtil.getEnumeratedName(field));
                 if (bb != null) {
