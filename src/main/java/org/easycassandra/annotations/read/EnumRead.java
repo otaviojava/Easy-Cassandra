@@ -38,7 +38,7 @@ public class EnumRead implements ReadInterface {
             }catch(NumberFormatException exception){
             	
             }
-            return enums[0];
+            return null;
         
     }  
     

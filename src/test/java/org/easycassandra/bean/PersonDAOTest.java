@@ -66,7 +66,7 @@ public class PersonDAOTest {
 	    @Test
 	    public void cantRetrieve() {
 	        Person person = dao.retrieve(new Long(-1));
-	        Assert.assertNull(person.getName());
+	        Assert.assertNull(person);
 	    }
 
 	    @Test
