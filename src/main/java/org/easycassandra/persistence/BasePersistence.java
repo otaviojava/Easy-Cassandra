@@ -22,8 +22,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-
 import org.easycassandra.EasyCassandraException;
 import org.easycassandra.annotations.read.EnumRead;
 import org.easycassandra.annotations.read.ReadInterface;
@@ -84,7 +82,6 @@ class BasePersistence {
      * @see BasePersistence#readMap
      */
     public BasePersistence() {
-
         writeManager = new WriteManager(writeMap);
         readManager = new ReadManager(readMap);
     }
@@ -95,38 +92,36 @@ class BasePersistence {
      * @param object - the object viewed
      * @param autoEnable - if the Keyvalue auto is enable
      * @return -The value of the KeyRow in ByteBuffer format
-     * @see KeyValue @{@link EasyCassandraException - for operation in EasyCassandra
+     * @see KeyValue @{@link EasyCassandraException - for operation
+     * in EasyCassandra
      */
     protected ByteBuffer getKey(Object object, boolean autoEnable) {
         Field keyField = ColumnUtil.getKeyField(object.getClass());
         if (keyField == null) {
-            throw new EasyCassandraException("You must use annotation @org.easycassandra.annotations.KeyValue in some field of the Class: " + object.getClass().getName() + "  for be the keyrow in Cassandra");
+            throw new EasyCassandraException("You must use annotation"
+                    + " @org.easycassandra.annotations.KeyValue in some"
+                    + " field of the Class: " + object.getClass().getName()
+                    + "  for be the keyrow in Cassandra");
         }
-        String colunaFamilia = ColumnUtil.getColumnFamilyName(object.getClass());
-        {
+        String familyColumn = ColumnUtil.getColumnFamilyName(object.getClass());
 
-
-            if (ColumnUtil.isGeneratedValue(keyField)) {
-                ColumnUtil.setAutoCoutingKeyValue(object, keyField, colunaFamilia, referenciaSuperColunas, keyStore);
-            }
-
-            Object keyValue = ReflectionUtil.getMethod(object, keyField);
-            if (keyValue == null) {
-                throw new EasyCassandraException("The key value must be not empty or null");
-            }
-
-            return getWriteManager().convert(keyValue);
-
-
-
-
-
+        if (ColumnUtil.isGeneratedValue(keyField)) {
+            ColumnUtil.setAutoCoutingKeyValue(object, keyField, familyColumn,
+                    referenciaSuperColunas, keyStore);
         }
+
+        Object keyValue = ReflectionUtil.getMethod(object, keyField);
+        if (keyValue == null) {
+            throw new EasyCassandraException("The key value must be not"
+                    + " empty or null");
+        }
+
+        return getWriteManager().convert(keyValue);
     }
 
-//columns Utils
+    //columns Utils
     /**
-     * Create values for query e.g: (key1,key2...)
+     * Create values for query e.g: (key1, key2...)
      *
      * @param keys - the values
      * @return - the String for query in
@@ -136,7 +131,12 @@ class BasePersistence {
         keyNames.append(" (");
         String condicion = "";
         for (Object key : keys) {
-            keyNames.append(" " + condicion + "'" + EncodingUtil.byteToString(Persistence.getWriteManager().convert(key)).toString() + "'");
+            keyNames.append(" ");
+            keyNames.append(condicion);
+            keyNames.append("'");
+            keyNames.append(EncodingUtil.byteToString(
+                    Persistence.getWriteManager().convert(key)).toString());
+            keyNames.append("'");
             condicion = ",";
         }
         return keyNames.substring(0, keyNames.length()) + ") ";
@@ -153,16 +153,19 @@ class BasePersistence {
      * @throws IllegalAccessException
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    protected List getList(List<Map<String, ByteBuffer>> colMap, Class persisteceClass) throws InstantiationException, IllegalAccessException {
+    protected List getList(List<Map<String, ByteBuffer>> colMap,
+            Class persisteceClass) throws InstantiationException,
+            IllegalAccessException {
         List lists = new ArrayList<>();
-
 
         for (Map<String, ByteBuffer> listMap : colMap) {
             Object bean = null;
             try {
                 bean = persisteceClass.newInstance();
-            } catch (InstantiationException | IllegalAccessException exception) {
-                Logger.getLogger(BasePersistence.class.getName()).log(Level.SEVERE, null, exception);
+            } catch (InstantiationException | IllegalAccessException ex) {
+                Logger.getLogger(
+                        BasePersistence.class.getName()).log(Level.SEVERE,
+                        null, ex);
             }
             bean = readObject(listMap, bean);
             lists.add(bean);
@@ -178,26 +181,26 @@ class BasePersistence {
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    protected Object readObject(Map<String, ByteBuffer> listMap, Object bean) throws InstantiationException, IllegalAccessException {
+    protected Object readObject(Map<String, ByteBuffer> listMap, Object bean)
+            throws InstantiationException, IllegalAccessException {
         Field[] fieldsAll = bean.getClass().getDeclaredFields();
         Boolean objNotNull = false;
         for (Field field : fieldsAll) {
             if (ColumnUtil.isIdField(field)) {
-                ByteBuffer byteBuffer = listMap.get("KEY");
-                setMethod(bean, field, byteBuffer);
+                ByteBuffer bb = listMap.get("KEY");
+                setMethod(bean, field, bb);
                 continue;
             } else if (ColumnUtil.isNormalField(field)) {
-                ByteBuffer byteBuffer = listMap.get(ColumnUtil.getColumnName(field));
-                objNotNull = setObjectNotNull(bean, objNotNull, field,	byteBuffer);
+                ByteBuffer bb = listMap.get(ColumnUtil.getColumnName(field));
+                objNotNull = setObjectNotNull(bean, objNotNull, field, bb);
                 continue;
             } else if (ColumnUtil.isVersionField(field)) {
-                ByteBuffer byteBuffer = listMap.get("TIMESTAMP");
-                objNotNull = setObjectNotNull(bean, objNotNull, field,
-						byteBuffer);
+                ByteBuffer bb = listMap.get("TIMESTAMP");
+                objNotNull = setObjectNotNull(bean, objNotNull, field, bb);
                 continue;
             } else if (ColumnUtil.isEnumField(field)) {
-                ByteBuffer byteBuffer = listMap.get(ColumnUtil.getEnumeratedName(field));
-                Object value = new EnumRead(field.getType()).getObjectByByte(byteBuffer);
+                ByteBuffer bb = listMap.get(ColumnUtil.getEnumeratedName(field));
+                Object value = new EnumRead(field.getType()).getObjectByByte(bb);
                 if (setMethod(bean, field, value)) {
                     objNotNull = true;
                 }
@@ -215,48 +218,51 @@ class BasePersistence {
     }
 
     /**
-     * Verify if the object if null
+     * Verify if the object is null and set the value in the field.
+     *
      * @param bean
      * @param objNotNull
      * @param field
      * @param byteBuffer
      * @return
      */
-	private Boolean setObjectNotNull(Object bean,Boolean objNotNull,Field field, ByteBuffer byteBuffer) {
-		if (setMethod(bean, field, byteBuffer)) {
-		    return true;
-		}
-		return objNotNull;
-	}
+    private Boolean setObjectNotNull(Object bean, Boolean objNotNull,
+            Field field, ByteBuffer byteBuffer) {
+        if (setMethod(bean, field, byteBuffer)) {
+            return true;
+        }
+        return objNotNull;
+    }
 
     /**
-     * Verify  if the object is empty, and empty return null 
+     * Verify if the object is empty, and empty return null
+     *
      * @param bean - the object
      * @param objNotNull - if the object is empty or not
      * @return the object or null
      */
-	private Object isValidObject(Object bean, Boolean objNotNull) {
-		if (objNotNull) {
+    private Object isValidObject(Object bean, Boolean objNotNull) {
+        if (objNotNull) {
             return bean;
         } else {
             return null;
         }
-	}
+    }
 
     /**
-     * Define o valor de um campo em um objeto.
+     * Set the value of a field in an object.
      *
-     * @param bean Objeto a se definir o valor do campo.
-     * @param field Campo a ser definido o valor.
-     * @param value Valor a se colocar no campo.
+     * @param bean Object to be set the value of a field.
+     * @param field Field to be set the value.
+     * @param value Value to set in the field.
      * @return
-     * <code>true</code> se e somente se o campo foi definido com o valor dado,
-     * <code>false</code> caso o campo seja null ou não foi definido
-     * corretamente.
+     * <code>true</code> if and only if the value was set in the field,
+     * <code>false</code> otherwise or the value is null;
      */
     private boolean setMethod(Object bean, Field field, Object value) {
         if (value != null) {
-            return ReflectionUtil.setMethod(bean, field,  value instanceof ByteBuffer
+            return ReflectionUtil.setMethod(bean, field,
+                    value instanceof ByteBuffer
                     ? getReadManager().convert((ByteBuffer) value,
                     field.getType()) : value);
         } else {
@@ -296,7 +302,8 @@ class BasePersistence {
     /**
      * @param referenciaSuperColunas the referenciaSuperColunas to set
      */
-    public void setReferenciaSuperColunas(AtomicReference<ColumnFamilyIds> referenciaSuperColunas) {
+    public void setReferenciaSuperColunas(
+            AtomicReference<ColumnFamilyIds> referenciaSuperColunas) {
         this.referenciaSuperColunas = referenciaSuperColunas;
     }
 
