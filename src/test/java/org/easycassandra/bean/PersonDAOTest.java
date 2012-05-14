@@ -39,6 +39,19 @@ public class PersonDAOTest {
 	    	
 	    	Assert.assertNotNull(person.getAddress().getCity());
 	    }
+	    
+	    @Test
+	    public void retrieveEnumTest() {
+	        Person person = dao.retrieve(4l);
+	        Assert.assertEquals(person.getSex(), Sex.MALE);
+	    }
+	    
+	    @Test
+	    public void retrieveEnumEmptyTest() {
+	        Person person = dao.retrieve(4l);
+	        Assert.assertNotNull(person.getSex());
+	    }
+	    
 
 	    @Test
 	    public void overrideTest() {

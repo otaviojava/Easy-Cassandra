@@ -363,7 +363,6 @@ public class Persistence extends BasePersistence {
     public Object findByKey(Object key, Class persistenceClass, ConsistencyLevelCQL consistencyLevel) {
         int limit = 1;
            
-        ByteBuffer keyBuffer = getWriteManager().convert(key);
         String keyString = "'"+EncodingUtil.byteToString(Persistence.getWriteManager().convert(key))+"'";
         String condicao = "KEY";
 
@@ -399,7 +398,6 @@ public class Persistence extends BasePersistence {
     	keyNames.append(" (");
     	String condicion="";
     	for(Object key:keys){
-    	ByteBuffer keyBuffer = getWriteManager().convert(key);
     	keyNames.append(" "+condicion+"'"+EncodingUtil.byteToString(Persistence.getWriteManager().convert(key))+"'");
     	condicion=",";
     	}
@@ -418,7 +416,6 @@ public class Persistence extends BasePersistence {
      */
     public boolean  deleteByKeyValue(Object keyValue, Class objectClass) {
     	
-        ByteBuffer keyBuffer = getWriteManager().convert(keyValue);
         String keyString = EncodingUtil.byteToString(Persistence.getWriteManager().convert(keyValue));
 
 

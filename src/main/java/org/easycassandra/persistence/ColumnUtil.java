@@ -28,7 +28,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Version;
-import javax.xml.crypto.dsig.keyinfo.KeyValue;
 
 import org.apache.cassandra.thrift.Column;
 import org.easycassandra.EasyCassandraException;
@@ -149,37 +148,52 @@ import org.easycassandra.util.ReflectionUtil;
 	         for (Field field : fields) {
 	        	 
 	        	 
-	             if (field.getAnnotation(Id.class) != null|| ReflectionUtil.getMethod(object, field)==null) {
+	             if (field.getName().equals("serialVersionUID")||field.getAnnotation(Id.class) != null|| ReflectionUtil.getMethod(object, field)==null) {
 	                 continue;
 	             }
-	             if (field.getAnnotation(javax.persistence.Column.class) != null) {
-	                 
+	             if (ColumnUtil.isNormalField(field)) {
 	                 Column column = makeColumn(timeStamp, ColumnUtil.getColumnName(field), object, field);
-	                 if (column != null) {
-	                     columns.add(column);
-	                 }
-	             } else if (field.getAnnotation(Embedded.class) != null) {
+	                 addColumn(columns, column);
+	             } else if (ColumnUtil.isEmbeddedField(field)) {
 	                 if (ReflectionUtil.getMethod(object, field) != null) {
 	                     columns.addAll(getColumns(ReflectionUtil.getMethod(object, field)));
 	                 }
-	             } else if (field.getAnnotation(Enumerated.class) != null) {
-	                 Column column = new Column();
-	                 column.setTimestamp(timeStamp);
-	                 column.setName(EncodingUtil.stringToByte(ColumnUtil.getEnumeratedName(field)));
-
-
-	                 ByteBuffer byteBuffer = new EnumWrite().getBytebyObject(ReflectionUtil.getMethod(object, field));
-	                 column.setValue(byteBuffer);
-
-
-	                 if (column != null) {
-	                     columns.add(column);
-	                 }
+	             } else if (ColumnUtil.isEnumField(field)) {
+	                 Column column = doEnumColumn(object, timeStamp, field);
+	                 addColumn(columns, column);
 	             }
 
 	         }
 	         return columns;
 	     }
+
+
+	     /**
+	      * Do enum column
+	      * @param object - the value
+	      * @param timeStamp - the time stamp
+	      * @param field - the field
+	      * @return - the column to enum value
+	      */
+		private static Column doEnumColumn(Object object, Long timeStamp,	Field field) {
+			Column column = new Column();
+			 column.setTimestamp(timeStamp);
+			 column.setName(EncodingUtil.stringToByte(ColumnUtil.getEnumeratedName(field)));
+			 ByteBuffer byteBuffer = new EnumWrite().getBytebyObject(ReflectionUtil.getMethod(object, field));
+			 column.setValue(byteBuffer);
+			return column;
+		}
+
+	     /**
+	      * Verify is exist column and then add in the list
+	      * @param columns - list of column
+	      * @param column - value
+	      */
+		private static void addColumn(List<Column> columns, Column column) {
+			if (column != null) {
+			     columns.add(column);
+			 }
+		}
 
 	     /**
 	      * Create a column for persist in Cassandra

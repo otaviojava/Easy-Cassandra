@@ -54,12 +54,13 @@ public class PersistenceDaoTest {
     public void runCqlfindByIdInclude() {
 
         Person p = getPerson();
-        p.setId(31l);
+        p.setId(4l);
+        p.setName("cool name");
         persistence.insert(p);
-        JCassandra jCassandra = persistence.createJCassandra("select * from Person where id = 31 ");
+        JCassandra jCassandra = persistence.createJCassandra("select * from Person where id = 4 ");
 
         List<Person> persons = jCassandra.getResultList();
-        Assert.assertEquals(persons.get(0).getName(), dao.retrieve(31l).getName());
+        Assert.assertEquals(persons.get(0).getName(), dao.retrieve(4l).getName());
     }
 
     @Test

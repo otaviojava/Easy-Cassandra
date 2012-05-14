@@ -15,6 +15,8 @@
 package org.easycassandra.annotations.read;
 
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.easycassandra.util.EncodingUtil;
 
@@ -34,9 +36,9 @@ public class EnumRead implements ReadInterface {
             String integerString = EncodingUtil.byteToString(buffer);
             try{
              	
-             	return enums[Integer.parseInt(integerString)];
+             	return integerString==null?null:enums[Integer.parseInt(integerString)];
             }catch(NumberFormatException exception){
-            	
+            	Logger.getLogger(EnumRead.class.getName()).log(Level.SEVERE, null, exception);
             }
             return null;
         

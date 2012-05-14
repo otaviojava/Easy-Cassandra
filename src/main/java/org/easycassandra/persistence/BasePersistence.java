@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.xml.crypto.dsig.keyinfo.KeyValue;
 
 import org.easycassandra.EasyCassandraException;
 import org.easycassandra.annotations.read.EnumRead;
@@ -137,7 +136,6 @@ class BasePersistence {
         keyNames.append(" (");
         String condicion = "";
         for (Object key : keys) {
-            ByteBuffer keyBuffer = getWriteManager().convert(key);
             keyNames.append(" " + condicion + "'" + EncodingUtil.byteToString(Persistence.getWriteManager().convert(key)).toString() + "'");
             condicion = ",";
         }
@@ -190,15 +188,12 @@ class BasePersistence {
                 continue;
             } else if (ColumnUtil.isNormalField(field)) {
                 ByteBuffer byteBuffer = listMap.get(ColumnUtil.getColumnName(field));
-                if (setMethod(bean, field, byteBuffer)) {
-                    objNotNull = true;
-                }
+                objNotNull = setObjectNotNull(bean, objNotNull, field,	byteBuffer);
                 continue;
             } else if (ColumnUtil.isVersionField(field)) {
                 ByteBuffer byteBuffer = listMap.get("TIMESTAMP");
-                if (setMethod(bean, field, byteBuffer)) {
-                    objNotNull = true;
-                }
+                objNotNull = setObjectNotNull(bean, objNotNull, field,
+						byteBuffer);
                 continue;
             } else if (ColumnUtil.isEnumField(field)) {
                 ByteBuffer byteBuffer = listMap.get(ColumnUtil.getEnumeratedName(field));
@@ -216,12 +211,37 @@ class BasePersistence {
                 continue;
             }
         }
-        if (objNotNull) {
+        return isValidObject(bean, objNotNull);
+    }
+
+    /**
+     * Verify if the object if null
+     * @param bean
+     * @param objNotNull
+     * @param field
+     * @param byteBuffer
+     * @return
+     */
+	private Boolean setObjectNotNull(Object bean,Boolean objNotNull,Field field, ByteBuffer byteBuffer) {
+		if (setMethod(bean, field, byteBuffer)) {
+		    return true;
+		}
+		return objNotNull;
+	}
+
+    /**
+     * Verify  if the object is empty, and empty return null 
+     * @param bean - the object
+     * @param objNotNull - if the object is empty or not
+     * @return the object or null
+     */
+	private Object isValidObject(Object bean, Boolean objNotNull) {
+		if (objNotNull) {
             return bean;
         } else {
             return null;
         }
-    }
+	}
 
     /**
      * Define o valor de um campo em um objeto.
@@ -236,10 +256,9 @@ class BasePersistence {
      */
     private boolean setMethod(Object bean, Field field, Object value) {
         if (value != null) {
-            value = value instanceof ByteBuffer
+            return ReflectionUtil.setMethod(bean, field,  value instanceof ByteBuffer
                     ? getReadManager().convert((ByteBuffer) value,
-                    field.getType()) : value;
-            return ReflectionUtil.setMethod(bean, field, value);
+                    field.getType()) : value);
         } else {
             return false;
         }

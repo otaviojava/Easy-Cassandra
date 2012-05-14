@@ -18,6 +18,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,7 +29,10 @@ import java.util.logging.Logger;
  */
 public final class ReflectionUtil {
 
-
+/**
+ * class of primitives types
+ */
+private static Class[] primitivesClass={int.class,long.class,float.class,double.class,boolean.class};
 
 
     /**
@@ -91,6 +95,9 @@ public final class ReflectionUtil {
 		 MethodType methodType= MethodType.methodType(classValue,refence);
 		  MethodHandle methodHandle;
 		try {
+			if(Arrays.asList(primitivesClass).contains(classValue)){
+				return valueOfWrapper(classValue, value);
+			}
 			methodHandle = MethodHandles.publicLookup().findStatic(classValue, "valueOf", methodType);
 			MethodHandle printer=MethodHandles.insertArguments(methodHandle, 0, value);
 		
@@ -101,6 +108,28 @@ public final class ReflectionUtil {
         }
 		
 		
+	}
+
+	/**
+	 * Do whrapper in value of method
+	 * @param classValue - value of the class
+	 * @param value - the value of the class
+	 * @return - the Object for the primitive type
+	 */
+	private static Object valueOfWrapper(Class classValue, Object value) {
+		switch (classValue.getName()) {
+		case "int":
+			return Integer.valueOf(value.toString());
+		case "long":
+			return Long.valueOf(value.toString());
+		case "float":
+			return Float.valueOf(value.toString());
+		case "double":
+			return Double.valueOf(value.toString());
+		case "boolean":
+			return Boolean.valueOf(value.toString());
+		}
+		return value;
 	}
 	
 	/**
