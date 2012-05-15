@@ -4,7 +4,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,15 +17,17 @@ package org.easycassandra.annotations.read;
 import java.nio.ByteBuffer;
 
 /**
- *interface for read some information  * from ByteBuffer
+ * interface for read some information * from ByteBuffer
+ *
  * @see ByteBuffer
  * @author otavio
  */
 public interface ReadInterface {
- /**
-  * 
-  * @param buffer
-  * @return the Object from ByteBuffer
-  */
-	Object getObjectByByte(ByteBuffer buffer);   
+
+    /**
+     *
+     * @param buffer
+     * @return the Object from ByteBuffer
+     */
+    Object getObjectByByte(ByteBuffer buffer);
 }

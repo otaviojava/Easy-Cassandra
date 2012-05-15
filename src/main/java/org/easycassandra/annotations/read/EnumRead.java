@@ -4,7 +4,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,31 +17,31 @@ package org.easycassandra.annotations.read;
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.easycassandra.util.EncodingUtil;
 
 /**
- *for read Enuns
+ * for read Enuns
+ *
  * @author otavio
  */
 public class EnumRead implements ReadInterface {
-	private Object[] enums;
-	public EnumRead(Class<?> enumereted){
-		this.enums = enumereted.getEnumConstants();
-		
-	}
-   @Override
+
+    private Object[] enums;
+
+    public EnumRead(Class<?> enumereted) {
+        this.enums = enumereted.getEnumConstants();
+    }
+
+    @Override
     public Object getObjectByByte(ByteBuffer buffer) {
-    
-            String integerString = EncodingUtil.byteToString(buffer);
-            try{
-             	
-             	return integerString==null?null:enums[Integer.parseInt(integerString)];
-            }catch(NumberFormatException exception){
-            	Logger.getLogger(EnumRead.class.getName()).log(Level.SEVERE, null, exception);
-            }
-            return null;
-        
-    }  
-    
+        String integerString = EncodingUtil.byteToString(buffer);
+        try {
+            return integerString == null
+                    ? null : enums[Integer.parseInt(integerString)];
+        } catch (NumberFormatException exception) {
+            Logger.getLogger(EnumRead.class.getName()).log(Level.SEVERE,
+                    null, exception);
+        }
+        return null;
+    }
 }

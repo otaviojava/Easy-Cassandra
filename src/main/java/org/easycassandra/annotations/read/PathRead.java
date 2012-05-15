@@ -4,7 +4,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,14 +18,13 @@ import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.file.Paths;
 
-public class PathRead implements ReadInterface{
+public class PathRead implements ReadInterface {
 
-	private final FileRead fileRead=new FileRead();
-	@Override
-	public Object getObjectByByte(ByteBuffer buffer) {
-		File file=(File)fileRead.getObjectByByte(buffer);
-		
-		return Paths.get(file.getAbsolutePath());
-	}
+    private final FileRead fileRead = new FileRead();
 
+    @Override
+    public Object getObjectByByte(ByteBuffer buffer) {
+        File file = (File) fileRead.getObjectByByte(buffer);
+        return Paths.get(file.getAbsolutePath());
+    }
 }

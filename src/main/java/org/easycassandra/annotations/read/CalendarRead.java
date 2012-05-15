@@ -4,7 +4,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,21 +20,20 @@ import java.util.Calendar;
 import org.easycassandra.util.EncodingUtil;
 
 /**
- *for read Date
+ * for read Date
+ *
  * @see java#util#Date
  * @author otavio
  */
 public class CalendarRead implements ReadInterface {
 
-	
     @Override
     public Object getObjectByByte(ByteBuffer buffer) {
         String longString = EncodingUtil.byteToString(buffer);
         Long l = Long.parseLong(longString);
-        Calendar calendar=Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(l);
         return calendar;
 
     }
-    
 }

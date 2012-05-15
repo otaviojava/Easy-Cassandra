@@ -4,7 +4,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,24 +15,18 @@
 package org.easycassandra.annotations.write;
 
 import java.nio.ByteBuffer;
-
 import org.easycassandra.util.EncodingUtil;
 
 /**
- *for Write Object in mode default
- *it only execute the toString Method
+ * for Write Object in mode default it only execute the toString Method
+ *
  * @see String
  * @author otavio
  */
-public class DefaultWrite implements WriteInterface{
+public class DefaultWrite implements WriteInterface {
 
     @Override
     public ByteBuffer getBytebyObject(Object object) {
-    
-          
-            
-          
-          return EncodingUtil.stringToByte(object.toString()); 
-      
+        return EncodingUtil.stringToByte(object.toString());
     }
 }

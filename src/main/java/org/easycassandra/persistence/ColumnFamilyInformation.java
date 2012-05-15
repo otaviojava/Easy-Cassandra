@@ -4,7 +4,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,39 +17,33 @@ package org.easycassandra.persistence;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Objects;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * The unit in XML Document
+ *
  * @author otavio
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "ColumnFamily")
 public class ColumnFamilyInformation implements Serializable {
 
-  
-	private static final int HASH_CODE = 61;
-
-	private static final int HASH_VALUE = 7;
-
-	private static final long serialVersionUID = 859191542482693032L;
-
-	/**
+    private static final int HASH_CODE = 61;
+    private static final int HASH_VALUE = 7;
+    private static final long serialVersionUID = 859191542482693032L;
+    /**
      * the number of the id Column Family
      */
     @XmlAttribute
     private BigInteger id;
-    
-    
     /**
      * name of the Column Family
      */
     @XmlAttribute
     private String columnFamilyName;
-    
     /**
      * name of the KeyStore
      */
@@ -57,7 +51,7 @@ public class ColumnFamilyInformation implements Serializable {
     private String keyStore;
 
     public BigInteger increment() {
-    	id=id.add(BigInteger.ONE);
+        id = id.add(BigInteger.ONE);
         return id;
     }
 
@@ -81,19 +75,18 @@ public class ColumnFamilyInformation implements Serializable {
         this.id = id;
     }
 
+    public String getKeyStore() {
+        return keyStore;
+    }
 
-	public String getKeyStore() {
-		return keyStore;
-	}
+    public void setKeyStore(String keyStore) {
+        this.keyStore = keyStore;
+    }
 
-	public void setKeyStore(String keyStore) {
-		this.keyStore = keyStore;
-	}
-
-	public ColumnFamilyInformation(String columnFamilyName,String keyStore) {
+    public ColumnFamilyInformation(String columnFamilyName, String keyStore) {
         id = BigInteger.valueOf(0l);
         this.columnFamilyName = columnFamilyName;
-        this.keyStore=keyStore;
+        this.keyStore = keyStore;
     }
 
     @Override
@@ -124,12 +117,5 @@ public class ColumnFamilyInformation implements Serializable {
         int hash = HASH_VALUE;
         hash = HASH_CODE * hash + Objects.hashCode(this.columnFamilyName);
         return HASH_CODE * hash + Objects.hashCode(this.keyStore);
-      
     }
-
-
-
-	
-
-
 }

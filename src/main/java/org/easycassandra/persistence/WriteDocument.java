@@ -4,7 +4,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,49 +15,40 @@
 package org.easycassandra.persistence;
 
 import java.util.concurrent.atomic.AtomicReference;
-
 import org.easycassandra.util.DomUtil;
 
 /**
- * This class is for Write the informations about id in
- * Document XML
+ * This class is for Write the informations about id in Document XML
+ *
  * @author otavio
  *
  */
 public class WriteDocument implements Runnable {
 
-	private static final long TIME_SLEEP = 3000l;
+    private static final long TIME_SLEEP = 3000l;
+    /**
+     * Information for Write in document
+     */
+    private AtomicReference<ColumnFamilyIds> columnReference;
 
-	
-	
-	/**
-	 * Information for Write in document
-	 */
-	private AtomicReference<ColumnFamilyIds> columnReference;
-	
-	
-	/**
-	 * Constructor
-	 * @param lock
-	 * @param columnReference
-	 */
-	public WriteDocument(	AtomicReference<ColumnFamilyIds> columnReference) {
-		this.columnReference = columnReference;
-	}
+    /**
+     * Constructor
+     *
+     * @param lock
+     * @param columnReference
+     */
+    public WriteDocument(AtomicReference<ColumnFamilyIds> columnReference) {
+        this.columnReference = columnReference;
+    }
 
-
-
-	@Override
-	public void run() {
-		while(true){
-			DomUtil.getFileDom(columnReference.get());
-			try {
-				Thread.sleep(TIME_SLEEP);
-			} catch (InterruptedException e) {
-			}
-		}
-		
-
-	}
-
+    @Override
+    public void run() {
+        while (true) {
+            DomUtil.getFileDom(columnReference.get());
+            try {
+                Thread.sleep(TIME_SLEEP);
+            } catch (InterruptedException e) {
+            }
+        }
+    }
 }

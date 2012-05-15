@@ -4,7 +4,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,35 +20,30 @@ import org.apache.cassandra.thrift.Cassandra.Client;
 import org.apache.thrift.transport.TTransport;
 
 /**
- *Information about Cassandra's EasyCassandraClient
+ * Information about Cassandra's EasyCassandraClient
+ *
  * @author otavio
  */
 class EasyCassandraClient {
 
     private static final int HASH_CODE = 89;
-
-	private static final int HASH_VALUE = 7;
-
-	/**
+    private static final int HASH_VALUE = 7;
+    /**
      * The host name
      */
     private String host;
-    
     /**
      * The keyspace Name
      */
     private String keyspace;
-    
     /**
      * The number's port
      */
     private Integer port;
-    
     /**
      * @see TTransport
      */
     private TTransport transport;
-    
     /**
      * @see Cassandra#Client
      */
@@ -61,8 +56,6 @@ class EasyCassandraClient {
     public void setClient(Client client) {
         this.client = client;
     }
-    
-    
 
     public String getHost() {
         return host;
@@ -118,6 +111,7 @@ class EasyCassandraClient {
         return false;
     }
 
+    @Override
     public int hashCode() {
         int hash = HASH_VALUE;
         hash = HASH_CODE * hash + Objects.hashCode(this.host);
@@ -134,6 +128,4 @@ class EasyCassandraClient {
         this.keyspace = keyspace;
         this.port = port;
     }
-    
-    
 }
