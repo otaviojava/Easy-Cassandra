@@ -46,7 +46,7 @@ class DescribeFamilyObject {
     DescribeFamilyObject(Class<?> classColumnFamily) {
         columnFamilyName = ColumnUtil.getColumnFamilyName(classColumnFamily);
         classFamily = classColumnFamily;
-        for (Field field : classColumnFamily.getDeclaredFields()) {
+        for (Field field : ColumnUtil.listFields(classColumnFamily)) {
             if ("serialVersionUID".equals(field.getName())) {
                 continue;
             }

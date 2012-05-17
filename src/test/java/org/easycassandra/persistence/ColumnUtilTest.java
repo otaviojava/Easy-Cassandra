@@ -7,6 +7,7 @@ import junit.framework.Assert;
 import org.easycassandra.bean.model.Address;
 import org.easycassandra.bean.model.Animal;
 import org.easycassandra.bean.model.Count;
+import org.easycassandra.bean.model.Engineer;
 import org.easycassandra.bean.model.Person;
 import org.easycassandra.bean.model.Person2;
 import org.junit.Test;
@@ -140,5 +141,15 @@ public class ColumnUtilTest {
 		Assert.assertFalse(ColumnUtil.isEnumField(Person.class.getDeclaredFields()[1]));		
 	}
 	
+	@Test
+	public void isMappedSuperclassTest(){
+		
+		Assert.assertTrue(ColumnUtil.isMappedSuperclass(Engineer.class));
+	}
 	
+	@Test
+	public void listFieldsTest(){
+		
+		Assert.assertEquals(ColumnUtil.listFields(Engineer.class).size(), 7);
+	}
 }

@@ -168,7 +168,9 @@ class BasePersistence {
                         null, ex);
             }
             bean = readObject(listMap, bean);
+            if(bean!=null){
             lists.add(bean);
+            }
         }
         return lists;
     }
@@ -183,9 +185,8 @@ class BasePersistence {
      */
     protected Object readObject(Map<String, ByteBuffer> listMap, Object bean)
             throws InstantiationException, IllegalAccessException {
-        Field[] fieldsAll = bean.getClass().getDeclaredFields();
         Boolean objNotNull = false;
-        for (Field field : fieldsAll) {
+        for (Field field : ColumnUtil.listFields(bean.getClass())) {
             if (ColumnUtil.isIdField(field)) {
                 ByteBuffer bb = listMap.get("KEY");
                 setMethod(bean, field, bb);

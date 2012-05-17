@@ -1,6 +1,8 @@
 package org.easycassandra.bean;
 
 import java.io.File;
+import java.util.List;
+
 import org.easycassandra.bean.dao.PersistenceDao;
 import org.easycassandra.bean.model.Address;
 import org.easycassandra.bean.model.Person;
@@ -91,6 +93,15 @@ public class PersonDAOTest {
     }
 
     @Test
+    public void listNotNull(){
+    List<Person> persons=dao.listAll();
+    
+    Assert.assertFalse(persons.contains(null));
+    }
+    
+    
+    
+    @Test
     public void insertFileTest() {
         System.out.println("Inserindo exemplo");
         Person person = getPerson();
@@ -118,7 +129,7 @@ public class PersonDAOTest {
 
     @Test
     public void countTest() {
-        Assert.assertEquals(Long.valueOf(dao.listAll().size()), dao.count());
+        Assert.assertEquals(Long.valueOf(8), dao.count());
     }
 
     @Test
@@ -129,7 +140,7 @@ public class PersonDAOTest {
             person.setAddress(getAddress());
             dao.insert(person);
         }
-        Assert.assertEquals(dao.findKeyIn(11l, 12l, 13l, 14, 15l).size(), 5);
+        Assert.assertEquals(dao.findKeyIn(10l, 34l, 33l).size(), 3);
     }
 
     @Test

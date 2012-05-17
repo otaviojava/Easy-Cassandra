@@ -20,7 +20,17 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.persistence.*;
+
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Version;
+import javax.xml.crypto.dsig.keyinfo.KeyValue;
+
 import org.apache.cassandra.thrift.Column;
 import org.easycassandra.EasyCassandraException;
 import org.easycassandra.annotations.Index;
@@ -132,8 +142,8 @@ final class ColumnUtil {
     public static List<Column> getColumns(Object object) {
         Long timeStamp = System.currentTimeMillis();
         List<Column> columns = new ArrayList<>();
-        Field[] fields = object.getClass().getDeclaredFields();
-
+        List<Field> fields = listFields(object.getClass());
+      
         for (Field field : fields) {
             if (field.getName().equals("serialVersionUID")
                     || field.getAnnotation(Id.class) != null
@@ -158,6 +168,32 @@ final class ColumnUtil {
     }
 
     /**
+     * list the fields in the class
+     * @param class1 
+     * @return list of the fields
+     */
+    public static List<Field> listFields(Class<?> class1) {
+    	List<Field> fields =new ArrayList<>();
+    	feedFieldList(class1, fields);
+    	if(isMappedSuperclass(class1)){
+    		feedFieldList(class1.getSuperclass(), fields);
+    			
+    	}
+		return fields;
+	}
+
+    /**
+     * feed the list com Fields
+     * @param class1
+     * @param fields
+     */
+	private static void feedFieldList(Class<?> class1, List<Field> fields) {
+		for(Field field:class1.getDeclaredFields()){
+    		fields.add(field);
+    	}
+	}
+
+	/**
      * Do enum column
      *
      * @param object - the value
@@ -324,4 +360,13 @@ final class ColumnUtil {
 
     private ColumnUtil() {
     }
+
+    /**
+     * verify is exist father to persist
+     * @param class1
+     * @return
+     */
+	public static boolean isMappedSuperclass(Class<?> class1) {
+		return class1.getSuperclass().getAnnotation(MappedSuperclass.class)!=null;
+	}
 }
