@@ -23,13 +23,11 @@ public class PersistenceDaoTest {
 
     @Test
     public void createJCassandraTest() {
-
         Assert.assertNotNull(persistence.createJCassandra("select * from Person"));
     }
 
     @Test
     public void createJCassandraFailTest() {
-
         Assert.assertNull(persistence.createJCassandra("select * from Otavio"));
     }
 
@@ -42,9 +40,7 @@ public class PersistenceDaoTest {
     @SuppressWarnings("unchecked")
     @Test
     public void runCqlListAllTest() {
-
         JCassandra jCassandra = persistence.createJCassandra("select * from Person");
-
         List<Person> persons = jCassandra.getResultList();
         Assert.assertEquals(persons.size(), dao.listAll().size());
     }
@@ -52,32 +48,25 @@ public class PersistenceDaoTest {
     @SuppressWarnings("unchecked")
     @Test
     public void runCqlfindByIdInclude() {
-
         Person p = getPerson();
         p.setId(4l);
         p.setName("cool name");
         persistence.insert(p);
         JCassandra jCassandra = persistence.createJCassandra("select * from Person where id = 4 ");
-
         List<Person> persons = jCassandra.getResultList();
         Assert.assertEquals(persons.get(0).getName(), dao.retrieve(4l).getName());
     }
 
     @Test
     public void runCqlSomeFieldsTest() {
-
         JCassandra jCassandra = persistence.createJCassandra("select name, id, year from Person");
-
-
         Assert.assertNotNull(jCassandra.getResultList());
     }
 
     @SuppressWarnings("rawtypes")
     @Test
     public void runCqlSomeFields2Test() {
-
         JCassandra jCassandra = persistence.createJCassandra("select name, id, year from Person");
-
         List list = jCassandra.getResultList();
         Assert.assertNotNull(list);
     }
@@ -85,28 +74,22 @@ public class PersistenceDaoTest {
     @SuppressWarnings("unchecked")
     @Test
     public void runCqlEqualsFieldTest() {
-
         JCassandra jCassandra = persistence.createJCassandra("select personalFile, sex, id, year from Person");
-
         List<Map<String, Object>> list = jCassandra.getResultList();
         for (Map<String, Object> map : list) {
             if (map.get("personalFile") != null) {
                 Assert.assertTrue(map.get("personalFile") instanceof File);
             }
-
         }
-
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void runCqlEqualsFieldEnumTest() {
-
         Person p = getPerson();
         p.setId(113l);
         persistence.insert(p);
         JCassandra jCassandra = persistence.createJCassandra("select personalFile, sex, id, year from Person where id = 113");
-
         List<Map<String, Object>> list = jCassandra.getResultList();
         Sex sex = (Sex) list.get(0).get("sex");
         Assert.assertEquals(Sex.MALE, sex);
@@ -115,22 +98,15 @@ public class PersistenceDaoTest {
     @SuppressWarnings("unchecked")
     @Test
     public void selectSubFieldTest() {
-
         JCassandra jCassandra = persistence.createJCassandra("select address.cep from Person where id = 10");
-
         String cep = (String) jCassandra.getSingleResult();
-
         Assert.assertEquals("40243-543", cep);
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void selectSubClassTest() {
-
         JCassandra jCassandra = persistence.createJCassandra("select address from Person where id = 10");
-
-
-
         Assert.assertTrue(jCassandra.getSingleResult() instanceof Address);
     }
 
@@ -260,9 +236,7 @@ public class PersistenceDaoTest {
     public void getFirstResultTest() {
         JCassandra jCassandra = persistence.createJCassandra("select * from Person where id =:id ");
         jCassandra.setFirstResult(3);
-
         Assert.assertEquals(jCassandra.getFirstResult(), 3);
-
     }
 
     @Test
@@ -316,7 +290,6 @@ public class PersistenceDaoTest {
     @BeforeClass
     public static void initStatic() {
         EasyCassandraManager.addFamilyObject(Person.class);
-
     }
 
     @Before
