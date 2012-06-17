@@ -9,7 +9,7 @@ import org.junit.Test;
 
 public class TwitterDaoTest {
 
-	private PersistenceDao<Twitter> dao = new PersistenceDao<>(Twitter.class);	
+	private PersistenceDao<Twitter> dao = new PersistenceDao<Twitter>(Twitter.class);	
 	
 	@Test
 	public void insertTest(){

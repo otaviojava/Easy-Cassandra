@@ -23,8 +23,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.cassandra.thrift.Cassandra;
 import org.apache.cassandra.thrift.Cassandra.Client;
-import org.apache.cassandra.thrift.InvalidRequestException;
-import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TFramedTransport;
@@ -53,11 +51,11 @@ public final class EasyCassandraManager {
     private static Map<String, DescribeFamilyObject> familyObjects;
 
     static {
-        conections = new ArrayList<>();
-        referenceSuperColunms = new AtomicReference<>();
+        conections = new ArrayList<EasyCassandraClient>();
+        referenceSuperColunms = new AtomicReference<ColumnFamilyIds>();
         ReadDocument readDocument = new ReadDocument();
         referenceSuperColunms.set(readDocument.read());
-        familyObjects = new HashMap<>();
+        familyObjects = new HashMap<String, DescribeFamilyObject>();
     }
 
     /**
@@ -84,7 +82,7 @@ public final class EasyCassandraManager {
             conection.setTransport(transport);
             conections.add(conection);
             return client;
-        } catch (InvalidRequestException | TException exception) {
+        } catch (Exception exception) {
             Logger.getLogger(EasyCassandraManager.class.getName()).log(Level.SEVERE, null, exception);
         }
         return null;

@@ -156,13 +156,13 @@ class BasePersistence {
     protected List getList(List<Map<String, ByteBuffer>> colMap,
             Class persisteceClass) throws InstantiationException,
             IllegalAccessException {
-        List lists = new ArrayList<>();
+        List lists = new ArrayList();
 
         for (Map<String, ByteBuffer> listMap : colMap) {
             Object bean = null;
             try {
                 bean = persisteceClass.newInstance();
-            } catch (InstantiationException | IllegalAccessException ex) {
+            } catch (Exception ex) {
                 Logger.getLogger(
                         BasePersistence.class.getName()).log(Level.SEVERE,
                         null, ex);

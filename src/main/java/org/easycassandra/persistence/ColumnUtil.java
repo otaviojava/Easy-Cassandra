@@ -29,7 +29,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
-import javax.xml.crypto.dsig.keyinfo.KeyValue;
 
 import org.apache.cassandra.thrift.Column;
 import org.easycassandra.EasyCassandraException;
@@ -141,7 +140,7 @@ final class ColumnUtil {
      */
     public static List<Column> getColumns(Object object) {
         Long timeStamp = System.currentTimeMillis();
-        List<Column> columns = new ArrayList<>();
+        List<Column> columns = new ArrayList<Column>();
         List<Field> fields = listFields(object.getClass());
       
         for (Field field : fields) {
@@ -173,7 +172,7 @@ final class ColumnUtil {
      * @return list of the fields
      */
     public static List<Field> listFields(Class<?> class1) {
-    	List<Field> fields =new ArrayList<>();
+    	List<Field> fields =new ArrayList<Field>();
     	feedFieldList(class1, fields);
     	if(isMappedSuperclass(class1)){
     		feedFieldList(class1.getSuperclass(), fields);

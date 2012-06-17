@@ -103,7 +103,7 @@ class DescribeField {
      */
     public void add(DescribeField describeField) {
         if (children == null) {
-            children = new ArrayList<>();
+            children = new ArrayList<DescribeField>();
         }
         children.add(describeField);
     }

@@ -15,7 +15,7 @@ import org.junit.Test;
  */
 public class PersonDAOTest {
 
-    private PersistenceDao<Person> dao = new PersistenceDao<>(Person.class);
+    private PersistenceDao<Person> dao = new PersistenceDao<Person>(Person.class);
 
     @Test
     public void insertTest() {

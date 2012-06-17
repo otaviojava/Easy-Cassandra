@@ -12,7 +12,7 @@ import org.junit.Test;
 * @author otavio
 */
 public class Person2DAOTest {
-	  private PersistenceDao<Person2> dao = new PersistenceDao<>(Person2.class);
+	  private PersistenceDao<Person2> dao = new PersistenceDao<Person2>(Person2.class);
 	  	@Test
 	    public void insertErrorTest() {
 	        System.out.println("Inserindo exemplo");

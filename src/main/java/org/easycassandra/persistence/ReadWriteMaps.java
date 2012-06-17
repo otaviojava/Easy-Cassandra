@@ -70,7 +70,7 @@ final class ReadWriteMaps {
      * @see ReadWriteMaps#writeMap
      */
     private static void initWriteMap() {
-        writeMap = new HashMap<>();
+        writeMap = new HashMap<String, WriteInterface>();
         writeMap.put("java.util.Date", new DateWrite());
     }
 
@@ -80,7 +80,7 @@ final class ReadWriteMaps {
      * @see ReadWriteMaps#readMap
      */
     private static void initReadMap() {
-        readMap = new HashMap<>();
+        readMap = new HashMap<String, ReadInterface>();
         readMap.put("java.util.Date", new DateRead());
         readMap.put("java.io.File", new FileRead());
         readMap.put("java.nio.file.Path", new PathRead());

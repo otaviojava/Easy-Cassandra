@@ -13,7 +13,7 @@ import org.junit.Test;
 */
 public class CountDAOTest {
 
-	private PersistenceDao<Count> dao = new PersistenceDao<>(Count.class);
+	private PersistenceDao<Count> dao = new PersistenceDao<Count>(Count.class);
     
     
     @Test

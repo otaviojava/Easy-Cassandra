@@ -16,7 +16,6 @@ package org.easycassandra.util;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBContext;
@@ -72,7 +71,7 @@ public final class DomUtil {
             File file = new File(FILE);
             marshaller.marshal(object, new FileWriter(file.getAbsolutePath()));
             return file;
-        } catch (IOException | JAXBException exception) {
+        } catch (Exception exception) {
             Logger.getLogger(DomUtil.class.getName()).log(Level.SEVERE, null,
                     exception);
         }

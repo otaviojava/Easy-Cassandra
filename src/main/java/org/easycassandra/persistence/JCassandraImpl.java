@@ -32,7 +32,8 @@ import org.easycassandra.util.ReflectionUtil;
  */
 class JCassandraImpl implements JCassandra {
 
-    private static final String NOT_SUPPORTED_YET = "Not supported yet.";
+	private static final String NOT_SUPPORTED_YET = "Not supported yet.";
+	private  static  List<String> cqlWords;
     /**
      * Class for run the queries
      */
@@ -68,7 +69,8 @@ class JCassandraImpl implements JCassandra {
      *
      * @param expression
      */
-    JCassandraImpl(String expression) {
+    JCassandraImpl(String expression) {  
+   initArray();
         informationCQL = new InformationQuery();
         StringTokenizer expressionTokens = new StringTokenizer(
                 cqlQuery(expression));
@@ -82,56 +84,68 @@ class JCassandraImpl implements JCassandra {
                 period = Period.AFTER_FROM;
                 continue;
             }
-            switch (actualExpression) {
-                case "update":
+         
+                if ("update".equals(actualExpression)){
                     period = Period.SELECT;
                     informationCQL.isUpdate = true;
-                    break;
-                case "select":
-                case "delete":
+                }
+                
+                else if("select".equals(actualExpression)||"delete".equals(actualExpression)){
+              
                     period = Period.SELECT;
-                    break;
-                case "*":
+                }
+                else if( "*".equals(actualExpression)){
                     informationCQL.allObject = true;
-                    break;
-                case "from":
+                }
+                else if( "from".equals(actualExpression)){
                     period = Period.FROM;
 
-                    break;
-                case "where":
+                }
+                else if( "where".equals(actualExpression)){
                     period = Period.WHERE;
-                    break;
-                case ",":
+                
+                }
+                else if( ",".equals(actualExpression)){ 
                     isNeedComma();
-                    break;
-                case "count(*)":
+                }
+                else if( "count(*)".equals(actualExpression)){
+                
                     informationCQL.countMode = true;
-                    break;
-                case "set":
-                case "<":
-                case ">":
-                case "=":
-                case "<=":
-                case ">=":
-                case "and":
-                case "or":
+                }
+                else if(cqlWords.contains(actualExpression)){
+              
+                
                     informationCQL.needsCondition = false;
-                    break;
-                default:
+                }
+                else{
                     defaultCondition(period, actualExpression);
-                    break;
-            }
+                }
+            
             isStartCorrect(period);
             if (Period.SELECT.equals(period) && informationCQL.isUpdate) {
                 period = Period.FROM;
             }
-        }
+        }  
         verifySyntax(informationCQL);
+       
         cql = new StringBuilder(expression);
         informationCQL.toVariableNameKey();
     }
 
-    private void isNeedComma() {
+    private void initArray() {
+    	 cqlWords=new ArrayList<String>();
+    	    cqlWords.add("set");
+    	    cqlWords.add("<");
+    	    cqlWords.add( ">");
+    	    cqlWords.add("=");
+    	    cqlWords.add( "<=");
+    	    cqlWords.add(">=");
+    	    cqlWords.add("and");
+    	    cqlWords.add("or");
+		
+	}
+
+	private void isNeedComma() {
         if (!informationCQL.needsComma && !informationCQL.isUpdate) {
             throw new EasyCassandraException(" Syntax error: unnecessary comma");
         }
@@ -319,7 +333,7 @@ class JCassandraImpl implements JCassandra {
             DescribeFamilyObject describeFamilyObject =
                     EasyCassandraManager.getFamily(informationCQL.columnFamily);
             int position = 0;
-            whereMap = new HashMap<>();
+            whereMap = new HashMap<String, VariableConditions>();
             for (String key : variabledMap.keySet()) {
                 String aux = key;
                 VariableConditions value = variabledMap.get(key);
@@ -342,10 +356,10 @@ class JCassandraImpl implements JCassandra {
         }
 
         {
-            variable = new ArrayList<>();
-            variabledMap = new HashMap<>();
+            variable = new ArrayList<String>();
+            variabledMap = new HashMap<String, VariableConditions>();
             variableConditions = new VariableConditions();
-            whereMap = new HashMap<>();
+            whereMap = new HashMap<String, VariableConditions>();
         }
 
         /**
@@ -381,7 +395,7 @@ class JCassandraImpl implements JCassandra {
         String cqlNew = replaceToCQLName(describeFamilyObject);
         List<?> list = null;
         if (informationCQL.countMode) {
-            List<Long> longList = new ArrayList<>();
+            List<Long> longList = new ArrayList<Long>();
             longList.add(persistence.executeCommandCQL(cqlNew).rows.get(
                     0).getColumns().get(0).value.asLongBuffer().get());
             list = longList;
@@ -432,10 +446,10 @@ class JCassandraImpl implements JCassandra {
      */
     private List<?> executeSomeFields(DescribeFamilyObject describeFamilyObject,
             String cql) {
-        List<Map<String, Object>> listCql = new ArrayList<>();
+        List<Map<String, Object>> listCql = new ArrayList<Map<String, Object>>();
         for (Map<String, String> resultSet : persistence.executeCql(cql)) {
-            Map<String, Object> resulMap = new HashMap<>();
-            List<String> used = new ArrayList<>();
+            Map<String, Object> resulMap = new HashMap<String, Object>();
+            List<String> used = new ArrayList<String>();
             for (String key : resultSet.keySet()) {
                 if (used.contains(key)) {
                     continue;
@@ -504,16 +518,17 @@ class JCassandraImpl implements JCassandra {
      * @param cql
      * @return
      */
-    private List<?> executeAll(DescribeFamilyObject describeFamilyObject,
+    @SuppressWarnings("rawtypes")
+	private List<?> executeAll(DescribeFamilyObject describeFamilyObject,
             String cql) {
         try {
             return persistence.listbyQuery(persistence.executeCommandCQL(cql),
                     describeFamilyObject.getClassFamily());
-        } catch (InstantiationException | IllegalAccessException exception) {
+        } catch (Exception exception) {
             Logger.getLogger(Persistence.class.getName()).log(Level.SEVERE,
                     null, exception);
         }
-        return new ArrayList<>();
+        return new ArrayList();
     }
 
     @Override
@@ -538,7 +553,7 @@ class JCassandraImpl implements JCassandra {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private Object hashMapContition(List<?> list) {
         Map map = (Map) list.get(0);
-        List objects = new ArrayList<>();
+        List objects = new ArrayList();
         for (Object object : map.keySet()) {
             if (map.get(object) != null) {
                 objects.add(map.get(object));
@@ -658,7 +673,7 @@ class JCassandraImpl implements JCassandra {
 
     @Override
     public Set<Parameter<?>> getParameters() {
-        Set<Parameter<?>> set = new HashSet<>();
+        Set<Parameter<?>> set = new HashSet<Parameter<?>>();
         for (String key : informationCQL.whereMap.keySet()) {
             set.add(informationCQL.whereMap.get(key));
         }

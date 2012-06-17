@@ -132,7 +132,7 @@ class DescribeFamilyObject {
     }
 
     {
-        fields = new HashMap<>();
-        columnName = new HashMap<>();
+        fields = new HashMap<String, DescribeField>();
+        columnName = new HashMap<String, String>();
     }
 }

@@ -14,10 +14,8 @@
  */
 package org.easycassandra.util;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,7 +30,8 @@ public final class ReflectionUtil {
     /**
      * class of primitives types
      */
-    private static Class[] primitivesClass = {int.class, long.class,
+    @SuppressWarnings("rawtypes")
+	private static Class[] primitivesClass = {int.class, long.class,
         float.class, double.class, boolean.class};
 
     /**
@@ -45,15 +44,18 @@ public final class ReflectionUtil {
     public static Object getMethod(Object object, Field field) {
 
         try {
-            String fieldName = field.getName();
-            MethodType methodType = MethodType.methodType(field.getType());
-            String methodName = "get" + fieldName.substring(0, 1).toUpperCase()
-                    + fieldName.substring(1);
-            MethodHandle methodHandle =
-                    MethodHandles.publicLookup().bind(object, methodName,
-                    methodType);
-            return methodHandle.invoke();
-        } catch (Throwable exception) {
+        	boolean isAccessibleCopy=field.isAccessible();
+          if(isAccessibleCopy){
+        	  return field.get(object);
+          }
+          else{
+        	  field.setAccessible(true);
+        	  Object value=field.get(object);
+        	  field.setAccessible(isAccessibleCopy);
+        	  return value;
+          }
+          
+        } catch (Exception exception) {
             Logger.getLogger(ReflectionUtil.class.getName()).log(Level.SEVERE,
                     null, exception);
         }
@@ -70,17 +72,16 @@ public final class ReflectionUtil {
      */
     public static boolean setMethod(Object object, Field field, Object value) {
         try {
-            String fieldName = field.getName();
-            MethodType methodType = MethodType.methodType(void.class,
-                    field.getType());
-            String methodName = "set" + fieldName.substring(0, 1).toUpperCase()
-                    + fieldName.substring(1);
-            MethodHandle methodHandle = MethodHandles.publicLookup().bind(object,
-                    methodName, methodType);
-            MethodHandle printer = MethodHandles.insertArguments(methodHandle,
-                    0, value);
-            printer.invoke();
-        } catch (Throwable exception) {
+        	boolean isAccessibleCopy=field.isAccessible();
+            if(isAccessibleCopy){
+          	field.set(object, value);
+            }
+            else{
+          	  field.setAccessible(true);
+          	 field.set(object, value);
+          	  field.setAccessible(isAccessibleCopy);
+            }
+        } catch (Exception exception) {
             Logger.getLogger(ReflectionUtil.class.getName()).log(Level.SEVERE,
                     null, exception);
             return false;
@@ -97,20 +98,18 @@ public final class ReflectionUtil {
      * @param refence - the Class Reference
      * @return the instance of the object
      */
-    public static Object valueOf(Class classValue, Object value, Class refence) {
-        MethodType methodType = MethodType.methodType(classValue, refence);
-        MethodHandle methodHandle;
+    @SuppressWarnings("rawtypes")
+	public static Object valueOf(Class classValue, Object value, Class refence) {
         try {
             if (Arrays.asList(primitivesClass).contains(classValue)) {
                 return valueOfWrapper(classValue, value);
             }
-            methodHandle = MethodHandles.publicLookup().findStatic(classValue,
-                    "valueOf", methodType);
-            MethodHandle printer = MethodHandles.insertArguments(methodHandle,
-                    0, value);
+            @SuppressWarnings("unchecked")
+			Method method= classValue.getMethod("valueOf", refence);
+            return method.invoke(classValue,value);
 
-            return printer.invoke();
-        } catch (Throwable exception) {
+        
+        } catch (Exception exception) {
             Logger.getLogger(ReflectionUtil.class.getName()).log(Level.SEVERE,
                     null, exception);
             return null;
@@ -126,19 +125,24 @@ public final class ReflectionUtil {
      * @param value - the value of the class
      * @return - the Object for the primitive type
      */
-    private static Object valueOfWrapper(Class classValue, Object value) {
-        switch (classValue.getName()) {
-            case "int":
+    private static Object valueOfWrapper(Class<?> classValue, Object value) {
+
+            if(int.class.equals(classValue)){
                 return Integer.valueOf(value.toString());
-            case "long":
+            }
+            if(long.class.equals(classValue)){
                 return Long.valueOf(value.toString());
-            case "float":
+            } 
+            if(float.class.equals(classValue)){
                 return Float.valueOf(value.toString());
-            case "double":
+            }
+            if(double.class.equals(classValue)){
                 return Double.valueOf(value.toString());
-            case "boolean":
+            }
+            if(boolean.class.equals(classValue)){
                 return Boolean.valueOf(value.toString());
-        }
+            }
+
         return value;
     }
 
@@ -148,7 +152,7 @@ public final class ReflectionUtil {
      * @param value
      * @return the value of value
      */
-    public static Object valueOf(Class classValue, Object value) {
+    public static Object valueOf(Class<?> classValue, Object value) {
         return valueOf(classValue, value, value.getClass());
     }
 
@@ -161,7 +165,7 @@ public final class ReflectionUtil {
     public static Object newInstance(Class<?> clazz) {
         try {
             return clazz.newInstance();
-        } catch (InstantiationException | IllegalAccessException exception) {
+        } catch (Exception exception) {
             Logger.getLogger(ReflectionUtil.class.getName()).log(Level.SEVERE,
                     null, exception);
             return null;

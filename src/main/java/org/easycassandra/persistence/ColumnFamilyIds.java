@@ -73,6 +73,6 @@ public class ColumnFamilyIds implements Serializable {
     }
 
     public ColumnFamilyIds() {
-        columnFamilyInformation = new ArrayList<>();
+        columnFamilyInformation = new ArrayList<ColumnFamilyInformation>();
     }
 }

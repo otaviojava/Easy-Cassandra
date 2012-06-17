@@ -95,7 +95,6 @@ public class PersistenceDaoTest {
         Assert.assertEquals(Sex.MALE, sex);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void selectSubFieldTest() {
         JCassandra jCassandra = persistence.createJCassandra("select address.cep from Person where id = 10");
@@ -103,7 +102,6 @@ public class PersistenceDaoTest {
         Assert.assertEquals("40243-543", cep);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void selectSubClassTest() {
         JCassandra jCassandra = persistence.createJCassandra("select address from Person where id = 10");
@@ -295,6 +293,6 @@ public class PersistenceDaoTest {
     @Before
     public void init() {
         persistence = EasyCassandraManager.getPersistence("javabahia", "localhost", 9160);
-        dao = new PersistenceDao<>(Person.class);
+        dao = new PersistenceDao<Person>(Person.class);
     }
 }

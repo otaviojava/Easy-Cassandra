@@ -25,7 +25,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.cassandra.thrift.Cassandra.Client;
 import org.apache.cassandra.thrift.*;
-import org.apache.thrift.TException;
 import org.easycassandra.ConsistencyLevelCQL;
 import org.easycassandra.EasyCassandraException;
 import org.easycassandra.util.EncodingUtil;
@@ -102,7 +101,7 @@ public class Persistence extends BasePersistence {
         } catch (Exception exception) {
             Logger.getLogger(Persistence.class.getName()).log(Level.SEVERE,
                     null, exception);
-            return new ArrayList<>();
+            return new ArrayList();
         }
 
 
@@ -199,10 +198,10 @@ public class Persistence extends BasePersistence {
      */
     public List<Map<String, String>> executeCql(String query) {
         CqlResult resultCQL = executeCommandCQL(query);
-        List<Map<String, String>> listMap = new ArrayList<>();
+        List<Map<String, String>> listMap = new ArrayList<Map<String, String>>();
 
         for (CqlRow row : resultCQL.rows) {
-            Map<String, String> mapColumn = new HashMap<>();
+            Map<String, String> mapColumn = new HashMap<String, String>();
 
             for (Column cl : row.getColumns()) {
 
@@ -233,9 +232,7 @@ public class Persistence extends BasePersistence {
         try {
             return client.execute_cql_query(ByteBuffer.wrap(cql.getBytes()),
                     Compression.NONE);
-        } catch (InvalidRequestException | UnavailableException |
-                TimedOutException | SchemaDisagreementException |
-                TException exception) {
+        } catch (Exception exception) {
             Logger logger = Logger.getLogger(Persistence.class.getName());
 
 
@@ -318,7 +315,7 @@ public class Persistence extends BasePersistence {
             Logger.getLogger(Persistence.class.getName()).log(Level.SEVERE,
                     null, exception);
         }
-        return new ArrayList<>();
+        return new ArrayList();
     }
 
     /**
@@ -334,10 +331,10 @@ public class Persistence extends BasePersistence {
      */
     public List listbyQuery(CqlResult resultCQL, Class persistenceClass)
             throws InstantiationException, IllegalAccessException {
-        List<Map<String, ByteBuffer>> listMap = new ArrayList<>();
+        List<Map<String, ByteBuffer>> listMap = new ArrayList<Map<String, ByteBuffer>>();
 
         for (CqlRow row : resultCQL.rows) {
-            Map<String, ByteBuffer> mapColumn = new HashMap<>();
+            Map<String, ByteBuffer> mapColumn = new HashMap<String, ByteBuffer>();
 
             for (Column column : row.getColumns()) {
                 if (column.timestamp != -1) {

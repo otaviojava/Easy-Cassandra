@@ -90,7 +90,7 @@ public class ReadManagerTest {
 	@Before
 	public void init(){
 		
-		Map<String, ReadInterface> readMap = new HashMap<>();
+		Map<String, ReadInterface> readMap = new HashMap<String, ReadInterface>();
 		readMap.put("java.util.Date", new DateRead());
 		readManager=new ReadManager(readMap);
 		

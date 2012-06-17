@@ -103,7 +103,7 @@ public class WriteManagerTest {
 	@Before
 	public void init(){
 		
-		Map<String, WriteInterface> writeMap = new HashMap<>();
+		Map<String, WriteInterface> writeMap = new HashMap<String, WriteInterface>();
 		writeMap.put("java.util.Date", new DateWrite());
 		writeManager = new WriteManager(writeMap);
 	}

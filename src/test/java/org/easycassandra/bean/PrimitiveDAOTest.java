@@ -13,7 +13,7 @@ import org.junit.Test;
 */
 public class PrimitiveDAOTest {
 
-	private PersistenceDao<Primitive> dao = new PersistenceDao<>(Primitive.class);
+	private PersistenceDao<Primitive> dao = new PersistenceDao<Primitive>(Primitive.class);
     
     
     @Test

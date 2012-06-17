@@ -1,7 +1,6 @@
 package org.easycassandra.annotations.readwrite;
 
 import java.util.Calendar;
-import java.util.Date;
 
 import junit.framework.Assert;
 
@@ -26,7 +25,6 @@ public class CalendarReadWriteTest implements ReadWriteTest{
 		
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	@Test
 	public void getObjectByByteNegativeTest() {
