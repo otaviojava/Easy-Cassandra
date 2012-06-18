@@ -1,7 +1,5 @@
 package org.easycassandra.bean.model;
 
-import java.nio.file.Path;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -19,7 +17,7 @@ public class Twitter {
 	    
 	    
 	    @Column
-	    private Path path;
+//	    private Path path;
 
 		public String getName() {
 			return name;
@@ -43,14 +41,14 @@ public class Twitter {
 
 		
 		
-		public Path getPath() {
-			return path;
-		}
-
-
-		public void setPath(Path path) {
-			this.path = path;
-		}
+//		public Path getPath() {
+//			return path;
+//		}
+//
+//
+//		public void setPath(Path path) {
+//			this.path = path;
+//		}
 
 
 		@Override

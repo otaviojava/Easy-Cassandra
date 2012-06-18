@@ -6,7 +6,6 @@ package org.easycassandra.bean.model;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -14,6 +13,7 @@ import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
 
+import org.apache.commons.lang.StringUtils;
 import org.easycassandra.annotations.Index;
 
 /**
@@ -102,15 +102,15 @@ public class Person implements Serializable {
             return false;
         }
         final Person other = (Person) obj;
-        if (!Objects.equals(this.id, other.id)) {
-            return false;
+        if(!StringUtils.equals(String.valueOf(this.id.intValue()), String.valueOf(other.id.intValue()))){
+        	return false;
         }
         return true;
     }
 
     public int hashCode() {
         int hash = 3;
-        return 97 * hash + Objects.hashCode(this.id);
+        return 97 * hash + Integer.valueOf(this.id.intValue());
         
     }
     

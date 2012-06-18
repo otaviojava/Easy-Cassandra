@@ -14,8 +14,10 @@
  */
 package org.easycassandra.persistence;
 
-import java.util.Objects;
+//import java.util.Objects;
 import javax.persistence.Parameter;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * This class is for represent parameter in CQL
@@ -86,8 +88,11 @@ class VariableConditions implements Parameter {
             return false;
         }
         final VariableConditions other = (VariableConditions) obj;
-        if (!Objects.equals(this.name, other.name)) {
-            return false;
+//        if (!Objects.equals(this.name, other.name)) {
+//            return false;
+//        }
+        if(StringUtils.equals(this.name, other.name)){
+        	return false;
         }
         return true;
     }
@@ -95,6 +100,6 @@ class VariableConditions implements Parameter {
     @Override
     public int hashCode() {
         int hash = HASH;
-        return VALUE * hash + Objects.hashCode(this.name);
+        return VALUE * hash + Integer.parseInt(this.name);
     }
 }

@@ -16,11 +16,13 @@ package org.easycassandra.persistence;
 
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.Objects;
+//import java.util.Objects;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * The unit in XML Document
@@ -103,11 +105,17 @@ public class ColumnFamilyInformation implements Serializable {
             return false;
         }
         final ColumnFamilyInformation other = (ColumnFamilyInformation) obj;
-        if (!Objects.equals(this.columnFamilyName, other.columnFamilyName)) {
-            return false;
+//        if (!Objects.equals(this.columnFamilyName, other.columnFamilyName)) {
+//            return false;
+//        }
+//        if (!Objects.equals(this.keyStore, other.keyStore)) {
+//            return false;
+//        }
+        if(!StringUtils.equals(this.columnFamilyName, other.columnFamilyName)){
+        	return false;
         }
-        if (!Objects.equals(this.keyStore, other.keyStore)) {
-            return false;
+        if(StringUtils.equals(this.keyStore, other.keyStore)){
+        	return false;
         }
         return true;
     }
@@ -115,7 +123,7 @@ public class ColumnFamilyInformation implements Serializable {
     @Override
     public int hashCode() {
         int hash = HASH_VALUE;
-        hash = HASH_CODE * hash + Objects.hashCode(this.columnFamilyName);
-        return HASH_CODE * hash + Objects.hashCode(this.keyStore);
+        hash = HASH_CODE * hash + Integer.parseInt(this.columnFamilyName);
+        return HASH_CODE * hash + Integer.parseInt(this.keyStore);
     }
 }

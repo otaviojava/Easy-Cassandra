@@ -5,9 +5,11 @@
 package org.easycassandra.bean.model;
 
 import java.io.Serializable;
-import java.util.Objects;
+//import java.util.Objects;
 
 import javax.persistence.Column;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -68,19 +70,25 @@ public class Address implements Serializable {
             return false;
         }
         final Address other = (Address) obj;
-        if (!Objects.equals(this.city, other.city)) {
-            return false;
+//        if (!Objects.equals(this.city, other.city)) {
+//            return false;
+//        }
+//        if (!Objects.equals(this.cep, other.cep)) {
+//            return false;
+//        }
+        if(!StringUtils.equals(this.city, other.city)){
+        	return false;
         }
-        if (!Objects.equals(this.cep, other.cep)) {
-            return false;
+        if(!StringUtils.equals(this.cep, other.cep)){
+        	return false;
         }
         return true;
     }
 
     public int hashCode() {
         int hash = 7;
-        hash = 97 * hash + Objects.hashCode(this.city);
-        hash = 97 * hash + Objects.hashCode(this.cep);
+        hash = 97 * hash + Integer.parseInt(this.city);
+        hash = 97 * hash + Integer.parseInt(this.cep);
         return hash;
     }
     

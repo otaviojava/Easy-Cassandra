@@ -14,7 +14,7 @@
  */
 package org.easycassandra.persistence;
 
-import java.util.Objects;
+//import java.util.Objects;
 import org.apache.cassandra.thrift.Cassandra;
 import org.apache.cassandra.thrift.Cassandra.Client;
 import org.apache.thrift.transport.TTransport;
@@ -114,9 +114,9 @@ class EasyCassandraClient {
     @Override
     public int hashCode() {
         int hash = HASH_VALUE;
-        hash = HASH_CODE * hash + Objects.hashCode(this.host);
-        hash = HASH_CODE * hash + Objects.hashCode(this.keyspace);
-        hash = HASH_CODE * hash + Objects.hashCode(this.port);
+        hash = HASH_CODE * hash + Integer.parseInt(this.host);
+        hash = HASH_CODE * hash + Integer.parseInt(this.keyspace);
+        hash = HASH_CODE * hash + (this.port);
         return hash;
     }
 
