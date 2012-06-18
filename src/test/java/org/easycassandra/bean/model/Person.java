@@ -110,7 +110,7 @@ public class Person implements Serializable {
 
     public int hashCode() {
         int hash = 3;
-        return 97 * hash + Integer.valueOf(this.id.intValue());
+        return 97 * hash + id.hashCode();
         
     }
     

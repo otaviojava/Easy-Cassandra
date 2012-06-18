@@ -114,8 +114,8 @@ class EasyCassandraClient {
     @Override
     public int hashCode() {
         int hash = HASH_VALUE;
-        hash = HASH_CODE * hash + Integer.parseInt(this.host);
-        hash = HASH_CODE * hash + Integer.parseInt(this.keyspace);
+        hash = HASH_CODE * hash + host.hashCode();
+        hash = HASH_CODE * hash + keyspace.hashCode();
         hash = HASH_CODE * hash + (this.port);
         return hash;
     }

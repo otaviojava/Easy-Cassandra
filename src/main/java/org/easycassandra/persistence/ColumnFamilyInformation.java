@@ -105,16 +105,10 @@ public class ColumnFamilyInformation implements Serializable {
             return false;
         }
         final ColumnFamilyInformation other = (ColumnFamilyInformation) obj;
-//        if (!Objects.equals(this.columnFamilyName, other.columnFamilyName)) {
-//            return false;
-//        }
-//        if (!Objects.equals(this.keyStore, other.keyStore)) {
-//            return false;
-//        }
         if(!StringUtils.equals(this.columnFamilyName, other.columnFamilyName)){
         	return false;
         }
-        if(StringUtils.equals(this.keyStore, other.keyStore)){
+        if(!StringUtils.equals(this.keyStore, other.keyStore)){
         	return false;
         }
         return true;
@@ -123,7 +117,7 @@ public class ColumnFamilyInformation implements Serializable {
     @Override
     public int hashCode() {
         int hash = HASH_VALUE;
-        hash = HASH_CODE * hash + Integer.parseInt(this.columnFamilyName);
-        return HASH_CODE * hash + Integer.parseInt(this.keyStore);
+        hash = HASH_CODE * hash + columnFamilyName.hashCode();
+        return HASH_CODE * hash +keyStore.hashCode();
     }
 }

@@ -6,14 +6,11 @@ package org.easycassandra.bean.model;
 
 import java.io.File;
 import java.io.Serializable;
-//import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
-
-import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -100,7 +97,7 @@ public class Person2 implements Serializable {
             return false;
         }
         final Person2 other = (Person2) obj;
-        if (!StringUtils.equals(String.valueOf(this.id.intValue()), String.valueOf(other.id.intValue()))) {
+        if (id!=other.id) {
             return false;
         }
         return true;

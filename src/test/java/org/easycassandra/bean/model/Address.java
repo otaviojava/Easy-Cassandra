@@ -87,8 +87,8 @@ public class Address implements Serializable {
 
     public int hashCode() {
         int hash = 7;
-        hash = 97 * hash + Integer.parseInt(this.city);
-        hash = 97 * hash + Integer.parseInt(this.cep);
+        hash = 97 * hash + this.city.hashCode();
+        hash = 97 * hash + cep.hashCode();
         return hash;
     }
     

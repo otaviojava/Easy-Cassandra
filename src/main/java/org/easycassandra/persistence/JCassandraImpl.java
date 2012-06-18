@@ -18,6 +18,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.*;
+
 import org.easycassandra.EasyCassandraException;
 import org.easycassandra.annotations.read.EnumRead;
 import org.easycassandra.persistence.DescribeField.TypeField;

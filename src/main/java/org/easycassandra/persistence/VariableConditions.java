@@ -88,9 +88,6 @@ class VariableConditions implements Parameter {
             return false;
         }
         final VariableConditions other = (VariableConditions) obj;
-//        if (!Objects.equals(this.name, other.name)) {
-//            return false;
-//        }
         if(StringUtils.equals(this.name, other.name)){
         	return false;
         }
@@ -100,6 +97,6 @@ class VariableConditions implements Parameter {
     @Override
     public int hashCode() {
         int hash = HASH;
-        return VALUE * hash + Integer.parseInt(this.name);
+        return VALUE * hash +name.hashCode();
     }
 }
