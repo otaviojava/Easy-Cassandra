@@ -35,16 +35,13 @@ import org.easycassandra.util.ReflectionUtil;
  *
  * @author otaviojava - otaviojava@java.net
  */
-public class Persistence extends BasePersistence {
+public abstract class Persistence extends BasePersistence {
 
     /**
      * the value default for list the result
      */
     private static final int DEFAULT_VALUE = 10000;
-    /**
-     * Client's Cassandra
-     */
-    private Client client = null;
+   
 
     /**
      * Constructor for Persistence
@@ -53,9 +50,8 @@ public class Persistence extends BasePersistence {
      * @param superColumnsRef
      * @param keyStore
      */
-    Persistence(Client client, AtomicReference<ColumnFamilyIds> superColumnsRef,
+    Persistence(AtomicReference<ColumnFamilyIds> superColumnsRef,
             String keyStore) {
-        this.client = client;
         setReferenciaSuperColunas(superColumnsRef);
         setKeyStore(keyStore);
         Thread thread = new Thread(new WriteDocument(superColumnsRef));
@@ -147,7 +143,7 @@ public class Persistence extends BasePersistence {
             ColumnParent columnParent = new ColumnParent(
                     ColumnUtil.getColumnFamilyName(object.getClass()));
             for (Column column : ColumnUtil.getColumns(object)) {
-                client.insert(rowid, columnParent, column, consistencyLevel);
+                getClient().insert(rowid, columnParent, column, consistencyLevel);
             }
         } catch (Exception exception) {
             Logger logger = Logger.getLogger(Persistence.class.getName());
@@ -230,7 +226,7 @@ public class Persistence extends BasePersistence {
      */
     CqlResult executeCommandCQL(String cql, IndexColumnName... index) {
         try {
-            return client.execute_cql_query(ByteBuffer.wrap(cql.getBytes()),
+            return getClient().execute_cql_query(ByteBuffer.wrap(cql.getBytes()),
                     Compression.NONE);
         } catch (Exception exception) {
             Logger logger = Logger.getLogger(Persistence.class.getName());
@@ -665,9 +661,7 @@ public class Persistence extends BasePersistence {
      *
      * @return
      */
-    public Client getClient() {
-        return client;
-    }
+    public abstract Client getClient();
 
     /**
      * Class for Store information about the index and the Column name

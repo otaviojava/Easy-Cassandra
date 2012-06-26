@@ -1,5 +1,6 @@
 package org.easycassandra.persistence;
 
+import org.easycassandra.ReplicaStrategy;
 import org.easycassandra.bean.model.Person;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -16,6 +17,36 @@ public class EasyCassandraManagerTest {
     public void getPersistenceTest() {
         Assert.assertNotNull(EasyCassandraManager.getPersistence("javabahia", "localhost", 9160));
     }
+    @Test
+    public void getCreateSimpleTest() {
+        Assert.assertNotNull(EasyCassandraManager.getClient("simpleTest", "localhost", 9160,ReplicaStrategy.SimpleStrategy,3));
+    }
+    @Test
+    public void getPersistClientEqualsTest(){
+    	Assert.assertEquals(EasyCassandraManager.getPersistence("javabahia", "localhost", 9160).getClient(), EasyCassandraManager.getPersistence("javabahia", "localhost", 9160).getClient());
+    }
+    
+    @Test
+    public void getCreateNetworkTopologyTest() {
+        Assert.assertNotNull(EasyCassandraManager.getClient("networkTest", "localhost", 9160,ReplicaStrategy.NetworkTopologyStrategy,3));
+    }
+
+
+    public void numberOfClientsTest(){
+    	EasyCassandraManager.getPersistence("javabahia", "localhost", 9160);
+    	EasyCassandraManager.getClient("javabahia", "localhost", 9160);
+    	Assert.assertEquals(1, EasyCassandraManager.numberOfClients());
+    }
+    
+    @Test
+    public void getPersistenceCreateAumaticlyTest() {
+        Assert.assertNotNull(EasyCassandraManager.getPersistence("unknow", "localhost", 9160));
+    }
+    
+//    @Test(expected=Exception.class)
+//    public void getPersistenceFailHostTest() {
+//        Assert.assertNull(EasyCassandraManager.getPersistence("unknow", "unknow", 9160));
+//    }
 
     @Test
     public void addColumnFamilyTest() {

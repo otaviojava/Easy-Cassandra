@@ -32,7 +32,7 @@ public class PersonDAOTest {
     @Test
     public void retrieveTest() {
         Person person = dao.retrieve(4l);
-        Assert.assertTrue(person.getName().contains("Otavio Santana"));
+        Assert.assertTrue(person.getName().toLowerCase().contains("otavio"));
     }
 
     @Test
@@ -126,13 +126,13 @@ public class PersonDAOTest {
 
     @Test
     public void inKeyTest() {
-        for (int index = 10; index < 15; index++) {
+        for (long index = 10; index < 15; index++) {
             Person person = getPerson();
-            person.setId(Long.valueOf(10l));
+            person.setId(Long.valueOf(index));
             person.setAddress(getAddress());
             dao.insert(person);
         }
-        Assert.assertEquals(dao.findKeyIn(10l, 33l).size(), 2);
+        Assert.assertEquals(dao.findKeyIn(10l,11l,12l,13l, 14l).size(), 5);
     }
 
     @Test
@@ -142,8 +142,7 @@ public class PersonDAOTest {
 
     @Test
     public void executeUpdateCqlFailTest() {
-        Assert.assertFalse(dao.executeUpdateCql("selectErrorSyntax "
-                + "* from Person "));
+        Assert.assertFalse(dao.executeUpdateCql("selectErrorSyntax * from Person "));
     }
 
     @Test
@@ -153,7 +152,7 @@ public class PersonDAOTest {
 
     @Test
     public void countTest() {
-        Assert.assertEquals(Long.valueOf(6), dao.count());
+        Assert.assertTrue(dao.count()>0);
     }
 
     private Address getAddress() {
