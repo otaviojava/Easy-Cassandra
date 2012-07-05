@@ -230,7 +230,9 @@ public final class EasyCassandraManager {
         for (EasyCassandraClient conexao : conections) {
             conexao.getTransport().close();
         }
+        if(referenceSuperColunms.get().size()>0){
         DomUtil.getFileDom(referenceSuperColunms.get());
+        }
     }
     
     /**

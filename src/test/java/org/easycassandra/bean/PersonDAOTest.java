@@ -154,6 +154,21 @@ public class PersonDAOTest {
     public void countTest() {
         Assert.assertTrue(dao.count()>0);
     }
+    
+    @Test
+    public void insertWithAcent(){
+    	Person person=getPerson();
+    	person.setName("Otávio");
+    	person.setId(32l);
+    	Assert.assertTrue(dao.insert(person));
+    }
+    
+    @Test
+    public void retrivetWithAcent(){
+    	
+    	
+    	Assert.assertTrue(dao.listByIndex("Otávio").size()>0);
+    }
 
     private Address getAddress() {
         Address address = new Address();

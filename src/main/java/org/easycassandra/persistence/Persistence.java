@@ -482,6 +482,7 @@ public abstract class Persistence extends BasePersistence {
      *
      */
     public List findByIndex(Object index, Class objectClass) {
+    	
         return findByIndex(index, objectClass, ConsistencyLevelCQL.ONE);
     }
 
@@ -512,7 +513,8 @@ public abstract class Persistence extends BasePersistence {
      */
     public List findByIndex(Object index, Class objectClass,
             ConsistencyLevelCQL consistencyLevelCQL, int limit) {
-        String indexString = index.toString();
+        String indexString = "'" + EncodingUtil.byteToString(
+                Persistence.getWriteManager().convert(index)) + "'";;
         Field indexField = ColumnUtil.getIndexField(objectClass);
         if (indexField == null) {
             try {
@@ -639,9 +641,9 @@ public abstract class Persistence extends BasePersistence {
                             index.getIndex());
                 }
                 query = new StringBuilder();
-                query.append(" CREATE INDEX ");
-                query.append(index.getIndex());
-                query.append("teste" + " ON ");
+                query.append(" CREATE INDEX   ");
+                query.append(index.getIndex().concat("_key"));
+                query.append("  ON   ");
                 query.append(index.getColumnFamily());
                 query.append(" ( ");
                 query.append(index.getIndex());

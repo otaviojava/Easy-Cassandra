@@ -44,7 +44,9 @@ public class WriteDocument implements Runnable {
     @Override
     public void run() {
         while (true) {
+              if(columnReference.get().size()>0){
             DomUtil.getFileDom(columnReference.get());
+              }
             try {
                 Thread.sleep(TIME_SLEEP);
             } catch (InterruptedException e) {

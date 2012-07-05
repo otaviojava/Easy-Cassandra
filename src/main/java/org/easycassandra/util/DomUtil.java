@@ -22,6 +22,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import org.easycassandra.persistence.ColumnFamilyIds;
 
 /**
  * for Read and write a XML Document
@@ -61,8 +62,9 @@ public final class DomUtil {
      * @param object
      * @return the file within object
      */
-    public static File getFileDom(Object object) {
+    public static File getFileDom(ColumnFamilyIds object) {
         try {
+            
             JAXBContext jAXBContext = JAXBContext.newInstance(object.getClass());
             Marshaller marshaller = jAXBContext.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
