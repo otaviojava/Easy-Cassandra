@@ -15,8 +15,7 @@
 package org.easycassandra.persistence;
 
 //import java.util.Objects;
-import org.apache.cassandra.thrift.Cassandra;
-import org.apache.cassandra.thrift.Cassandra.Client;
+import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TTransport;
 
 /**
@@ -33,10 +32,6 @@ class EasyCassandraClient {
      */
     private String host;
     /**
-     * The keyspace Name
-     */
-    private String keyspace;
-    /**
      * The number's port
      */
     private Integer port;
@@ -44,18 +39,11 @@ class EasyCassandraClient {
      * @see TTransport
      */
     private TTransport transport;
+    
     /**
-     * @see Cassandra#Client
+     * @see TProtocol
      */
-    private Cassandra.Client client;
-
-    public Client getClient() {
-        return client;
-    }
-
-    public void setClient(Client client) {
-        this.client = client;
-    }
+    private TProtocol protocol;
 
     public String getHost() {
         return host;
@@ -65,13 +53,6 @@ class EasyCassandraClient {
         this.host = host;
     }
 
-    public String getKeyspace() {
-        return keyspace;
-    }
-
-    public void setKeyspace(String keyspace) {
-        this.keyspace = keyspace;
-    }
 
     public Integer getPort() {
         return port;
@@ -89,9 +70,19 @@ class EasyCassandraClient {
         this.transport = transport;
     }
 
-    @Override
+    
+    
+    public TProtocol getProtocol() {
+		return protocol;
+	}
+
+	public void setProtocol(TProtocol protocol) {
+		this.protocol = protocol;
+	}
+
+	@Override
     public String toString() {
-        return host + keyspace + port;
+        return host  + port;
     }
 
     @Override
@@ -115,7 +106,6 @@ class EasyCassandraClient {
     public int hashCode() {
         int hash = HASH_VALUE;
         hash = HASH_CODE * hash + host.hashCode();
-        hash = HASH_CODE * hash + keyspace.hashCode();
         hash = HASH_CODE * hash + (this.port);
         return hash;
     }
@@ -123,9 +113,8 @@ class EasyCassandraClient {
     public EasyCassandraClient() {
     }
 
-    public EasyCassandraClient(String host, String keyspace, Integer port) {
+    public EasyCassandraClient(String host, Integer port) {
         this.host = host;
-        this.keyspace = keyspace;
         this.port = port;
     }
 }

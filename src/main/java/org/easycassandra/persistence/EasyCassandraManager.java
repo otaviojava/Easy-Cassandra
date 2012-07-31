@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,10 +32,9 @@ import org.apache.cassandra.thrift.TimedOutException;
 import org.apache.cassandra.thrift.UnavailableException;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
-import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TFramedTransport;
 import org.apache.thrift.transport.TSocket;
-import org.apache.thrift.transport.TTransport;
+import org.easycassandra.EasyCassandraException;
 import org.easycassandra.ReplicaStrategy;
 import org.easycassandra.util.DomUtil;
 
@@ -96,29 +94,38 @@ public final class EasyCassandraManager {
      * @return the Cassandra's Client
      */
     public static Client getClient(String keySpace, String host, int port,ReplicaStrategy replicaStrategy,int replicaFator) {
-        EasyCassandraClient conection = new EasyCassandraClient(host,
-                keySpace, port);
-        if (conections.contains(conection)) {
-            return conections.get(conections.indexOf(conection)).getClient();
+    	EasyCassandraClient easyClient = new EasyCassandraClient(host, port);
+        if (conections.contains(easyClient)) {
+        	easyClient= conections.get(conections.indexOf(easyClient));
+        	
+        	return makeConnection(keySpace, replicaStrategy, replicaFator,easyClient);
+        	
+        	
         }
-        TTransport transport = null;
-        TProtocol protocol = null;
-        Cassandra.Client client = null;
-       
-        try {
-        	  transport = new TFramedTransport(new TSocket(host, port));
-              protocol = new TBinaryProtocol(transport);
-             client = new Cassandra.Client(protocol);
-        	 transport.open();
+        easyClient.setTransport(new TFramedTransport(new TSocket(host, port)));
+        easyClient.setProtocol(new TBinaryProtocol(easyClient.getTransport()));
+        
+        return makeConnection(keySpace, replicaStrategy, replicaFator,easyClient);
+    }
+	private static Client makeConnection(String keySpace,
+			ReplicaStrategy replicaStrategy, int replicaFator,
+			EasyCassandraClient conection) {
+		Cassandra.Client client=null;
+		try {
+        	
+			client = new Cassandra.Client(conection.getProtocol());
+             if(!conection.getTransport().isOpen()){
+            	 conection.getTransport().open();
+             }
              client.set_keyspace(keySpace);
-             addConnection(conection, transport, client);
+             addConnection(conection);
             
             return client;
         }catch (InvalidRequestException exception){
              if(((InvalidRequestException)exception).getWhy().contains("Keyspace ".concat(keySpace).concat(" does not exist"))){
         	       try {
                     createKeySpace(keySpace, replicaStrategy, replicaFator, client);
-                    addConnection(conection, transport, client);
+                    addConnection(conection);
                     return client;
                 } catch (Exception e) {
                     Logger.getLogger(EasyCassandraManager.class.getName()).log(Level.SEVERE, null, e);
@@ -130,7 +137,7 @@ public final class EasyCassandraManager {
             
         }
         return null;
-    }
+	}
     
     /**
      * Create the keyspace
@@ -167,14 +174,15 @@ public final class EasyCassandraManager {
     /**
      * Add connection in EasyCassandraManager
      * @param conection -
-     * @param transport
-     * @param client
+     * @param transport -
+     * @param protocol  - 
+     * @param client    -
      */
-	private static void addConnection(EasyCassandraClient conection,
-			TTransport transport, Cassandra.Client client) {
-		conection.setClient(client);
-		 conection.setTransport(transport);
+	private static void addConnection(EasyCassandraClient conection) {
+		 
+		  if (!conections.contains(conection)) {
 		 conections.add(conection);
+		  }
 	}
 
     /**
@@ -196,6 +204,41 @@ public final class EasyCassandraManager {
        return new PersistenceSingleClient(client, referenceSuperColunms, keySpace);
        
     }
+    /**
+     * get the Persistence with many clients and randomly access
+     * @param keySpace -keySpace's name
+     * @return - the Persistence
+     */
+	public static Persistence getPersistenceRandom(String keySpace) {
+	
+		return new PersistenceRandomClient(getListClient(keySpace),referenceSuperColunms, keySpace);
+}
+	/**
+     * get the Persistence with many clients and sequential access
+     * @param keySpace -keySpace's name
+     * @return - the Persistence
+     */
+	public static Persistence getPersistenceSequencial(String keySpace) {
+	
+		return new PersistenceSequencialClient(getListClient(keySpace),referenceSuperColunms, keySpace);
+}
+	
+	/**
+	 * make the list of client from the keyspace's name
+	 * @param keySpace - the keyspace's name
+	 * @return the client's list
+	 */
+	private static List<Client> getListClient(String keySpace) {
+		List<Client> clients=new ArrayList<Cassandra.Client>();
+		if(conections.size()<1){
+			throw new EasyCassandraException("You should add client connections in EasyCassandraManager");
+			
+		}
+		for(EasyCassandraClient easyClient:conections){
+			clients.add(makeConnection(keySpace, ReplicaStrategy.SimpleStrategy, REPLICA_FATOR_DEFAULT, easyClient));
+		}
+		return clients;
+	}
 
     /**
      * Add object for CQL in objects
@@ -233,6 +276,7 @@ public final class EasyCassandraManager {
         if(referenceSuperColunms.get().size()>0){
         DomUtil.getFileDom(referenceSuperColunms.get());
         }
+        conections=new ArrayList<EasyCassandraClient>();
     }
     
     /**
@@ -243,10 +287,7 @@ public final class EasyCassandraManager {
 		
 		return conections.size();
 	}
-	public static Client getRandomCleint() {
-		Random random=new Random();
-		return conections.get(random.nextInt(conections.size())).getClient();
-	}
+
         
         private EasyCassandraManager(){
         }

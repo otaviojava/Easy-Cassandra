@@ -23,8 +23,15 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.apache.cassandra.thrift.Cassandra.Client;
-import org.apache.cassandra.thrift.*;
+import org.apache.cassandra.thrift.Column;
+import org.apache.cassandra.thrift.ColumnParent;
+import org.apache.cassandra.thrift.Compression;
+import org.apache.cassandra.thrift.ConsistencyLevel;
+import org.apache.cassandra.thrift.CqlResult;
+import org.apache.cassandra.thrift.CqlRow;
+import org.apache.cassandra.thrift.InvalidRequestException;
 import org.easycassandra.ConsistencyLevelCQL;
 import org.easycassandra.EasyCassandraException;
 import org.easycassandra.util.EncodingUtil;
@@ -37,7 +44,9 @@ import org.easycassandra.util.ReflectionUtil;
  */
 public abstract class Persistence extends BasePersistence {
 
-    /**
+    private static final int HASH = 11;
+	private static final int HASH_VALUE = 5;
+	/**
      * the value default for list the result
      */
     private static final int DEFAULT_VALUE = 10000;
@@ -48,17 +57,20 @@ public abstract class Persistence extends BasePersistence {
      *
      * @param client
      * @param superColumnsRef
-     * @param keyStore
+     * @param keySpace
      */
     Persistence(AtomicReference<ColumnFamilyIds> superColumnsRef,
-            String keyStore) {
+            String keySpace) {
         setReferenciaSuperColunas(superColumnsRef);
-        setKeyStore(keyStore);
+        setKeySpace(keySpace);
         Thread thread = new Thread(new WriteDocument(superColumnsRef));
         thread.setDaemon(true);
         thread.start();
+        
     }
 
+    private String keySpace;
+    
     protected List retriveObject(String condiction, String condictionValue,
             Class persistenceClass, ConsistencyLevelCQL consistencyLevel,
             int limit, IndexColumnName... index) {
@@ -717,4 +729,28 @@ public abstract class Persistence extends BasePersistence {
         }
         return jCassandra;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Persistence other = (Persistence) obj;
+        if ((this.getKeySpace() == null) ? (other.getKeySpace() != null) : !this.getKeySpace().equals(other.getKeySpace())) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        
+        return HASH * HASH_VALUE + (this.getKeySpace() != null ? this.getKeySpace().hashCode() : 0);
+    
+    }
+    
+    
 }

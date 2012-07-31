@@ -311,7 +311,7 @@ class BasePersistence {
     /**
      * @param keyStore the keyStore to set
      */
-    public void setKeyStore(String keyStore) {
+    public void setKeySpace(String keyStore) {
         this.keyStore = keyStore;
     }
 }

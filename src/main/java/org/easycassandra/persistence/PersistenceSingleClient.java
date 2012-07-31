@@ -25,6 +25,7 @@ public class PersistenceSingleClient extends Persistence {
 	public  Client getClient() {
         return client;
     }
+
 	
 
 }
