@@ -10,7 +10,7 @@ import org.junit.Test;
 public class EasyCassandraManagerTest {
 
     @Test
-    public void getCleintTest() {
+    public void getClientTest() {
         Assert.assertNotNull(EasyCassandraManager.getClient("javabahia", "localhost", 9160));
     }
 
