@@ -28,15 +28,17 @@ import org.apache.cassandra.thrift.Cassandra.Client;
  */
 public class PersistenceRandomClient extends Persistence{
 
+   	private Random random;
 	PersistenceRandomClient(List<Client> clients, AtomicReference<ColumnFamilyIds> superColumnsRef,
 			String keySpace) {
 		super(superColumnsRef, keySpace);
 		this.clients=clients;
+		random=new Random();
 	}
 	private List<Client> clients;
 	@Override
 	public Client getClient() {
-		Random random=new Random();
+		
 		return clients.get(random.nextInt(clients.size()));
 	}
 
