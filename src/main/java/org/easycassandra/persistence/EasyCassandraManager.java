@@ -201,7 +201,7 @@ public final class EasyCassandraManager {
     	if(client==null){
     		return null;
     	}
-       return new PersistenceSingleClient(client, referenceSuperColunms, keySpace);
+       return new PersistenceSingle(client, referenceSuperColunms, keySpace);
        
     }
     /**
@@ -211,7 +211,7 @@ public final class EasyCassandraManager {
      */
 	public static Persistence getPersistenceRandom(String keySpace) {
 	
-		return new PersistenceRandomClient(getListClient(keySpace),referenceSuperColunms, keySpace);
+		return new PersistenceRandom(getListClient(keySpace),referenceSuperColunms, keySpace);
 }
 	/**
      * get the Persistence with many clients and sequential access
@@ -220,7 +220,7 @@ public final class EasyCassandraManager {
      */
 	public static Persistence getPersistenceSequencial(String keySpace) {
 	
-		return new PersistenceSequencialClient(getListClient(keySpace),referenceSuperColunms, keySpace);
+		return new PersistenceSequencial(getListClient(keySpace),referenceSuperColunms, keySpace);
 }
 	
 	/**

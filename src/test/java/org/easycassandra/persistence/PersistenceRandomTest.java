@@ -5,7 +5,7 @@ import org.easycassandra.bean.model.Sex;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class PersistenceRandomClientTest {
+public class PersistenceRandomTest {
 
 	@Test
 	public void sizeTest(){
@@ -13,7 +13,7 @@ public class PersistenceRandomClientTest {
     	EasyCassandraManager.getPersistence("javabahia", "localhost", 9160);
     	EasyCassandraManager.getPersistence("javabahia", "node2", 9160);
     	EasyCassandraManager.getPersistence("javabahia", "node3", 9160);
-    	PersistenceRandomClient persistence=(PersistenceRandomClient)EasyCassandraManager.getPersistenceRandom("javabahia");
+    	Persistence persistence=EasyCassandraManager.getPersistenceRandom("javabahia");
     	
     	Assert.assertTrue(persistence.size()==3);
     }
@@ -26,7 +26,7 @@ public class PersistenceRandomClientTest {
     	EasyCassandraManager.getPersistence("javabahia", "localhost", 9160);
     	EasyCassandraManager.getPersistence("javabahia", "node2", 9160);
     	EasyCassandraManager.getPersistence("javabahia", "node3", 9160);
-    	PersistenceRandomClient persistence=(PersistenceRandomClient)EasyCassandraManager.getPersistenceRandom("javabahia");
+    	PersistenceRandom persistence=(PersistenceRandom)EasyCassandraManager.getPersistenceRandom("javabahia");
     	
     	Assert.assertTrue(persistence.size()==3);
     }

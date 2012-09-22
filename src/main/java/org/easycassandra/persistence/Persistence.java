@@ -752,5 +752,11 @@ public abstract class Persistence extends BasePersistence {
     
     }
     
+    /**
+	 * Return the number of connections in this client
+	 * @return number of connection
+	 */
+	public abstract int size();
+    
     
 }

@@ -5,7 +5,7 @@ import org.easycassandra.bean.model.Sex;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class PersistenceSequencialClientTest {
+public class PersistenceSequencialTest {
 
 	@Test
 	public void sizeTest(){
@@ -13,7 +13,7 @@ public class PersistenceSequencialClientTest {
     	EasyCassandraManager.getPersistence("javabahia", "localhost", 9160);
     	EasyCassandraManager.getPersistence("javabahia", "node2", 9160);
     	EasyCassandraManager.getPersistence("javabahia", "node3", 9160);
-    	PersistenceSequencialClient persistence=(PersistenceSequencialClient)EasyCassandraManager.getPersistenceSequencial("javabahia");
+    	Persistence persistence=EasyCassandraManager.getPersistenceSequencial("javabahia");
     	Assert.assertTrue(persistence.size()==3);
     }
 	
@@ -27,7 +27,7 @@ public class PersistenceSequencialClientTest {
     	EasyCassandraManager.getPersistence("javabahia", "localhost", 9160);
     	EasyCassandraManager.getPersistence("javabahia", "node2", 9160);
     	EasyCassandraManager.getPersistence("javabahia", "node3", 9160);
-    	PersistenceSequencialClient persistence=(PersistenceSequencialClient)EasyCassandraManager.getPersistenceSequencial("javabahia");
+    	PersistenceSequencial persistence=(PersistenceSequencial)EasyCassandraManager.getPersistenceSequencial("javabahia");
     	Assert.assertTrue(persistence.size()==3);
     }
 	@Test

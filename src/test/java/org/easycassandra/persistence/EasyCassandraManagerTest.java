@@ -55,7 +55,7 @@ public class EasyCassandraManagerTest {
     @Test
     public void getPersistenceRandomInstanceTest(){
     	EasyCassandraManager.getPersistence("javabahia", "localhost", 9160);
-    	Assert.assertTrue(EasyCassandraManager.getPersistenceRandom("javabahia") instanceof PersistenceRandomClient);
+    	Assert.assertTrue(EasyCassandraManager.getPersistenceRandom("javabahia") instanceof PersistenceRandom);
     }
     
     @Test
@@ -71,7 +71,7 @@ public class EasyCassandraManagerTest {
     @Test
     public void getPersistenceSequencialInstanceTest(){
     	EasyCassandraManager.getPersistence("javabahia", "localhost", 9160);
-    	Assert.assertTrue(EasyCassandraManager.getPersistenceSequencial("javabahia") instanceof PersistenceSequencialClient);
+    	Assert.assertTrue(EasyCassandraManager.getPersistenceSequencial("javabahia") instanceof PersistenceSequencial);
     }
 
     

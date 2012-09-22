@@ -26,10 +26,10 @@ import org.apache.cassandra.thrift.Cassandra.Client;
  * @author otavio
  *
  */
-public class PersistenceRandomClient extends Persistence{
+public class PersistenceRandom extends Persistence{
 
    	private Random random;
-	PersistenceRandomClient(List<Client> clients, AtomicReference<ColumnFamilyIds> superColumnsRef,
+	PersistenceRandom(List<Client> clients, AtomicReference<ColumnFamilyIds> superColumnsRef,
 			String keySpace) {
 		super(superColumnsRef, keySpace);
 		this.clients=clients;
@@ -46,6 +46,7 @@ public class PersistenceRandomClient extends Persistence{
 	 * Return the number of connections in this client
 	 * @return number of connection
 	 */
+        @Override
 	public int size(){
 		
 		return clients.size();

@@ -25,9 +25,9 @@ import org.apache.cassandra.thrift.Cassandra.Client;
  * @author otavio
  *
  */
-public class PersistenceSequencialClient extends Persistence{
+public class PersistenceSequencial extends Persistence{
 
-	PersistenceSequencialClient(List<Client> clients, AtomicReference<ColumnFamilyIds> superColumnsRef,
+	PersistenceSequencial(List<Client> clients, AtomicReference<ColumnFamilyIds> superColumnsRef,
 			String keySpace) {
 		super(superColumnsRef, keySpace);
 		this.clients=clients;
@@ -43,7 +43,7 @@ public class PersistenceSequencialClient extends Persistence{
 	 * value for count the acess
 	 */
 	private int counter;
-	@Override
+	 @Override
 	public Client getClient() {
 		counter++;
 		if(counter==clients.size()){
@@ -56,6 +56,7 @@ public class PersistenceSequencialClient extends Persistence{
 	 * Return the number of connections in this client
 	 * @return number of connection
 	 */
+    @Override
 	public int size(){
 		
 		return clients.size();
