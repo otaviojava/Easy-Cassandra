@@ -35,8 +35,20 @@ class DescribeFamilyObject {
      * Object's name
      */
     private Map<String, String> columnName;
+    /**
+     * Class of family column
+     */
     private Class<?> classFamily;
+    /**
+     * key and value of information of fields in family column class
+     */
     private Map<String, DescribeField> fields;
+    
+    /**
+     * this attribute is used when you want create a
+     *  family column in a specific keyspace.
+     */
+    private String schema;
 
     /**
      * method constructor for the DescribeFamilyObject
@@ -46,6 +58,7 @@ class DescribeFamilyObject {
     DescribeFamilyObject(Class<?> classColumnFamily) {
         columnFamilyName = ColumnUtil.getColumnFamilyName(classColumnFamily);
         classFamily = classColumnFamily;
+        schema=ColumnUtil.getSchema(classColumnFamily);
         for (Field field : ColumnUtil.listFields(classColumnFamily)) {
             if ("serialVersionUID".equals(field.getName())) {
                 continue;
@@ -135,4 +148,9 @@ class DescribeFamilyObject {
         fields = new HashMap<String, DescribeField>();
         columnName = new HashMap<String, String>();
     }
+
+	public String getSchema() {
+		return schema;
+	}
+    
 }

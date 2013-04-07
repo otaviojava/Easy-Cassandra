@@ -1,6 +1,8 @@
 package org.easycassandra.annotations.readwrite;
 
+import java.nio.ByteBuffer;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import junit.framework.Assert;
 
@@ -28,9 +30,11 @@ public class CalendarReadWriteTest implements ReadWriteTest{
 	@Override
 	@Test
 	public void getObjectByByteNegativeTest() {
-		Calendar date=Calendar.getInstance();
-		date.set(Calendar.MONTH, 2);
-		Assert.assertFalse( date.equals(calendarRead.getObjectByByte(calendarWrite.getBytebyObject(Calendar.getInstance()))));
+		Calendar date=new GregorianCalendar();
+		date.add(Calendar.YEAR, 2);
+		ByteBuffer bufferCalendar=calendarWrite.getBytebyObject(Calendar.getInstance());
+		Calendar other=(Calendar)calendarRead.getObjectByByte(bufferCalendar);
+		Assert.assertFalse( date.equals(other));
 	}
 
 	@Override

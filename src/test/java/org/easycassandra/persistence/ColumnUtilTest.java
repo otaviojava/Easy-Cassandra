@@ -7,6 +7,7 @@ import junit.framework.Assert;
 import org.easycassandra.bean.model.Address;
 import org.easycassandra.bean.model.Animal;
 import org.easycassandra.bean.model.Count;
+import org.easycassandra.bean.model.Drink;
 import org.easycassandra.bean.model.Engineer;
 import org.easycassandra.bean.model.Person;
 import org.easycassandra.bean.model.Person2;
@@ -19,6 +20,12 @@ public class ColumnUtilTest {
 		
 		
 		Assert.assertEquals("person", ColumnUtil.getColumnFamilyName(Person.class));
+	}
+	@Test
+	public void getColumnFamilyNameByTableTest(){
+		
+		
+		Assert.assertEquals("drink", ColumnUtil.getColumnFamilyName(Drink.class));
 	}
 	
 	@Test
@@ -151,5 +158,14 @@ public class ColumnUtilTest {
 	public void listFieldsTest(){
 		
 		Assert.assertEquals(ColumnUtil.listFields(Engineer.class).size(), 7);
+	}
+	@Test
+	public void getSchemaTest(){
+		Assert.assertEquals(ColumnUtil.getSchema(Drink.class), "schemaA");
+	}
+	
+	@Test
+	public void getSchemaNullTest(){
+		Assert.assertNull(ColumnUtil.getSchema(Person.class));
 	}
 }

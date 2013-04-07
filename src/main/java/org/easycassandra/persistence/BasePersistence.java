@@ -68,7 +68,7 @@ class BasePersistence {
     /**
      * name of keyspace where the Client is
      */
-    private String keyStore;
+    private ConnectionInformation connectionInformation;
 
     static {
         writeMap = ReadWriteMaps.getWriteMap();
@@ -107,7 +107,7 @@ class BasePersistence {
 
         if (ColumnUtil.isGeneratedValue(keyField)) {
             ColumnUtil.setAutoCoutingKeyValue(object, keyField, familyColumn,
-                    referenciaSuperColunas, keyStore);
+                    referenciaSuperColunas, connectionInformation.getKeySpace());
         }
 
         Object keyValue = ReflectionUtil.getMethod(object, keyField);
@@ -153,28 +153,30 @@ class BasePersistence {
      * @throws IllegalAccessException
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    protected List getList(List<Map<String, ByteBuffer>> colMap,
-            Class persisteceClass) throws InstantiationException,
+    protected <T> List<T> getList(List<Map<String, ByteBuffer>> colMap, Class persisteceClass) throws InstantiationException,
             IllegalAccessException {
-        List lists = new ArrayList();
+        List<T> lists = new ArrayList();
 
         for (Map<String, ByteBuffer> listMap : colMap) {
             Object bean = null;
             try {
                 bean = persisteceClass.newInstance();
             } catch (Exception ex) {
-                Logger.getLogger(
-                        BasePersistence.class.getName()).log(Level.SEVERE,
-                        null, ex);
+                Logger.getLogger(BasePersistence.class.getName()).log(Level.SEVERE,null, ex);
             }
             bean = readObject(listMap, bean);
             if(bean!=null){
-            lists.add(bean);
+            lists.add((T) bean);
             }
         }
         return lists;
     }
 
+    protected String getKeyspace(Object object,String actualKeySpace){
+    	
+    	return ColumnUtil.getSchema(object.getClass())==null? actualKeySpace:ColumnUtil.getSchema(object.getClass());
+    }
+    
     /**
      * The List Of the Class with information from Cassandra
      *
@@ -276,8 +278,16 @@ class BasePersistence {
      *
      * @return Keyspace's name
      */
-    public synchronized String getKeySpace() {
-        return keyStore;
+    public  String getKeySpace() {
+        return connectionInformation.getKeySpace();
+    }
+    
+    /**
+     * information about the conectin
+     * @return
+     */
+    public synchronized ConnectionInformation information() {
+        return connectionInformation;
     }
 
     /**
@@ -303,8 +313,7 @@ class BasePersistence {
     /**
      * @param referenciaSuperColunas the referenciaSuperColunas to set
      */
-    public void setReferenciaSuperColunas(
-            AtomicReference<ColumnFamilyIds> referenciaSuperColunas) {
+    public void setReferenceSupercolumn(AtomicReference<ColumnFamilyIds> referenciaSuperColunas) {
         this.referenciaSuperColunas = referenciaSuperColunas;
     }
 
@@ -312,6 +321,9 @@ class BasePersistence {
      * @param keyStore the keyStore to set
      */
     public void setKeySpace(String keyStore) {
-        this.keyStore = keyStore;
+      this.connectionInformation.setKeySpace(keyStore);
     }
+    public void setConnectionInformation(ConnectionInformation connectionInformation) {
+		this.connectionInformation = connectionInformation;
+	}
 }

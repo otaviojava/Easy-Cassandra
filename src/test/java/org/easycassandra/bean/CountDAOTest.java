@@ -38,6 +38,7 @@ public class CountDAOTest {
     
     @Test
     public void timeStampLongTest(){
+    	
     	Count count=dao.retrieve(2l);
     	Assert.assertNotNull(count.getTimeStampLong());
     }

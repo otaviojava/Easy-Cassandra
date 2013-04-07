@@ -14,7 +14,10 @@
  */
 package org.easycassandra.persistence;
 
-//import java.util.Objects;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.cassandra.thrift.Cassandra.Client;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TTransport;
 
@@ -44,6 +47,12 @@ class EasyCassandraClient {
      * @see TProtocol
      */
     private TProtocol protocol;
+    
+        
+    /**
+     * Key-value of cleints and keyspace that there are in this host and port
+     */
+    private Map<String, Client> mapClientKeySpace;
 
     public String getHost() {
         return host;
@@ -111,10 +120,29 @@ class EasyCassandraClient {
     }
 
     public EasyCassandraClient() {
+    	init();
     }
 
+    public void init(){
+    	mapClientKeySpace=new HashMap<String, Client>();
+    }
     public EasyCassandraClient(String host, Integer port) {
         this.host = host;
         this.port = port;
+        init();
     }
+    
+    /**
+     * add keyspace to this connection
+     * @param keySpace
+     */
+    public void addKeySpace(String keySpace,Client client){
+    	mapClientKeySpace.put(keySpace, client);
+    	
+    }
+    
+    public Client getConnectionByKeySpace(String keySpace){
+    	return mapClientKeySpace.get(keySpace);
+    }
+    
 }

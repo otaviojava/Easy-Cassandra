@@ -16,7 +16,6 @@ package org.easycassandra.annotations.write;
 
 import java.io.File;
 import java.nio.ByteBuffer;
-//import java.nio.file.Path;
 import java.util.Calendar;
 import java.util.Map;
 

@@ -42,9 +42,18 @@ import org.easycassandra.util.ReflectionUtil;
  *
  * @author otaviojava - otaviojava@java.net
  */
+
+@SuppressWarnings({"rawtypes"})
 public abstract class Persistence extends BasePersistence {
 
-    private static final int HASH = 11;
+    private static final String MESSAGEM_NOT_EXIST_COLUMN_FAMILY = "not exist column Family, now try make it";
+	private static final String MESSAGE_VERIFY_IF_EXIST_COLUMN_FAMILY = "Verify if exist and trying create the Column Family";
+	private static final String FOR_LIST_BY_INDEX = " for list by index ";
+	private static final String MESSAGE_USE_ANNOTATION = "You must use annotation @org.easycassandra.annotations.IndexValue in some field of the Class:";
+	private static final String INDEX_CREATED_WITH_SUCCESS = "Index created with success, now trying execute the command again";
+	private static final String COLUMN_FAMILY_CREATED_WITH_SUCCESS = "Column Family created with success, now trying execute the command again";
+	private static final String MESSAGE_COLUMN_FAMILY_CREATED = COLUMN_FAMILY_CREATED_WITH_SUCCESS;
+	private static final int HASH = 11;
 	private static final int HASH_VALUE = 5;
 	/**
      * the value default for list the result
@@ -57,32 +66,26 @@ public abstract class Persistence extends BasePersistence {
      *
      * @param client
      * @param superColumnsRef
-     * @param keySpace
+     * @param connectionInformation
      */
-    Persistence(AtomicReference<ColumnFamilyIds> superColumnsRef,
-            String keySpace) {
-        setReferenciaSuperColunas(superColumnsRef);
-        setKeySpace(keySpace);
+    Persistence(AtomicReference<ColumnFamilyIds> superColumnsRef,ConnectionInformation connectionInformation) {
+        setReferenceSupercolumn(superColumnsRef);
+        setConnectionInformation(connectionInformation);
         Thread thread = new Thread(new WriteDocument(superColumnsRef));
         thread.setDaemon(true);
         thread.start();
         
     }
-
-    private String keySpace;
     
-    protected List retriveObject(String condiction, String condictionValue,
-            Class persistenceClass, ConsistencyLevelCQL consistencyLevel,
-            int limit, IndexColumnName... index) {
-        return retriveObject(condiction, condictionValue, persistenceClass,
-                consistencyLevel, limit, " =", index);
+    protected <T> List<T> retriveObject(String condiction, String condictionValue, Class<T> persistenceClass, ConsistencyLevelCQL consistencyLevel, int limit, IndexColumnName... index) {
+        return retriveObject(condiction, condictionValue, persistenceClass,consistencyLevel, limit, " =", index);
     }
 
     /**
      * method for retrieve Objects
      *
      * @param condiction -condiction for search the Objects can be index and
-     * rowkey
+     * rowkey default 10000
      * @param condictionValue - value for seach in condiction
      * @param persistenceClass - type object class
      * @param consistLevel level consistency for retrive the information
@@ -91,25 +94,23 @@ public abstract class Persistence extends BasePersistence {
      * @return the list retrieved with length (limit)
      *
      */
-    protected List retriveObject(String condiction, String condictionValue,
-            Class persistenceClass, ConsistencyLevelCQL consistLevel,
-            int limit, String condicionValue, IndexColumnName... index) {
-        try {
+    protected <T> List<T> retriveObject(String condiction, String condictionValue, Class<T> persistenceClass, ConsistencyLevelCQL consistLevel, int limit, String condicionValue, IndexColumnName... index) {
+        
+    	try {
+    		
             StringBuilder cql = new StringBuilder();
             cql.append("select * from ");
             cql.append(ColumnUtil.getColumnFamilyName(persistenceClass));
-            cql.append(" USING ").append(consistLevel.getValue()).append(" ");   //default One
+            cql.append(" USING ").append(consistLevel.getValue()).append(" ");  
             cql.append(" where ");
             cql.append(" ").append(condiction).append(condicionValue);
             cql.append(condictionValue);
-            cql.append(" LIMIT ").append(limit);//default 10000
-            CqlResult executeCqlQuery = executeCommandCQL(cql.toString(),
-                    index);
+            cql.append(" LIMIT ").append(limit);
+            CqlResult executeCqlQuery = executeCommandCQL(cql.toString(),getClient(persistenceClass),index);
             return listbyQuery(executeCqlQuery, persistenceClass);
         } catch (Exception exception) {
-            Logger.getLogger(Persistence.class.getName()).log(Level.SEVERE,
-                    null, exception);
-            return new ArrayList();
+            Logger.getLogger(Persistence.class.getName()).log(Level.SEVERE, null, exception);
+            return new ArrayList<T>();
         }
 
 
@@ -148,28 +149,47 @@ public abstract class Persistence extends BasePersistence {
      * @param autoEnable - if use the auto_increment or not
      * @return the result of insertion
      */
-    private boolean insert(Object object, ConsistencyLevel consistencyLevel,
-            boolean autoEnable) {
-        try {
+    private boolean insert(Object object, ConsistencyLevel consistencyLevel,boolean autoEnable) {
+
+    	Client client=getClient(object.getClass());
+    	try {
+        	
             ByteBuffer rowid = getKey(object, autoEnable);
-            ColumnParent columnParent = new ColumnParent(
-                    ColumnUtil.getColumnFamilyName(object.getClass()));
+            ColumnParent columnParent = new ColumnParent(ColumnUtil.getColumnFamilyName(object.getClass()));
             for (Column column : ColumnUtil.getColumns(object)) {
-                getClient().insert(rowid, columnParent, column, consistencyLevel);
+                client.insert(rowid, columnParent, column, consistencyLevel);
             }
         } catch (Exception exception) {
             Logger logger = Logger.getLogger(Persistence.class.getName());
             if (createColumnFamily(exception, logger)) {
-                logger.log(Level.INFO, "Column Family created with success, "
-                        + "now trying execute the command again");
+            	logger.log(Level.INFO, MESSAGE_COLUMN_FAMILY_CREATED);
                 return insert(object, consistencyLevel, autoEnable);
             }
-            Logger.getLogger(Persistence.class.getName()).log(Level.SEVERE,
-                    null, exception);
+            Logger.getLogger(Persistence.class.getName()).log(Level.SEVERE, null, exception);
             return false;
         }
         return true;
     }
+
+	private Client getClient(Class object) {
+		
+		String keySpaceActual=getKeySpace(object);
+    	boolean isNotkeySpaceEquals=!getKeySpace().equals(keySpaceActual);
+    	if(isNotkeySpaceEquals){
+    		return EasyCassandraManager.getClient(keySpaceActual, information().getHost(), information().getPort());
+    	}else{
+    		return getClient();
+    	}
+	}
+    
+    /**
+     * checks whether this object has a specific keyspace or default
+     * @param object
+     * @return the specific keyspace or default
+     */
+	private String getKeySpace(Class<?> object) {
+		return ColumnUtil.getSchema(object)==null?getKeySpace():ColumnUtil.getSchema(object);
+	}
 
     /**
      * the method for insert the Object
@@ -190,8 +210,7 @@ public abstract class Persistence extends BasePersistence {
      * @param autoEnable - if use the auto_increment or not
      * @return the result of insertion
      */
-    public boolean insert(Object object, ConsistencyLevelCQL consistLevel,
-            boolean autoEnable) {
+    public boolean insert(Object object, ConsistencyLevelCQL consistLevel, boolean autoEnable) {
         return insert(object, consistLevel.toConsistencyLevel(), autoEnable);
     }
 
@@ -205,7 +224,7 @@ public abstract class Persistence extends BasePersistence {
      *
      */
     public List<Map<String, String>> executeCql(String query) {
-        CqlResult resultCQL = executeCommandCQL(query);
+        CqlResult resultCQL = executeCommandCQL(query,getClient());
         List<Map<String, String>> listMap = new ArrayList<Map<String, String>>();
 
         for (CqlRow row : resultCQL.rows) {
@@ -228,7 +247,7 @@ public abstract class Persistence extends BasePersistence {
      * @return - if there was sucess return true otherwise false
      */
     public boolean executeUpdateCql(String query) {
-        return executeCommandCQL(query) != null;
+        return executeCommandCQL(query,getClient()) != null;
     }
 
     /**
@@ -236,22 +255,19 @@ public abstract class Persistence extends BasePersistence {
      * @return the result executing query
      * @param the name of index
      */
-    CqlResult executeCommandCQL(String cql, IndexColumnName... index) {
+    CqlResult executeCommandCQL(String cql,Client client, IndexColumnName... index) {
         try {
-            return getClient().execute_cql_query(ByteBuffer.wrap(cql.getBytes()),
-                    Compression.NONE);
+            return getClient().execute_cql_query(ByteBuffer.wrap(cql.getBytes()),Compression.NONE);
         } catch (Exception exception) {
             Logger logger = Logger.getLogger(Persistence.class.getName());
 
 
             if (createColumnFamily(exception, logger)) {
-                logger.log(Level.WARNING, "Column Family created with success, "
-                        + "now trying execute the command again");
-                return executeCommandCQL(cql, index);
+                logger.log(Level.WARNING, COLUMN_FAMILY_CREATED_WITH_SUCCESS);
+                return executeCommandCQL(cql,client, index);
             } else if (createIndex(exception, logger, index)) {
-                logger.log(Level.WARNING, "Index created with success, now "
-                        + "trying execute the command again");
-                return executeCommandCQL(cql);
+                logger.log(Level.WARNING, INDEX_CREATED_WITH_SUCCESS);
+                return executeCommandCQL(cql,client);
             } else {
                 logger.log(Level.SEVERE, null, exception);
             }
@@ -269,7 +285,7 @@ public abstract class Persistence extends BasePersistence {
      * int)
      * @return the list with Object is retrive
      */
-    public List findAll(Class persistenceClass) {
+    public <T> List<T> findAll(Class<T> persistenceClass) {
         return findAll(persistenceClass, ConsistencyLevelCQL.ONE, DEFAULT_VALUE);
     }
 
@@ -283,7 +299,7 @@ public abstract class Persistence extends BasePersistence {
      * int)
      * @return the list with Object is retrive
      */
-    public List findAll(Class persistenceClass, int limit) {
+    public <T> List<T> findAll(Class<T> persistenceClass, int limit) {
         return findAll(persistenceClass, ConsistencyLevelCQL.ONE, limit);
     }
 
@@ -296,34 +312,34 @@ public abstract class Persistence extends BasePersistence {
      * int)
      * @return the list with Object is retrive
      */
-    public List findAll(Class persistClass, ConsistencyLevelCQL consistLevel) {
+    public <T> List<T> findAll(Class<T> persistClass, ConsistencyLevelCQL consistLevel) {
         return findAll(persistClass, consistLevel, DEFAULT_VALUE);
     }
 
     /**
      * the method for retrieve the object in Cassandra
-     *
+     *default 10000
      * @param persistClass - type of class for be retrieve
      * @param consistLevel - Level of consitency for retrive the Object
      * @param limit - lenght the list
      * @return the list with Object is retrive
      */
-    public List findAll(Class persistClass, ConsistencyLevelCQL consistLevel,
-            int limit) {
+    
+	public <T> List<T> findAll(Class<T> persistClass, ConsistencyLevelCQL consistLevel,int limit) {
         try {
             StringBuilder cql = new StringBuilder();
             cql.append(" select  * ");
             cql.append(" from ");
             cql.append(ColumnUtil.getColumnFamilyName(persistClass));
-            cql.append(" USING ").append(consistLevel.getValue()).append(" ");   //padra One
-            cql.append("LIMIT ").append(limit);//padrao 10000
-            CqlResult executeCqlQuery = executeCommandCQL(cql.toString());
+            cql.append(" USING ").append(consistLevel.getValue()).append(" ");   
+            cql.append("LIMIT ").append(limit);
+            CqlResult executeCqlQuery = executeCommandCQL(cql.toString(),getClient(persistClass));
             return listbyQuery(executeCqlQuery, persistClass);
         } catch (Exception exception) {
             Logger.getLogger(Persistence.class.getName()).log(Level.SEVERE,
                     null, exception);
         }
-        return new ArrayList();
+        return new ArrayList<T>();
     }
 
     /**
@@ -337,8 +353,7 @@ public abstract class Persistence extends BasePersistence {
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    public List listbyQuery(CqlResult resultCQL, Class persistenceClass)
-            throws InstantiationException, IllegalAccessException {
+    public <T> List<T> listbyQuery(CqlResult resultCQL, Class<T> persistenceClass)  throws InstantiationException, IllegalAccessException {
         List<Map<String, ByteBuffer>> listMap = new ArrayList<Map<String, ByteBuffer>>();
 
         for (CqlRow row : resultCQL.rows) {
@@ -370,8 +385,9 @@ public abstract class Persistence extends BasePersistence {
      * @see #findByKey(java.lang.Object, java.lang.Class,
      * org.easycassandra.ConsistencyLevelCQL)
      */
-    public Object findByKey(Object key, Class persistenceClass) {
-        return findByKey(key, persistenceClass, ConsistencyLevelCQL.ONE);
+    
+	public <T> T findByKey(Object key, Class<T> persistenceClass) {
+        return (T)findByKey(key, persistenceClass, ConsistencyLevelCQL.ONE);
     }
 
     /**
@@ -382,16 +398,13 @@ public abstract class Persistence extends BasePersistence {
      * @param consistencyLevel - The consistency Level
      * @return - The object from key
      */
-    public Object findByKey(Object key, Class persistenceClass,
-            ConsistencyLevelCQL consistencyLevel) {
+	public <T> T findByKey(Object key, Class<T> persistenceClass,ConsistencyLevelCQL consistencyLevel) {
         int limit = 1;
-        String keyString = "'" + EncodingUtil.byteToString(
-                Persistence.getWriteManager().convert(key)) + "'";
-        String condicao = "KEY";
-        List objects = retriveObject(condicao, keyString, persistenceClass,
-                consistencyLevel, limit);
+        String keyString = "'" + EncodingUtil.byteToString(Persistence.getWriteManager().convert(key)) + "'";
+        String condicion = "KEY";
+        List<T> objects = retriveObject(condicion, keyString, persistenceClass,consistencyLevel, limit);
         if (objects.size() > 0) {
-            return objects.get(0);
+            return   objects.get(0);
         }
         return null;
     }
@@ -405,7 +418,7 @@ public abstract class Persistence extends BasePersistence {
      * like ConsistencyLevelCQL.ONE
      * @see Persistence#findByKeyIn(Class, ConsistencyLevelCQL, Object...)
      */
-    public List findByKeyIn(Class baseClass, Object... keys) {
+    public <T> List<T> findByKeyIn(Class<T> baseClass, Object... keys) {
         return findByKeyIn(baseClass, ConsistencyLevelCQL.ONE, keys);
     }
 
@@ -417,8 +430,7 @@ public abstract class Persistence extends BasePersistence {
      * @param keys - the values of rowkey
      * @return - List with object in
      */
-    public List findByKeyIn(Class baseClass, ConsistencyLevelCQL consistLevel,
-            Object... keys) {
+    public <T> List<T> findByKeyIn(Class<T> baseClass, ConsistencyLevelCQL consistLevel, Object... keys) {
         StringBuilder keyNames = new StringBuilder();
         keyNames.append(" (");
         String condicion = "";
@@ -430,8 +442,7 @@ public abstract class Persistence extends BasePersistence {
                     Persistence.getWriteManager().convert(key))).append("'");
             condicion = ",";
         }
-        return retriveObject("KEY", keyNames.substring(0, keyNames.length())
-                + ") ", baseClass, consistLevel, keys.length, " in ");
+        return retriveObject("KEY", keyNames.substring(0, keyNames.length())+ ") ", baseClass, consistLevel, keys.length, " in ");
     }
 
     //delete comand
@@ -477,7 +488,7 @@ public abstract class Persistence extends BasePersistence {
         cql.append(" where KEY = '");
         cql.append(keyValue);
         cql.append("'");
-        CqlResult cqlResult = executeCommandCQL(cql.toString());
+        CqlResult cqlResult = executeCommandCQL(cql.toString(),getClient(persistClass));
         return cqlResult != null;
     }
 
@@ -493,7 +504,7 @@ public abstract class Persistence extends BasePersistence {
      * @return list retrieve from the value index
      *
      */
-    public List findByIndex(Object index, Class objectClass) {
+    public <T> List<T> findByIndex(Object index, Class<T> objectClass) {
     	
         return findByIndex(index, objectClass, ConsistencyLevelCQL.ONE);
     }
@@ -509,8 +520,7 @@ public abstract class Persistence extends BasePersistence {
      * 10.000
      * @return list retrieve from the value index
      */
-    public List findByIndex(Object index, Class objectClass,
-            ConsistencyLevelCQL consistencyLevel) {
+    public <T>  List<T> findByIndex(Object index, Class<T> objectClass,ConsistencyLevelCQL consistencyLevel) {
         return findByIndex(index, objectClass, consistencyLevel, DEFAULT_VALUE);
     }
 
@@ -523,30 +533,22 @@ public abstract class Persistence extends BasePersistence {
      * @param limit - The length of List
      * @return list retrieve from the value index
      */
-    public List findByIndex(Object index, Class objectClass,
-            ConsistencyLevelCQL consistencyLevelCQL, int limit) {
-        String indexString = "'" + EncodingUtil.byteToString(
-                Persistence.getWriteManager().convert(index)) + "'";;
+    public <T> List<T> findByIndex(Object index, Class<T> objectClass,ConsistencyLevelCQL consistencyLevelCQL, int limit) {
+        String indexString = "'" + EncodingUtil.byteToString(Persistence.getWriteManager().convert(index)) + "'";
         Field indexField = ColumnUtil.getIndexField(objectClass);
         if (indexField == null) {
             try {
-                throw new EasyCassandraException("You must use annotation "
-                        + "@org.easycassandra.annotations.IndexValue in some"
-                        + " field of the Class:" + objectClass.getName()
-                        + " for list by index ");
+                throw new EasyCassandraException(MESSAGE_USE_ANNOTATION + objectClass.getName()+ FOR_LIST_BY_INDEX);
             } catch (EasyCassandraException exception) {
-                Logger.getLogger(Persistence.class.getName()).log(Level.SEVERE,
-                        null, exception);
+                Logger.getLogger(Persistence.class.getName()).log(Level.SEVERE,null, exception);
                 return null;
             }
         }
         String condicao = ColumnUtil.getColumnName(indexField);
         IndexColumnName indexColumnName = new IndexColumnName();
-        indexColumnName.setColumnFamily(ColumnUtil.getColumnFamilyName(
-                objectClass));
+        indexColumnName.setColumnFamily(ColumnUtil.getColumnFamilyName(objectClass));
         indexColumnName.setIndex(condicao);
-        return retriveObject(condicao, indexString, objectClass,
-                consistencyLevelCQL, limit, indexColumnName);
+        return retriveObject(condicao, indexString, objectClass,consistencyLevelCQL, limit, indexColumnName);
     }
 
     /**
@@ -594,8 +596,8 @@ public abstract class Persistence extends BasePersistence {
         cql.append("SELECT count(*) ");
         cql.append(" from ");
         cql.append(ColumnUtil.getColumnFamilyName(clazz));
-        cql.append(" USING ").append(consistencyLevel.getValue()).append(" ");   //default One
-        CqlResult cqlResult = executeCommandCQL(cql.toString());
+        cql.append(" USING ").append(consistencyLevel.getValue()).append(" ");   
+        CqlResult cqlResult = executeCommandCQL(cql.toString(),getClient(clazz));
         return cqlResult.rows.get(0).getColumns().get(0).value.asLongBuffer().get();
     }
 
@@ -609,18 +611,13 @@ public abstract class Persistence extends BasePersistence {
      * @return if created the column with success
      */
     private boolean createColumnFamily(Exception exception, Logger logger) {
-        if (exception instanceof InvalidRequestException
-                && ((InvalidRequestException) exception).getWhy().contains(
+        if (exception instanceof InvalidRequestException  && ((InvalidRequestException) exception).getWhy().contains(
                 "unconfigured columnfamily ")) {
-            logger.log(Level.WARNING,
-                    "Verify if exist and trying create the Column Family");
-            logger.log(Level.INFO, "not exist column Family, now try make it");
-            String columnFamily =
-                    ((InvalidRequestException) exception).getWhy().replace(
-                    "unconfigured columnfamily ", "");
-            String query = " CREATE COLUMNFAMILY " + columnFamily
-                    + " (KEY text PRIMARY KEY); ";
-            return executeCommandCQL(query) != null;
+            logger.log(Level.WARNING,MESSAGE_VERIFY_IF_EXIST_COLUMN_FAMILY);
+            logger.log(Level.INFO, MESSAGEM_NOT_EXIST_COLUMN_FAMILY);
+            String columnFamily = ((InvalidRequestException) exception).getWhy().replace("unconfigured columnfamily ", "");
+            String query = " CREATE COLUMNFAMILY " + columnFamily + " (KEY text PRIMARY KEY); ";
+            return executeCommandCQL(query,getClient()) != null;
         }
         return false;
     }
@@ -634,8 +631,7 @@ public abstract class Persistence extends BasePersistence {
      * @param indexs - information about the index
      * @return if created the index with success
      */
-    private boolean createIndex(Exception exception, Logger logger,
-            IndexColumnName... indexs) {
+    private boolean createIndex(Exception exception, Logger logger,IndexColumnName... indexs) {
         if (exception instanceof InvalidRequestException
                 && ((InvalidRequestException) exception).getWhy().contains(
                 "No indexed columns present in by-columns clause ")) {
@@ -648,7 +644,7 @@ public abstract class Persistence extends BasePersistence {
                 query.append(" ADD ");
                 query.append(index.getIndex());
                 query.append(" text ");
-                if (executeCommandCQL(query.toString()) == null) {
+                if (executeCommandCQL(query.toString(),getClient()) == null) {
                     logger.log(Level.INFO, "The column with name{0} exists",
                             index.getIndex());
                 }
@@ -661,7 +657,7 @@ public abstract class Persistence extends BasePersistence {
                 query.append(index.getIndex());
                 query.append(" )");
                 logger.log(Level.INFO, "run the cql: {0}", query.toString());
-                if (executeCommandCQL(query.toString()) == null) {
+                if (executeCommandCQL(query.toString(),getClient()) == null) {
                     return false;
                 }
             }
@@ -676,6 +672,8 @@ public abstract class Persistence extends BasePersistence {
      * @return
      */
     public abstract Client getClient();
+    
+    
 
     /**
      * Class for Store information about the index and the Column name

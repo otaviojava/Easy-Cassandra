@@ -97,8 +97,12 @@ public final class EasyCassandraManager {
     	EasyCassandraClient easyClient = new EasyCassandraClient(host, port);
         if (conections.contains(easyClient)) {
         	easyClient= conections.get(conections.indexOf(easyClient));
-        	
-        	return makeConnection(keySpace, replicaStrategy, replicaFator,easyClient);
+        	Client client=easyClient.getConnectionByKeySpace(keySpace);
+        	if(client==null){
+        		client=makeConnection(keySpace, replicaStrategy, replicaFator,easyClient);
+        		easyClient.addKeySpace(keySpace, client);
+        	}
+        	return easyClient.getConnectionByKeySpace(keySpace);
         	
         	
         }
@@ -107,9 +111,7 @@ public final class EasyCassandraManager {
         
         return makeConnection(keySpace, replicaStrategy, replicaFator,easyClient);
     }
-	private static Client makeConnection(String keySpace,
-			ReplicaStrategy replicaStrategy, int replicaFator,
-			EasyCassandraClient conection) {
+	private static Client makeConnection(String keySpace,ReplicaStrategy replicaStrategy, int replicaFator,EasyCassandraClient conection) {
 		Cassandra.Client client=null;
 		try {
         	
@@ -117,7 +119,9 @@ public final class EasyCassandraManager {
              if(!conection.getTransport().isOpen()){
             	 conection.getTransport().open();
              }
+             
              client.set_keyspace(keySpace);
+             conection.addKeySpace(keySpace, client);
              addConnection(conection);
             
             return client;
@@ -125,6 +129,7 @@ public final class EasyCassandraManager {
              if(((InvalidRequestException)exception).getWhy().contains("Keyspace ".concat(keySpace).concat(" does not exist"))){
         	       try {
                     createKeySpace(keySpace, replicaStrategy, replicaFator, client);
+                    conection.addKeySpace(keySpace, client);
                     addConnection(conection);
                     return client;
                 } catch (Exception e) {
@@ -151,11 +156,7 @@ public final class EasyCassandraManager {
      * @throws SchemaDisagreementException
      * @throws TException
      */
-	private static void createKeySpace(String keySpace,
-			ReplicaStrategy replicaStrategy, int replicaFator,
-			Cassandra.Client client) throws InvalidRequestException,
-			UnavailableException, TimedOutException,
-			SchemaDisagreementException, TException {
+	private static void createKeySpace(String keySpace,ReplicaStrategy replicaStrategy, int replicaFator,Cassandra.Client client) throws InvalidRequestException,UnavailableException, TimedOutException,SchemaDisagreementException, TException {
 		StringBuilder cql=new StringBuilder();
 		 cql.append(" CREATE KEYSPACE ");
 		 cql.append(keySpace);
@@ -181,7 +182,7 @@ public final class EasyCassandraManager {
 	private static void addConnection(EasyCassandraClient conection) {
 		 
 		  if (!conections.contains(conection)) {
-		 conections.add(conection);
+			  conections.add(conection);
 		  }
 	}
 
@@ -195,13 +196,12 @@ public final class EasyCassandraManager {
      * @see EasyCassandraManager#getClient(String, String, int)
      * @return Persistence from the Param's values
      */
-    public static Persistence getPersistence(String keySpace, String host,
-            int port) {
+    public static Persistence getPersistence(String keySpace, String host, int port) {
     	Client client=getClient(keySpace,host, port);
     	if(client==null){
     		return null;
     	}
-       return new PersistenceSingle(client, referenceSuperColunms, keySpace);
+       return new PersistenceSingle(client, referenceSuperColunms, new ConnectionInformation(host, keySpace, port));
        
     }
     /**
@@ -228,14 +228,17 @@ public final class EasyCassandraManager {
 	 * @param keySpace - the keyspace's name
 	 * @return the client's list
 	 */
-	private static List<Client> getListClient(String keySpace) {
-		List<Client> clients=new ArrayList<Cassandra.Client>();
+	private static List<ConnectionInformation> getListClient(String keySpace) {
+		List<ConnectionInformation> clients=new ArrayList<ConnectionInformation>();
 		if(conections.size()<1){
 			throw new EasyCassandraException("You should add client connections in EasyCassandraManager");
 			
 		}
+		
 		for(EasyCassandraClient easyClient:conections){
-			clients.add(makeConnection(keySpace, ReplicaStrategy.SimpleStrategy, REPLICA_FATOR_DEFAULT, easyClient));
+			ConnectionInformation information=new ConnectionInformation(easyClient.getHost(), keySpace, easyClient.getPort());
+			information.setClient(makeConnection(keySpace, ReplicaStrategy.SimpleStrategy, REPLICA_FATOR_DEFAULT, easyClient));
+			clients.add(information);
 		}
 		return clients;
 	}
@@ -247,10 +250,8 @@ public final class EasyCassandraManager {
      * @return
      */
     public static boolean addFamilyObject(Class<?> classColumnFamily) {
-        DescribeFamilyObject describeFamilyObject =
-                new DescribeFamilyObject(classColumnFamily);
-        familyObjects.put(describeFamilyObject.getClassFamily().getSimpleName(),
-                describeFamilyObject);
+        DescribeFamilyObject describeFamilyObject = new DescribeFamilyObject(classColumnFamily);
+        familyObjects.put(describeFamilyObject.getClassFamily().getSimpleName(),describeFamilyObject);
         return true;
     }
 

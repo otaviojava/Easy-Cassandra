@@ -14,7 +14,6 @@
  */
 package org.easycassandra.persistence;
 
-//import java.util.Objects;
 import javax.persistence.Parameter;
 
 import org.apache.commons.lang.StringUtils;

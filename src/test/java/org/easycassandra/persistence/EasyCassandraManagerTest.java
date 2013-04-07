@@ -36,6 +36,7 @@ public class EasyCassandraManagerTest {
 
     @Test
     public void numberOfClientsTest(){
+    	EasyCassandraManager.closeClients();
     	EasyCassandraManager.getPersistence("javabahia", "localhost", 9160);
     	EasyCassandraManager.getClient("javabahia", "localhost", 9160);
     	Assert.assertEquals(1, EasyCassandraManager.numberOfClients());

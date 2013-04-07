@@ -397,7 +397,7 @@ class JCassandraImpl implements JCassandra {
         List<?> list = null;
         if (informationCQL.countMode) {
             List<Long> longList = new ArrayList<Long>();
-            longList.add(persistence.executeCommandCQL(cqlNew).rows.get(
+            longList.add(persistence.executeCommandCQL(cqlNew,persistence.getClient()).rows.get(
                     0).getColumns().get(0).value.asLongBuffer().get());
             list = longList;
         } else if (informationCQL.allObject) {
@@ -523,7 +523,7 @@ class JCassandraImpl implements JCassandra {
 	private List<?> executeAll(DescribeFamilyObject describeFamilyObject,
             String cql) {
         try {
-            return persistence.listbyQuery(persistence.executeCommandCQL(cql),
+            return persistence.listbyQuery(persistence.executeCommandCQL(cql,persistence.getClient()),
                     describeFamilyObject.getClassFamily());
         } catch (Exception exception) {
             Logger.getLogger(Persistence.class.getName()).log(Level.SEVERE,

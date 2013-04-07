@@ -83,7 +83,6 @@ final class ReadWriteMaps {
         readMap = new HashMap<String, ReadInterface>();
         readMap.put("java.util.Date", new DateRead());
         readMap.put("java.io.File", new FileRead());
-        //readMap.put("java.nio.file.Path", new PathRead());
         readMap.put("java.util.Calendar", new CalendarRead());
     }
 

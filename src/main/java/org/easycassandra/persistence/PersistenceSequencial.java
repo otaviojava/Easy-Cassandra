@@ -27,9 +27,9 @@ import org.apache.cassandra.thrift.Cassandra.Client;
  */
 public class PersistenceSequencial extends Persistence{
 
-	PersistenceSequencial(List<Client> clients, AtomicReference<ColumnFamilyIds> superColumnsRef,
-			String keySpace) {
-		super(superColumnsRef, keySpace);
+	PersistenceSequencial(List<ConnectionInformation> clients, AtomicReference<ColumnFamilyIds> superColumnsRef,String keySpace) {
+		super(superColumnsRef, new ConnectionInformation());
+		setKeySpace(keySpace);
 		this.clients=clients;
 		counter=0;
 	}
@@ -37,7 +37,7 @@ public class PersistenceSequencial extends Persistence{
 	/**
 	 * The Cassandra's client
 	 */
-	private List<Client> clients;
+	private List<ConnectionInformation> clients;
 	
 	/**
 	 * value for count the acess
@@ -49,7 +49,9 @@ public class PersistenceSequencial extends Persistence{
 		if(counter==clients.size()){
 			counter=0;
 		}
-		return clients.get(counter);
+		ConnectionInformation information=clients.get(counter);
+		setConnectionInformation(information);
+		return information.getClient();
 	}
 
 	/**

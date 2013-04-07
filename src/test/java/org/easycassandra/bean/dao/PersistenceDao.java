@@ -10,8 +10,7 @@ import org.easycassandra.persistence.Persistence;
 public class PersistenceDao<T> {
 
     private Persistence persistence;
-    @SuppressWarnings("rawtypes")
-    private Class baseClass;
+    private Class<T> baseClass;
 
     public PersistenceDao(Class<T> baseClass) {
         this.baseClass = baseClass;
@@ -34,17 +33,15 @@ public class PersistenceDao<T> {
         return persistence.update(bean);
     }
 
-    @SuppressWarnings("unchecked")
     public T retrieve(Object id) {
-        return (T) persistence.findByKey(id, baseClass);
+    	
+        return   persistence.findByKey(id, baseClass);
     }
 
-    @SuppressWarnings("unchecked")
     public List<T> listAll() {
         return persistence.findAll(baseClass);
     }
 
-    @SuppressWarnings("unchecked")
     public List<T> listByIndex(Object index) {
         return persistence.findByIndex(index, baseClass);
     }
@@ -53,7 +50,6 @@ public class PersistenceDao<T> {
         return persistence.count(baseClass);
     }
 
-    @SuppressWarnings("unchecked")
     public List<T> findKeyIn(Object... key) {
         return persistence.findByKeyIn(baseClass, key);
     }

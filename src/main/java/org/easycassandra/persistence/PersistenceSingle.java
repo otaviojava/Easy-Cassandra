@@ -11,10 +11,15 @@ import org.apache.cassandra.thrift.Cassandra.Client;
  *
  */
 public class PersistenceSingle extends Persistence {
-	 PersistenceSingle(Client client,	AtomicReference<ColumnFamilyIds> superColumnsRef, String keyStore) {
-		super(superColumnsRef, keyStore);
+	
+	 PersistenceSingle(Client client, AtomicReference<ColumnFamilyIds> superColumnsRef, ConnectionInformation connectionInformation) {
+		super(superColumnsRef, connectionInformation);
 		this.client=client;
 	 }
+	 /**
+	  * 
+	  */
+	 
 
 	/**
      * Client's Cassandra
@@ -31,6 +36,5 @@ public class PersistenceSingle extends Persistence {
         return 1;
     }
 
-	
 
 }

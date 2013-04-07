@@ -28,7 +28,9 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Table;
 import javax.persistence.Version;
+import javax.xml.crypto.dsig.keyinfo.KeyValue;
 
 import org.apache.cassandra.thrift.Column;
 import org.easycassandra.EasyCassandraException;
@@ -53,14 +55,24 @@ final class ColumnUtil {
      */
     public static String getColumnFamilyName(Class<?> object) {
 
-        Entity colunaFamilia = (Entity) object.getAnnotation(Entity.class);
-
-        if (colunaFamilia != null) {
-            return colunaFamilia.name().equals("")
-                    ? object.getSimpleName() : colunaFamilia.name();
+        Entity columnFamily = (Entity) object.getAnnotation(Entity.class);
+        Table columnFamilyTable = (Table) object.getAnnotation(Table.class);
+        if (columnFamily != null) {
+            return columnFamily.name().equals("")   ? object.getSimpleName() : columnFamily.name();
+        }else
+        if(columnFamilyTable != null){
+        	return columnFamilyTable.name().equals("")   ? object.getSimpleName() : columnFamilyTable.name();
         }
         return object.getSimpleName();
     }
+    
+    public static String getSchema(Class<?> class1) {
+    	Table columnFamily = (Table) class1.getAnnotation(Table.class);
+    	 if (columnFamily != null) {
+             return columnFamily.schema().equals("") ? null : columnFamily.schema();
+         }
+		return null;
+	}
 
     /**
      * verifies that the name of the annotation is empty if you take the field
@@ -200,8 +212,7 @@ final class ColumnUtil {
      * @param field - the field
      * @return - the column to enum value
      */
-    private static Column doEnumColumn(Object object, Long timeStamp,
-            Field field) {
+    private static Column doEnumColumn(Object object, Long timeStamp, Field field) {
         Column column = new Column();
         column.setTimestamp(timeStamp);
         column.setName(EncodingUtil.stringToByte(
@@ -233,8 +244,7 @@ final class ColumnUtil {
      * @param field - the Field viewed
      * @return the column for the Cassandra
      */
-    public static Column makeColumn(long timeStamp, String coluna,
-            Object object, Field field) {
+    public static Column makeColumn(long timeStamp, String coluna,Object object, Field field) {
 
         Object subObject = ReflectionUtil.getMethod(object, field);
         if (subObject != null) {
@@ -368,4 +378,6 @@ final class ColumnUtil {
 	public static boolean isMappedSuperclass(Class<?> class1) {
 		return class1.getSuperclass().getAnnotation(MappedSuperclass.class)!=null;
 	}
+
+	
 }
