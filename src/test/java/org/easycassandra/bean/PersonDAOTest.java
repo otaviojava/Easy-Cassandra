@@ -19,7 +19,7 @@ public class PersonDAOTest {
 
     @Test
     public void insertTest() {
-        System.out.println("Inserindo exemplo");
+        System.out.println("inserting sample");
         Person person = getPerson();
         person.setName("otavio teste");
         person.setId(4l);
