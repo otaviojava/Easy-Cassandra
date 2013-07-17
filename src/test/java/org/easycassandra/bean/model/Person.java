@@ -4,7 +4,6 @@
  */
 package org.easycassandra.bean.model;
 
-import java.io.File;
 import java.io.Serializable;
 
 import javax.persistence.Column;
@@ -39,8 +38,6 @@ public class Person implements Serializable {
     @Enumerated
     private Sex sex;
     
-    @Column(name = "file")
-    private File personalFile;
     
     @Embedded
     private Address address;
@@ -86,14 +83,7 @@ public class Person implements Serializable {
     }
 
     
-    public File getPersonalFile() {
-		return personalFile;
-	}
-
-	public void setPersonalFile(File personalFile) {
-		this.personalFile = personalFile;
-	}
-
+   
 	public boolean equals(Object obj) {
         if (obj == null) {
             return false;

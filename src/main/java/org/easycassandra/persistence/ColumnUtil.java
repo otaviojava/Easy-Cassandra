@@ -15,14 +15,12 @@
 package org.easycassandra.persistence;
 
 import java.lang.reflect.Field;
-import java.math.BigInteger;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
@@ -32,12 +30,7 @@ import javax.persistence.Table;
 import javax.persistence.Version;
 import javax.xml.crypto.dsig.keyinfo.KeyValue;
 
-import org.apache.cassandra.thrift.Column;
-import org.easycassandra.EasyCassandraException;
 import org.easycassandra.annotations.Index;
-import org.easycassandra.annotations.write.EnumWrite;
-import org.easycassandra.util.EncodingUtil;
-import org.easycassandra.util.ReflectionUtil;
 
 /**
  * Class Util for Column
@@ -45,15 +38,20 @@ import org.easycassandra.util.ReflectionUtil;
  * @author otavio
  *
  */
-final class ColumnUtil {
+ enum ColumnUtil {
+INTANCE;
 
+	/**
+	 * The integer class is used to enum how default
+	 */
+	public static final Class<?> DEFAULT_ENUM_CLASS=Integer.class;
     /**
      * Get The Column name from an Object
      *
      * @param object - Class of the object viewed
      * @return The name of Column name if there are not will be return null
      */
-    public static String getColumnFamilyName(Class<?> object) {
+    public String getColumnFamilyName(Class<?> object) {
 
         Entity columnFamily = (Entity) object.getAnnotation(Entity.class);
         Table columnFamilyTable = (Table) object.getAnnotation(Table.class);
@@ -66,12 +64,12 @@ final class ColumnUtil {
         return object.getSimpleName();
     }
     
-    public static String getSchema(Class<?> class1) {
+    public  String getSchema(Class<?> class1) {
     	Table columnFamily = (Table) class1.getAnnotation(Table.class);
     	 if (columnFamily != null) {
-             return columnFamily.schema().equals("") ? null : columnFamily.schema();
+             return columnFamily.schema().equals("") ? null : columnFamily.schema().concat(".");
          }
-		return null;
+		return "";
 	}
 
     /**
@@ -81,9 +79,11 @@ final class ColumnUtil {
      * @param field - field for viewd
      * @return The name inside annotations or the field's name
      */
-    public static String getColumnName(Field field) {
-        return field.getAnnotation(
-                javax.persistence.Column.class).name().equals("")
+    public  String getColumnName(Field field) {
+    	if(field.getAnnotation(javax.persistence.Column.class)==null){
+    		return field.getName();
+    	}
+        return field.getAnnotation(javax.persistence.Column.class).name().equals("")
                 ? field.getName() : field.getAnnotation(
                 javax.persistence.Column.class).name();
     }
@@ -95,7 +95,7 @@ final class ColumnUtil {
      * @param field
      * @return The name inside annotations or the field's name
      */
-    public static String getEnumeratedName(Field field) {
+    public  String getEnumeratedName(Field field) {
         if (isNormalField(field)) {
             return getColumnName(field);
         }
@@ -109,10 +109,20 @@ final class ColumnUtil {
      * @param persistenceClass - Class of the object viewed
      * @return the Field if there are not will be return null
      */
-    public static Field getKeyField(Class<?> persistenceClass) {
+    public  Field getKeyField(Class<?> persistenceClass) {
         return getField(persistenceClass, Id.class);
     }
-
+    /**
+     * Return the Field with the complex key Annotations
+     *
+     * @see KeyValue
+     * @param persistenceClass - Class of the object viewed
+     * @return the Field if there are not will be return null
+     */
+    public  Field getKeyComplexField(Class<?> persistenceClass) {
+        return getField(persistenceClass, EmbeddedId.class);
+    }
+    
     /**
      * Return the Field with the IndexValue Annotations
      *
@@ -120,7 +130,7 @@ final class ColumnUtil {
      * @param persistenceClass - Class of the object viewed
      * @return the Field if there are not will be return null
      */
-    public static Field getIndexField(Class<?> persistenceClass) {
+    public  Field getIndexField(Class<?> persistenceClass) {
         return getField(persistenceClass, Index.class);
     }
 
@@ -133,7 +143,7 @@ final class ColumnUtil {
      * @return
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static Field getField(Class object, Class annotation) {
+    public  Field getField(Class object, Class annotation) {
         for (Field field : object.getDeclaredFields()) {
             if (field.getAnnotation(annotation) != null) {
                 return field;
@@ -144,46 +154,14 @@ final class ColumnUtil {
         return null;
     }
 
-    /**
-     * create columns based on annotations in Easy-Cassandra
-     *
-     * @param object - the object viewed
-     * @return - List of the Column
-     */
-    public static List<Column> getColumns(Object object) {
-        Long timeStamp = System.currentTimeMillis();
-        List<Column> columns = new ArrayList<Column>();
-        List<Field> fields = listFields(object.getClass());
-      
-        for (Field field : fields) {
-            if (field.getName().equals("serialVersionUID")
-                    || field.getAnnotation(Id.class) != null
-                    || ReflectionUtil.getMethod(object, field) == null) {
-                continue;
-            }
-            if (ColumnUtil.isNormalField(field)) {
-                Column column = makeColumn(timeStamp,
-                        ColumnUtil.getColumnName(field), object, field);
-                addColumn(columns, column);
-            } else if (ColumnUtil.isEmbeddedField(field)) {
-                if (ReflectionUtil.getMethod(object, field) != null) {
-                    columns.addAll(getColumns(
-                            ReflectionUtil.getMethod(object, field)));
-                }
-            } else if (ColumnUtil.isEnumField(field)) {
-                Column column = doEnumColumn(object, timeStamp, field);
-                addColumn(columns, column);
-            }
-        }
-        return columns;
-    }
+   
 
     /**
      * list the fields in the class
      * @param class1 
      * @return list of the fields
      */
-    public static List<Field> listFields(Class<?> class1) {
+    public  List<Field> listFields(Class<?> class1) {
     	List<Field> fields =new ArrayList<Field>();
     	feedFieldList(class1, fields);
     	if(isMappedSuperclass(class1)){
@@ -198,109 +176,12 @@ final class ColumnUtil {
      * @param class1
      * @param fields
      */
-	private static void feedFieldList(Class<?> class1, List<Field> fields) {
+	private  void feedFieldList(Class<?> class1, List<Field> fields) {
 		for(Field field:class1.getDeclaredFields()){
     		fields.add(field);
     	}
 	}
 
-	/**
-     * Do enum column
-     *
-     * @param object - the value
-     * @param timeStamp - the time stamp
-     * @param field - the field
-     * @return - the column to enum value
-     */
-    private static Column doEnumColumn(Object object, Long timeStamp, Field field) {
-        Column column = new Column();
-        column.setTimestamp(timeStamp);
-        column.setName(EncodingUtil.stringToByte(
-                ColumnUtil.getEnumeratedName(field)));
-        ByteBuffer byteBuffer = new EnumWrite().getBytebyObject(
-                ReflectionUtil.getMethod(object, field));
-        column.setValue(byteBuffer);
-        return column;
-    }
-
-    /**
-     * Verify is exist column and then add in the list
-     *
-     * @param columns - list of column
-     * @param column - value
-     */
-    private static void addColumn(List<Column> columns, Column column) {
-        if (column != null) {
-            columns.add(column);
-        }
-    }
-
-    /**
-     * Create a column for persist in Cassandra
-     *
-     * @param timeStamp - time in the Column
-     * @param coluna - name in the Column
-     * @param object - the object viewed
-     * @param field - the Field viewed
-     * @return the column for the Cassandra
-     */
-    public static Column makeColumn(long timeStamp, String coluna,Object object, Field field) {
-
-        Object subObject = ReflectionUtil.getMethod(object, field);
-        if (subObject != null) {
-            Column column = new Column();
-            column.setTimestamp(timeStamp);
-            column.setName(EncodingUtil.stringToByte(coluna));
-            column.setValue(BasePersistence.getWriteManager().convert(subObject));
-            return column;
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * The method for set the new KeyValue in auto counting mode
-     *
-     * @param object - the object
-     * @param keyField - the key
-     * @param columnFamily - the name of column
-     * @param superColumnRef - reference of super column
-     * @param keyStore - the name of key Store
-     */
-    public static void setAutoCoutingKeyValue(Object object, Field keyField,
-            String columnFamily, AtomicReference<ColumnFamilyIds> superColumnRef,
-            String keyStore) {
-        if (!contains(keyField.getType())) {
-            throw new EasyCassandraException(" There are not supported "
-                    + "auto counting  for this class, see: java.lang.String,"
-                    + " java.lang.Long, java.lang.Integer, java.lang.Byte,"
-                    + " java.lang.Short, java.math.BigInteger ");
-        }
-        Object id = superColumnRef.get().getId(columnFamily, keyStore);
-        if (String.class.equals(keyField.getType())) {
-            id = id.toString();
-        } else if (!BigInteger.class.equals(keyField.getType())) {
-            id = ReflectionUtil.valueOf(keyField.getType(), id.toString());
-        }
-        ReflectionUtil.setMethod(object, keyField, id);
-    }
-
-    /**
-     * Verify is the key Class are supported
-     *
-     * @param clazz - the class for verify
-     * @return if Easy-Cassandra has supported or not
-     */
-    private static boolean contains(Class<?> clazz) {
-        Class<?>[] classes = {String.class, Long.class, Integer.class,
-            Byte.class, Short.class, BigInteger.class};
-        for (Class<?> claZZ : classes) {
-            if (clazz.equals(claZZ)) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     /**
      * verify if this is key of the column
@@ -308,12 +189,12 @@ final class ColumnUtil {
      * @param field
      * @return
      */
-    public static boolean isIdField(Field field) {
+    public  boolean isIdField(Field field) {
         return field.getAnnotation(Id.class) != null;
     }
 
     @GeneratedValue
-    public static boolean isGeneratedValue(Field field) {
+    public  boolean isGeneratedValue(Field field) {
         return field.getAnnotation(GeneratedValue.class) != null;
     }
 
@@ -323,7 +204,7 @@ final class ColumnUtil {
      * @param field
      * @return
      */
-    public static boolean isSecundaryIndexField(Field field) {
+    public  boolean isSecundaryIndexField(Field field) {
         return field.getAnnotation(Index.class) != null;
     }
 
@@ -333,7 +214,7 @@ final class ColumnUtil {
      * @param field
      * @return
      */
-    public static boolean isNormalField(Field field) {
+    public  boolean isNormalField(Field field) {
         return field.getAnnotation(javax.persistence.Column.class) != null;
     }
 
@@ -343,7 +224,7 @@ final class ColumnUtil {
      * @param field
      * @return
      */
-    public static boolean isEnumField(Field field) {
+    public  boolean isEnumField(Field field) {
         return field.getAnnotation(Enumerated.class) != null;
     }
 
@@ -353,9 +234,19 @@ final class ColumnUtil {
      * @param field
      * @return
      */
-    public static boolean isEmbeddedField(Field field) {
+    public  boolean isEmbeddedField(Field field) {
         return field.getAnnotation(Embedded.class) != null;
     }
+    /**
+     * verify if this is a Embedded id column
+     *
+     * @param field
+     * @return
+     */
+    public  boolean isEmbeddedIdField(Field field) {
+        return field.getAnnotation(EmbeddedId.class) != null;
+    }
+
 
     /**
      * verify if this is a Version column
@@ -363,11 +254,8 @@ final class ColumnUtil {
      * @param field
      * @return
      */
-    public static boolean isVersionField(Field field) {
+    public  boolean isVersionField(Field field) {
         return field.getAnnotation(Version.class) != null;
-    }
-
-    private ColumnUtil() {
     }
 
     /**
@@ -375,9 +263,9 @@ final class ColumnUtil {
      * @param class1
      * @return
      */
-	public static boolean isMappedSuperclass(Class<?> class1) {
+	public  boolean isMappedSuperclass(Class<?> class1) {
 		return class1.getSuperclass().getAnnotation(MappedSuperclass.class)!=null;
 	}
 
-	
+
 }

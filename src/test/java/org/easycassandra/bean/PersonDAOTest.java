@@ -1,7 +1,7 @@
 package org.easycassandra.bean;
 
-import java.io.File;
 import java.util.List;
+
 import org.easycassandra.bean.dao.PersistenceDao;
 import org.easycassandra.bean.model.Address;
 import org.easycassandra.bean.model.Person;
@@ -19,14 +19,17 @@ public class PersonDAOTest {
 
     @Test
     public void insertTest() {
-        System.out.println("inserting sample");
+    	
+    	
         Person person = getPerson();
         person.setName("otavio teste");
         person.setId(4l);
+        person.setYear(20);
         Address address = getAddress();
         person.setAddress(address);
-
+    	
         Assert.assertTrue(dao.insert(person));
+    	
     }
 
     @Test
@@ -106,17 +109,11 @@ public class PersonDAOTest {
         person.setId(4l);
         Address address = getAddress();
         person.setAddress(address);
-        person.setPersonalFile(new File("readme.txt"));
 
         Assert.assertTrue(dao.insert(person));
     }
 
-    @Test
-    public void retrieveFileTest() {
-        Person person = dao.retrieve(4l);
-        Assert.assertEquals(person.getPersonalFile().length(),
-                new File("readme.txt").length());
-    }
+   
 
     @Test
     public void countNotNullTest() {
@@ -124,31 +121,28 @@ public class PersonDAOTest {
         Assert.assertNotNull(dao.count());
     }
 
-    @Test
-    public void inKeyTest() {
-        for (long index = 10; index < 15; index++) {
-            Person person = getPerson();
-            person.setId(Long.valueOf(index));
-            person.setAddress(getAddress());
-            dao.insert(person);
-        }
-        Assert.assertEquals(dao.findKeyIn(10l,11l,12l,13l, 14l).size(), 5);
-    }
+//    @Test
+//    public void inKeyTest() {
+//        for (long index = 10; index < 15; index++) {
+//            Person person = getPerson();
+//            person.setId(Long.valueOf(index));
+//            person.setAddress(getAddress());
+//            dao.insert(person);
+//        }
+//        Assert.assertEquals(dao.findKeyIn(10l,11l,12l,13l, 14l).size(), 5);
+//    }
 
     @Test
     public void executeUpdateCqlTest() {
         Assert.assertTrue(dao.executeUpdateCql("select * from Person"));
     }
 
-    @Test
-    public void executeUpdateCqlFailTest() {
-        Assert.assertFalse(dao.executeUpdateCql("selectErrorSyntax * from Person "));
-    }
+   
 
-    @Test
-    public void executeCqlTest() {
-        Assert.assertNotNull(dao.executeCql("select * from person"));
-    }
+//    @Test
+//    public void executeCqlTest() {
+//        Assert.assertNotNull(dao.executeQuery("select * from person"));
+//    }
 
     @Test
     public void countTest() {
@@ -163,13 +157,6 @@ public class PersonDAOTest {
     	Assert.assertTrue(dao.insert(person));
     }
     
-    @Test
-    public void retrivetWithAcent(){
-    	
-    	
-    	Assert.assertTrue(dao.listByIndex("Otávio").size()>0);
-    }
-
     private Address getAddress() {
         Address address = new Address();
         address.setCep("40243-543");

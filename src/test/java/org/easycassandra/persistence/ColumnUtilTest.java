@@ -19,153 +19,153 @@ public class ColumnUtilTest {
 	public void getColumnFamilyNameTest(){
 		
 		
-		Assert.assertEquals("person", ColumnUtil.getColumnFamilyName(Person.class));
+		Assert.assertEquals("person", ColumnUtil.INTANCE.getColumnFamilyName(Person.class));
 	}
 	@Test
 	public void getColumnFamilyNameByTableTest(){
 		
 		
-		Assert.assertEquals("drink", ColumnUtil.getColumnFamilyName(Drink.class));
+		Assert.assertEquals("drink", ColumnUtil.INTANCE.getColumnFamilyName(Drink.class));
 	}
 	
 	@Test
 	public void getColumnFamilyNameWithDefaultTest(){
 		
 		
-		Assert.assertEquals("Animal", ColumnUtil.getColumnFamilyName(Animal.class));
+		Assert.assertEquals("Animal", ColumnUtil.INTANCE.getColumnFamilyName(Animal.class));
 	}
 	
 	@Test
 	public void getColumnNameTest() {
 		Field field=Person.class.getDeclaredFields()[2];
-		Assert.assertEquals("name", ColumnUtil.getColumnName(field));
+		Assert.assertEquals("name", ColumnUtil.INTANCE.getColumnName(field));
 	}
 	
 	@Test
 	public void getColumnNameTestWithDefaultTest() {
 		Field field=Animal.class.getDeclaredFields()[2];
-		Assert.assertEquals("race", ColumnUtil.getColumnName(field));
+		Assert.assertEquals("race", ColumnUtil.INTANCE.getColumnName(field));
 	}
 	
 	@Test
 	public void getColumnEnumTest() {
 		Field field=Person.class.getDeclaredFields()[4];
-		Assert.assertEquals("sex", ColumnUtil.getEnumeratedName(field));
+		Assert.assertEquals("sex", ColumnUtil.INTANCE.getEnumeratedName(field));
 	}
 	
 	@Test
 	public void getColumnEnumTestWithDefaultTest() {
 		Field field=Person2.class.getDeclaredFields()[4];
-		Assert.assertEquals("sex", ColumnUtil.getEnumeratedName(field));
+		Assert.assertEquals("sex", ColumnUtil.INTANCE.getEnumeratedName(field));
 	}
 	
 	@Test
 	public void getKeyFieldTest(){
-		Assert.assertNotNull(ColumnUtil.getKeyField(Person.class));
+		Assert.assertNotNull(ColumnUtil.INTANCE.getKeyField(Person.class));
 	}
 	
 	@Test
 	public void getKeyFieldNullTest(){
-		Assert.assertNull(ColumnUtil.getKeyField(Address.class));
+		Assert.assertNull(ColumnUtil.INTANCE.getKeyField(Address.class));
 	}
 	
 	@Test
 	public void getIndexFieldTest(){
-		Assert.assertNotNull(ColumnUtil.getIndexField(Person.class));
+		Assert.assertNotNull(ColumnUtil.INTANCE.getIndexField(Person.class));
 	}
 	
 	@Test
 	public void getIndexFieldNullTest(){
-		Assert.assertNull(ColumnUtil.getIndexField(Address.class));
+		Assert.assertNull(ColumnUtil.INTANCE.getIndexField(Address.class));
 	}
 
 	@Test
 	public void isKeyFieldTest(){
 		
-		Assert.assertTrue(ColumnUtil.isIdField(Person.class.getDeclaredFields()[1]));		
+		Assert.assertTrue(ColumnUtil.INTANCE.isIdField(Person.class.getDeclaredFields()[1]));		
 	}
 	
 	@Test
 	public void isGeneratedValueTest(){
 		
-		Assert.assertTrue(ColumnUtil.isGeneratedValue(Count.class.getDeclaredFields()[1]));		
+		Assert.assertTrue(ColumnUtil.INTANCE.isGeneratedValue(Count.class.getDeclaredFields()[1]));		
 	}
 	
 	@Test
 	public void isEmbeddedFieldTest(){
 		
-		Assert.assertTrue(ColumnUtil.isEmbeddedField(Person.class.getDeclaredFields()[6]));		
+		Assert.assertTrue(ColumnUtil.INTANCE.isEmbeddedField(Person.class.getDeclaredFields()[6]));		
 	}
 	
 	@Test
 	public void isVersionFieldTest(){
 		
-		Assert.assertTrue(ColumnUtil.isVersionField(Count.class.getDeclaredFields()[3]));		
+		Assert.assertTrue(ColumnUtil.INTANCE.isVersionField(Count.class.getDeclaredFields()[3]));		
 	}
 	
 	
 	@Test
 	public void isKeyFieldTestFail(){
 		
-		Assert.assertFalse(ColumnUtil.isIdField(Person.class.getDeclaredFields()[2]));		
+		Assert.assertFalse(ColumnUtil.INTANCE.isIdField(Person.class.getDeclaredFields()[2]));		
 	}
 	
 	@Test
 	public void isNormalFieldTest(){
 		
-		Assert.assertTrue(ColumnUtil.isNormalField(Person.class.getDeclaredFields()[2]));		
+		Assert.assertTrue(ColumnUtil.INTANCE.isNormalField(Person.class.getDeclaredFields()[2]));		
 	}
 	
 	@Test
 	public void isNormalFieldTestFail(){
 		
-		Assert.assertFalse(ColumnUtil.isNormalField(Person.class.getDeclaredFields()[1]));		
+		Assert.assertFalse(ColumnUtil.INTANCE.isNormalField(Person.class.getDeclaredFields()[1]));		
 	}
 	
 	
 	@Test
 	public void isSecundaryIndexFieldTest(){
 		
-		Assert.assertTrue(ColumnUtil.isSecundaryIndexField(Person.class.getDeclaredFields()[2]));		
+		Assert.assertTrue(ColumnUtil.INTANCE.isSecundaryIndexField(Person.class.getDeclaredFields()[2]));		
 	}
 	
 	@Test
 	public void isSecundaryIndexFieldTestFail(){
 		
-		Assert.assertFalse(ColumnUtil.isSecundaryIndexField(Person.class.getDeclaredFields()[1]));		
+		Assert.assertFalse(ColumnUtil.INTANCE.isSecundaryIndexField(Person.class.getDeclaredFields()[1]));		
 	}
 	
 
 	@Test
 	public void isEnumFieldTest(){
 		
-		Assert.assertTrue(ColumnUtil.isEnumField(Person.class.getDeclaredFields()[4]));		
+		Assert.assertTrue(ColumnUtil.INTANCE.isEnumField(Person.class.getDeclaredFields()[4]));		
 	}
 	
 	@Test
 	public void isEnumFieldTestFail(){
 		
-		Assert.assertFalse(ColumnUtil.isEnumField(Person.class.getDeclaredFields()[1]));		
+		Assert.assertFalse(ColumnUtil.INTANCE.isEnumField(Person.class.getDeclaredFields()[1]));		
 	}
 	
 	@Test
 	public void isMappedSuperclassTest(){
 		
-		Assert.assertTrue(ColumnUtil.isMappedSuperclass(Engineer.class));
+		Assert.assertTrue(ColumnUtil.INTANCE.isMappedSuperclass(Engineer.class));
 	}
 	
 	@Test
 	public void listFieldsTest(){
 		
-		Assert.assertEquals(ColumnUtil.listFields(Engineer.class).size(), 7);
+		Assert.assertEquals(ColumnUtil.INTANCE.listFields(Engineer.class).size(), 7);
 	}
 	@Test
 	public void getSchemaTest(){
-		Assert.assertEquals(ColumnUtil.getSchema(Drink.class), "schemaA");
+		Assert.assertEquals(ColumnUtil.INTANCE.getSchema(Drink.class), "schemaA");
 	}
 	
 	@Test
 	public void getSchemaNullTest(){
-		Assert.assertNull(ColumnUtil.getSchema(Person.class));
+		Assert.assertNull(ColumnUtil.INTANCE.getSchema(Person.class));
 	}
 }

@@ -1,24 +1,23 @@
 package org.easycassandra.bean.dao;
 
 import java.util.List;
-import java.util.Map;
-import org.easycassandra.ConsistencyLevelCQL;
+
 import org.easycassandra.persistence.EasyCassandraManager;
-import org.easycassandra.persistence.JCassandra;
-import org.easycassandra.persistence.Persistence;
+import org.easycassandra.persistence.PersistenceCassandra;
 
 public class PersistenceDao<T> {
 
-    private Persistence persistence;
+    private PersistenceCassandra persistence;
     private Class<T> baseClass;
 
     public PersistenceDao(Class<T> baseClass) {
         this.baseClass = baseClass;
-        persistence = EasyCassandraManager.getPersistence("javabahia", "localhost", 9160);
+        persistence = EasyCassandraManager.getPersistence("localhost", "javabahia");
+        EasyCassandraManager.addFamilyObject(baseClass, "javabahia");
     }
 
     public boolean insert(T bean) {
-        return persistence.insert(bean, ConsistencyLevelCQL.ONE);
+        return persistence.insert(bean);
     }
 
     public boolean remove(T bean) {
@@ -26,7 +25,7 @@ public class PersistenceDao<T> {
     }
 
     public boolean removeFromRowKey(Object rowKey) {
-        return persistence.deleteByKeyValue(rowKey, baseClass);
+        return persistence.deleteByKey(rowKey, baseClass);
     }
 
     public boolean update(T bean) {
@@ -49,20 +48,20 @@ public class PersistenceDao<T> {
     public Long count() {
         return persistence.count(baseClass);
     }
-
-    public List<T> findKeyIn(Object... key) {
-        return persistence.findByKeyIn(baseClass, key);
-    }
+//
+//    public List<T> findKeyIn(Object... key) {
+//        return persistence.findByKeyIn(baseClass, key);
+//    }
 
     public boolean executeUpdateCql(String string) {
-        return persistence.executeUpdateCql(string);
+        return persistence.executeUpdate(string);
     }
 
-    public List<Map<String, String>> executeCql(String string) {
-        return persistence.executeCql(string);
-    }
-
-    public JCassandra createJCassandra(String cql) {
-        return persistence.createJCassandra(cql);
-    }
+//    public List<Map<String, String>> executeCql(String string) {
+//        return persistence.executeCql(string);
+//    }
+//
+//    public JCassandra createJCassandra(String cql) {
+//        return persistence.createJCassandra(cql);
+//    }
 }
