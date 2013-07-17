@@ -20,6 +20,11 @@ import org.easycassandra.ReplicaStrategy;
 
 import com.datastax.driver.core.Session;
 
+/**
+ * Class to persist information in cassandra database
+ * @author otaviojava
+ *
+ */
 class PersistenceCassandraImpl implements PersistenceCassandra {
 
 	private Session session;

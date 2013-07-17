@@ -27,7 +27,11 @@ import com.datastax.driver.core.ColumnDefinitions.Definition;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.exceptions.InvalidQueryException;
-
+/**
+ * Class to fix a column family
+ * @author otaviojava
+ *
+ */
 class FixColumnFamily {
 
 	
