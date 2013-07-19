@@ -49,6 +49,7 @@ class PersistenceCassandraImpl implements PersistenceCassandra {
 		this.keySpace=keySpace;
 		new FixKeySpace().verifyKeySpace(keySpace, session,replicaStrategy,factor);
 	}
+	
 	public void execute(String string) {
 		session.execute(string);
 	}
@@ -62,14 +63,17 @@ class PersistenceCassandraImpl implements PersistenceCassandra {
 		
 		return new DeleteQuery().deleteByKey(bean,session);
 	}
+	
 	@Override
 	public boolean update(Object bean) {
 		return new InsertQuery().prepare(bean,session);
 	}
+	
 	@Override
 	public <T> List<T> findAll(Class<T> bean) {
 		return new FindAllQuery().listAll(bean, session);
 	}
+	
 	@Override
 	public <T> T findByKey(Object key, Class<T> bean) {
 		return new FindByKeyQuery().findByKey(key, bean, session);
@@ -88,8 +92,8 @@ class PersistenceCassandraImpl implements PersistenceCassandra {
 	
 	@Override
 	public <T> List<T> findByIndex(Object index, Class<T> bean) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return new FindByIndexQuery().findByIndex(index, bean, session);
 	}
 	@Override
 	public Long count(Class<?> bean) {

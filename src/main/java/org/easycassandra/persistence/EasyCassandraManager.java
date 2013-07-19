@@ -28,6 +28,8 @@ import com.datastax.driver.core.Session;
 public class EasyCassandraManager {
 	
 	private static Cluster cluter;
+	private static String host="";
+	
 	
 	/**
      * Method for create the Cassandra's Client, if the keyspace there is not,if keyspace there isn't, 
@@ -37,7 +39,9 @@ public class EasyCassandraManager {
      * @return the client bridge for the Cassandra data base
      */
 	public static PersistenceCassandra getPersistence(String host, String keySpace) {
-		cluter=Cluster.builder().addContactPoints(host).build();
+		if(!EasyCassandraManager.host.equals(host)){
+			cluter=Cluster.builder().addContactPoints(host).build();
+		}
 		Session session=cluter.connect();
 		return new PersistenceCassandraImpl(session,keySpace);
 	}
@@ -61,6 +65,10 @@ public class EasyCassandraManager {
 		
 		String familyColumn= ColumnUtil.INTANCE.getColumnFamilyName(class1);
 		Session session=cluter.connect(keySpace);
+		if(!ColumnUtil.INTANCE.getSchema(class1).equals("")){
+			getPersistence(host, ColumnUtil.INTANCE.getSchema(class1));
+			
+		}
 		return new FixColumnFamily().verifyColumnFamily(session, familyColumn,class1);
 	}
 

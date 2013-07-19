@@ -1,5 +1,6 @@
 package org.easycassandra.bean;
 
+import org.easycassandra.KeyProblemsException;
 import org.easycassandra.bean.dao.PersistenceDao;
 import org.easycassandra.bean.model.Animal;
 import org.junit.Assert;
@@ -21,12 +22,12 @@ public class AnimalDAOTest {
 	        
 	     
 	    }
-	  	@Test
+	  	@Test(expected=KeyProblemsException.class)
 	  	public void insertNullError(){
 	  		Animal animal=new Animal();
-		       animal.setRace("I know no");
-		       animal.setCountry("Brazil");
-	           Assert.assertFalse(dao.insert(animal));
+		    animal.setRace("I know no");
+		    animal.setCountry("Brazil");
+	        Assert.assertFalse(dao.insert(animal));
 	  	}
 	  	@Test
 	    public void listErrorTest() {
@@ -36,7 +37,7 @@ public class AnimalDAOTest {
 	    }
 	  	@Test
 	  	public void listIndexInitializeTest(){
-	  		Assert.assertEquals(dao.listByIndex("Brazil").size(),1);
+	  		Assert.assertEquals(dao.listByIndex("Brazil").size(),2);
 	  	}
 	  
     

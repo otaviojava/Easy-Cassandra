@@ -32,7 +32,7 @@ public class FindAllQuery {
 		byKeyBean.stringBuilder.append("select ");
 		byKeyBean=prepare(byKeyBean, bean);
 		byKeyBean.stringBuilder.deleteCharAt(byKeyBean.stringBuilder.length()-1); 
-		byKeyBean.stringBuilder.append(" from ").append(ColumnUtil.INTANCE.getSchema(bean));
+		byKeyBean.stringBuilder.append(" from ");
 		byKeyBean.stringBuilder.append(ColumnUtil.INTANCE.getColumnFamilyName(bean));
 		
 		return executeConditions(bean, session, byKeyBean);

@@ -61,7 +61,7 @@ private void createEndInsertQuery(InsertBean insertBean) {
 }
 
 private void createBeginInsertQuery(Object bean, InsertBean insertBean) {
-	insertBean.query.append("insert into ").append(ColumnUtil.INTANCE.getSchema(bean.getClass()));
+	insertBean.query.append("insert into ");
 	insertBean.query.append(ColumnUtil.INTANCE.getColumnFamilyName(bean.getClass()));
 	insertBean.query.append("(");
 }

@@ -44,7 +44,7 @@ class DeleteQuery {
 		}
 		
 		StringBuilder queryDelete=new StringBuilder();
-		queryDelete.append("DELETE FROM ").append(ColumnUtil.INTANCE.getSchema(bean));
+		queryDelete.append("DELETE FROM ");
 		queryDelete.append(ColumnUtil.INTANCE.getColumnFamilyName(bean)).append(" WHERE ");
 		
 		Field keyField=ColumnUtil.INTANCE.getKeyField(bean);

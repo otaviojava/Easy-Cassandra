@@ -17,7 +17,8 @@ public class EngineerDaoTest {
 
     @Test
     public void retrieveTest() {
-        Assert.assertNotNull(dao.retrieve(getEngineer().getNickName()));
+    	Engineer engineer=dao.retrieve(getEngineer().getNickName());
+        Assert.assertNotNull(engineer);
     }
 
     @Test

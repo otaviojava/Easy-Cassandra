@@ -38,14 +38,32 @@ class FindByKeyQuery extends FindAllQuery {
 		byKeyBean.stringBuilder.append("select ");
 		byKeyBean=prepare(byKeyBean, bean);
 		byKeyBean.stringBuilder.deleteCharAt(byKeyBean.stringBuilder.length()-1); 
-		byKeyBean.stringBuilder.append(" from ").append(ColumnUtil.INTANCE.getSchema(bean));
+		byKeyBean.stringBuilder.append(" from ");
 		byKeyBean.stringBuilder.append(ColumnUtil.INTANCE.getColumnFamilyName(bean));
 		return executeConditions(key, bean, session, byKeyBean);
 	}
 
+	
 	private <T> T executeConditions(Object key, Class<T> bean, Session session,	QueryBean byKeyBean) {
-		byKeyBean.stringBuilder.append(" where ");
+		ResultSet resultSet = executeQuery(key, bean,session, byKeyBean);
+		List<T> list= RecoveryObject.INTANCE.recoverObjet(bean, resultSet);
+		if(!list.isEmpty()){
+			return list.get(0);
+		}
 		
+		return null;
+	}
+	/**
+	 * execute the query and returns the result set
+	 * @param key - value of key 
+	 * @param bean - bean represents column family
+	 * @param session 
+	 * @param byKeyBean 
+	 * @return 
+	 */
+	protected ResultSet executeQuery(Object key, Class<?> bean, Session session,	QueryBean byKeyBean) {
+
+		byKeyBean.stringBuilder.append(" where ");
 		
 		if(!key.getClass().equals(byKeyBean.key.getType())){
 			StringBuilder erro=new StringBuilder();
@@ -54,14 +72,11 @@ class FindByKeyQuery extends FindAllQuery {
 			throw new KeyProblemsException(erro.toString());
 		}
 		if(ColumnUtil.INTANCE.isIdField(byKeyBean.key)){
-			ResultSet resultSet = executeSingleKey(key, session, byKeyBean);
-			List<T> list= RecoveryObject.INTANCE.recoverObjet(bean, resultSet);
-			if(!list.isEmpty()){
-				return list.get(0);
-			}
-				return null;
+			return executeSingleKey(key, session, byKeyBean);
 		}else if(ColumnUtil.INTANCE.isEmbeddedIdField(byKeyBean.key)){
 			throw new NotImplementedException("This version doesn't support complex key yet");
+		}else if(ColumnUtil.INTANCE.isIndexField(byKeyBean.key)){
+			return executeSingleKey(key, session, byKeyBean);
 		}
 		
 		return null;

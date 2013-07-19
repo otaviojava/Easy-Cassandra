@@ -15,14 +15,15 @@ import org.junit.Test;
  */
 public class PersonDAOTest {
 
-    private PersistenceDao<Person> dao = new PersistenceDao<Person>(Person.class);
+    private static final String NAME = "otavio teste";
+	private PersistenceDao<Person> dao = new PersistenceDao<Person>(Person.class);
 
     @Test
     public void insertTest() {
     	
     	
         Person person = getPerson();
-        person.setName("otavio teste");
+        person.setName(NAME);
         person.setId(4l);
         person.setYear(20);
         Address address = getAddress();
@@ -105,7 +106,7 @@ public class PersonDAOTest {
     public void insertFileTest() {
         System.out.println("Inserindo exemplo");
         Person person = getPerson();
-        person.setName("otavio teste");
+        person.setName(NAME);
         person.setId(4l);
         Address address = getAddress();
         person.setAddress(address);
@@ -121,16 +122,12 @@ public class PersonDAOTest {
         Assert.assertNotNull(dao.count());
     }
 
-//    @Test
-//    public void inKeyTest() {
-//        for (long index = 10; index < 15; index++) {
-//            Person person = getPerson();
-//            person.setId(Long.valueOf(index));
-//            person.setAddress(getAddress());
-//            dao.insert(person);
-//        }
-//        Assert.assertEquals(dao.findKeyIn(10l,11l,12l,13l, 14l).size(), 5);
-//    }
+
+    @Test
+    public void findIndexTest(){
+    	List<Person> persons= dao.listByIndex(NAME);
+    	Assert.assertNotNull(persons);
+    }
 
     @Test
     public void executeUpdateCqlTest() {
@@ -139,10 +136,7 @@ public class PersonDAOTest {
 
    
 
-//    @Test
-//    public void executeCqlTest() {
-//        Assert.assertNotNull(dao.executeQuery("select * from person"));
-//    }
+
 
     @Test
     public void countTest() {
@@ -152,7 +146,7 @@ public class PersonDAOTest {
     @Test
     public void insertWithAcent(){
     	Person person=getPerson();
-    	person.setName("Otávio");
+    	person.setName(NAME);
     	person.setId(32l);
     	Assert.assertTrue(dao.insert(person));
     }
@@ -168,7 +162,7 @@ public class PersonDAOTest {
     private Person getPerson() {
         Person person = new Person();
         person.setYear(10);
-        person.setName("Name Person ");
+        person.setName(NAME);
         person.setSex(Sex.MALE);
         return person;
     }

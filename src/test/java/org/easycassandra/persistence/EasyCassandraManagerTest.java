@@ -51,7 +51,7 @@ public class EasyCassandraManagerTest {
     public void addColumnFamilyErrorTest() {
     	
     	Persistence persistence=EasyCassandraManager.getPersistence("localhost", "simpleTest",ReplicaStrategy.SimpleStrategy,3);
-    	persistence.executeUpdate("create table SimpleBeanWrong( id bigint, name ascii, born int,  PRIMARY KEY (id) )");
+//    	persistence.executeUpdate("create table SimpleBeanWrong( id bigint, name ascii, born int,  PRIMARY KEY (id) )");
         Assert.assertTrue(EasyCassandraManager.addFamilyObject(SimpleBeanWrong.class,"simpleTest"));
     }
     
@@ -59,7 +59,7 @@ public class EasyCassandraManagerTest {
     public void addColumnFamilyAlterTableTest() {
     	
     	Persistence persistence=EasyCassandraManager.getPersistence("localhost", "simpleTest",ReplicaStrategy.SimpleStrategy,3);
-    	persistence.executeUpdate("create table SimpleBeanAlterTable( id bigint, name ascii, born int,  PRIMARY KEY (id) )");
+//    	persistence.executeUpdate("create table SimpleBeanAlterTable( id bigint, name ascii, born int,  PRIMARY KEY (id) )");
         Assert.assertTrue(EasyCassandraManager.addFamilyObject(SimpleBeanAlterTable.class,"simpleTest"));
     }
     

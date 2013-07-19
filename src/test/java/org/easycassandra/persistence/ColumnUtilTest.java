@@ -6,11 +6,9 @@ import junit.framework.Assert;
 
 import org.easycassandra.bean.model.Address;
 import org.easycassandra.bean.model.Animal;
-import org.easycassandra.bean.model.Count;
 import org.easycassandra.bean.model.Drink;
 import org.easycassandra.bean.model.Engineer;
 import org.easycassandra.bean.model.Person;
-import org.easycassandra.bean.model.Person2;
 import org.junit.Test;
 
 public class ColumnUtilTest {
@@ -25,7 +23,7 @@ public class ColumnUtilTest {
 	public void getColumnFamilyNameByTableTest(){
 		
 		
-		Assert.assertEquals("drink", ColumnUtil.INTANCE.getColumnFamilyName(Drink.class));
+		Assert.assertEquals("schemaA.drink", ColumnUtil.INTANCE.getColumnFamilyName(Drink.class));
 	}
 	
 	@Test
@@ -53,11 +51,7 @@ public class ColumnUtilTest {
 		Assert.assertEquals("sex", ColumnUtil.INTANCE.getEnumeratedName(field));
 	}
 	
-	@Test
-	public void getColumnEnumTestWithDefaultTest() {
-		Field field=Person2.class.getDeclaredFields()[4];
-		Assert.assertEquals("sex", ColumnUtil.INTANCE.getEnumeratedName(field));
-	}
+	
 	
 	@Test
 	public void getKeyFieldTest(){
@@ -85,23 +79,15 @@ public class ColumnUtilTest {
 		Assert.assertTrue(ColumnUtil.INTANCE.isIdField(Person.class.getDeclaredFields()[1]));		
 	}
 	
-	@Test
-	public void isGeneratedValueTest(){
-		
-		Assert.assertTrue(ColumnUtil.INTANCE.isGeneratedValue(Count.class.getDeclaredFields()[1]));		
-	}
+	
 	
 	@Test
 	public void isEmbeddedFieldTest(){
 		
-		Assert.assertTrue(ColumnUtil.INTANCE.isEmbeddedField(Person.class.getDeclaredFields()[6]));		
+		Assert.assertTrue(ColumnUtil.INTANCE.isEmbeddedField(Person.class.getDeclaredFields()[5]));		
 	}
 	
-	@Test
-	public void isVersionFieldTest(){
-		
-		Assert.assertTrue(ColumnUtil.INTANCE.isVersionField(Count.class.getDeclaredFields()[3]));		
-	}
+	
 	
 	
 	@Test
@@ -158,14 +144,5 @@ public class ColumnUtilTest {
 	public void listFieldsTest(){
 		
 		Assert.assertEquals(ColumnUtil.INTANCE.listFields(Engineer.class).size(), 7);
-	}
-	@Test
-	public void getSchemaTest(){
-		Assert.assertEquals(ColumnUtil.INTANCE.getSchema(Drink.class), "schemaA");
-	}
-	
-	@Test
-	public void getSchemaNullTest(){
-		Assert.assertNull(ColumnUtil.INTANCE.getSchema(Person.class));
 	}
 }

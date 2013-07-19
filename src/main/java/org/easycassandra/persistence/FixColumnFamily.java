@@ -46,12 +46,14 @@ class FixColumnFamily {
 			try{
 				ResultSet resultSet=session.execute("SELECT * FROM "+familyColumn+" LIMIT 1");
 				verifyRowType(resultSet,class1,session);
+				findIndex(class1, session);
 				return true;
 			}catch(InvalidQueryException exception){
 				
-				if(exception.getCause().getMessage().contains("unconfigured columnfamily "+familyColumn.toLowerCase())){
+				if(exception.getCause().getMessage().contains("unconfigured columnfamily ")){
 					Logger.getLogger(FixColumnFamily.class.getName()).info("Column family doesn't exist, try to create");
 					createColumnFamily(familyColumn, class1,session);
+					findIndex(class1, session);
 					return true;
 				}
 			}
@@ -154,7 +156,7 @@ class FixColumnFamily {
 	 */
 	private void createColumnFamily(String familyColumn, Class<?> class1,Session session) {
 		StringBuilder cqlCreateTable=new StringBuilder();
-		cqlCreateTable.append("create table ").append(ColumnUtil.INTANCE.getSchema(class1));
+		cqlCreateTable.append("create table ");
 		
 		cqlCreateTable.append(familyColumn).append("( ");
 		RelationShipJavaCassandra javaCassandra=RelationShipJavaCassandra.INSTANCE;
@@ -214,5 +216,21 @@ class FixColumnFamily {
 		}
 		return isComplexID;
 	}
-
+	/**
+	 * Find if exists 
+	 */
+	private void findIndex(Class<?> familyColumn,Session session){
+		StringBuilder createIndexQuery = new StringBuilder();
+		Field index=ColumnUtil.INTANCE.getIndexField(familyColumn);
+		if(index ==null){return;}
+		createIndexQuery.append("CREATE INDEX ");
+		createIndexQuery.append(ColumnUtil.INTANCE.getColumnName(index)).append("INDEX ON ");
+		createIndexQuery.append(ColumnUtil.INTANCE.getColumnFamilyName(familyColumn));
+		createIndexQuery.append(" (").append(ColumnUtil.INTANCE.getColumnName(index)).append(");");
+		try{
+		session.execute(createIndexQuery.toString());
+		}catch(InvalidQueryException exception){
+			Logger.getLogger(FixColumnFamily.class.getName()).info("Index already exists");
+		}
+	}
 }

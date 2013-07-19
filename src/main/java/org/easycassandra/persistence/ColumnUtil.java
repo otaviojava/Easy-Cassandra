@@ -52,22 +52,32 @@ INTANCE;
      * @return The name of Column name if there are not will be return null
      */
     public String getColumnFamilyName(Class<?> object) {
-
+    	String schema=getSchemaConcat(object);
         Entity columnFamily = (Entity) object.getAnnotation(Entity.class);
         Table columnFamilyTable = (Table) object.getAnnotation(Table.class);
         if (columnFamily != null) {
-            return columnFamily.name().equals("")   ? object.getSimpleName() : columnFamily.name();
+            String columnName=columnFamily.name().equals("")   ? object.getSimpleName() : columnFamily.name();
+            return schema.concat(columnName);
         }else
         if(columnFamilyTable != null){
-        	return columnFamilyTable.name().equals("")   ? object.getSimpleName() : columnFamilyTable.name();
+        	String columnName= columnFamilyTable.name().equals("")   ? object.getSimpleName() : columnFamilyTable.name();
+        	return schema.concat(columnName);
         }
-        return object.getSimpleName();
+        return schema.concat(object.getSimpleName());
     }
+    
+    private  String getSchemaConcat(Class<?> class1) {
+    	String schema=getSchema(class1);
+    	if(!"".equals(schema)){
+    		return schema.concat(".");
+    	}
+		return "";
+	}
     
     public  String getSchema(Class<?> class1) {
     	Table columnFamily = (Table) class1.getAnnotation(Table.class);
     	 if (columnFamily != null) {
-             return columnFamily.schema().equals("") ? null : columnFamily.schema().concat(".");
+             return columnFamily.schema().equals("") ? null : columnFamily.schema();
          }
 		return "";
 	}
@@ -192,7 +202,16 @@ INTANCE;
     public  boolean isIdField(Field field) {
         return field.getAnnotation(Id.class) != null;
     }
-
+    /**
+     * verify if this is index of the column
+     *
+     * @param field
+     * @return
+     */
+    public  boolean isIndexField(Field field) {
+        return field.getAnnotation(Index.class) != null;
+    }
+    
     @GeneratedValue
     public  boolean isGeneratedValue(Field field) {
         return field.getAnnotation(GeneratedValue.class) != null;

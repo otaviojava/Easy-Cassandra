@@ -70,7 +70,7 @@ import com.datastax.driver.core.Row;
 				ReflectionUtil.setMethod(newObjetc, field, enumValue);	
 				continue;
 			}
-			Definition column=mapDefinition.get(ColumnUtil.INTANCE.getColumnName(field));
+			Definition column=mapDefinition.get(ColumnUtil.INTANCE.getColumnName(field).toLowerCase());
 			Object value=RelationShipJavaCassandra.INSTANCE.getObject(row, column.getType().getName(),column.getName());
 			ReflectionUtil.setMethod(newObjetc, field, value);
 		}

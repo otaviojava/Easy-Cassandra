@@ -1,5 +1,6 @@
 package org.easycassandra.bean.dao;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.easycassandra.persistence.EasyCassandraManager;
@@ -9,11 +10,16 @@ public class PersistenceDao<T> {
 
     private PersistenceCassandra persistence;
     private Class<T> baseClass;
+    
+    private static final List<Class<?>> classes=new LinkedList<Class<?>>();
 
     public PersistenceDao(Class<T> baseClass) {
         this.baseClass = baseClass;
         persistence = EasyCassandraManager.getPersistence("localhost", "javabahia");
-        EasyCassandraManager.addFamilyObject(baseClass, "javabahia");
+        if(!classes.contains(baseClass)){
+        	EasyCassandraManager.addFamilyObject(baseClass, "javabahia");
+        	classes.add(baseClass);
+        }
     }
 
     public boolean insert(T bean) {
