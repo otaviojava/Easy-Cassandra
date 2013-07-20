@@ -17,22 +17,22 @@ public class EasyCassandraManagerTest {
 
     @BeforeClass
 	public static void beforeClass(){
-		EasyCassandraManager.getPersistence("localhost", "simpleTest",ReplicaStrategy.SimpleStrategy,3);
+		EasyCassandraManager.INSTANCE.getPersistence("localhost", "simpleTest",ReplicaStrategy.SIMPLES_TRATEGY,3);
 	}
 
     @Test
     public void getPersistenceTest() {
-        Assert.assertNotNull(EasyCassandraManager.getPersistence("localhost", "javabahia"));
+        Assert.assertNotNull(EasyCassandraManager.INSTANCE.getPersistence("localhost", "javabahia"));
     }
     @Test
     public void getCreateSimpleTest() {
-        Assert.assertNotNull(EasyCassandraManager.getPersistence("localhost", "simpleTest",ReplicaStrategy.SimpleStrategy,3));
+        Assert.assertNotNull(EasyCassandraManager.INSTANCE.getPersistence("localhost", "simpleTest",ReplicaStrategy.SIMPLES_TRATEGY,3));
     }
   
     
     @Test
     public void getCreateNetworkTopologyTest() {
-    	Assert.assertNotNull(EasyCassandraManager.getPersistence("localhost", "simpleTest2",ReplicaStrategy.SimpleStrategy,3));
+    	Assert.assertNotNull(EasyCassandraManager.INSTANCE.getPersistence("localhost", "simpleTest2",ReplicaStrategy.SIMPLES_TRATEGY,3));
     }
 
 
@@ -43,48 +43,48 @@ public class EasyCassandraManagerTest {
   
     @Test
     public void addColumnFamilyTest() {
-    	EasyCassandraManager.getPersistence("localhost", "simpleTest",ReplicaStrategy.SimpleStrategy,3);
-        Assert.assertTrue(EasyCassandraManager.addFamilyObject(SimpleBean.class,"javabahia"));
+    	EasyCassandraManager.INSTANCE.getPersistence("localhost", "simpleTest",ReplicaStrategy.SIMPLES_TRATEGY,3);
+        Assert.assertTrue(EasyCassandraManager.INSTANCE.addFamilyObject(SimpleBean.class,"javabahia"));
     }
     
     @Test(expected=FieldJavaNotEquivalentCQLException.class)
     public void addColumnFamilyErrorTest() {
     	
-    	Persistence persistence=EasyCassandraManager.getPersistence("localhost", "simpleTest",ReplicaStrategy.SimpleStrategy,3);
+    	Persistence persistence=EasyCassandraManager.INSTANCE.getPersistence("localhost", "simpleTest",ReplicaStrategy.SIMPLES_TRATEGY,3);
 //    	persistence.executeUpdate("create table SimpleBeanWrong( id bigint, name ascii, born int,  PRIMARY KEY (id) )");
-        Assert.assertTrue(EasyCassandraManager.addFamilyObject(SimpleBeanWrong.class,"simpleTest"));
+        Assert.assertTrue(EasyCassandraManager.INSTANCE.addFamilyObject(SimpleBeanWrong.class,"simpleTest"));
     }
     
     @Test
     public void addColumnFamilyAlterTableTest() {
     	
-    	Persistence persistence=EasyCassandraManager.getPersistence("localhost", "simpleTest",ReplicaStrategy.SimpleStrategy,3);
+    	Persistence persistence=EasyCassandraManager.INSTANCE.getPersistence("localhost", "simpleTest",ReplicaStrategy.SIMPLES_TRATEGY,3);
 //    	persistence.executeUpdate("create table SimpleBeanAlterTable( id bigint, name ascii, born int,  PRIMARY KEY (id) )");
-        Assert.assertTrue(EasyCassandraManager.addFamilyObject(SimpleBeanAlterTable.class,"simpleTest"));
+        Assert.assertTrue(EasyCassandraManager.INSTANCE.addFamilyObject(SimpleBeanAlterTable.class,"simpleTest"));
     }
     
     @Test
     public void addColumnFamilyComplexTest() {
     	
-        Assert.assertTrue(EasyCassandraManager.addFamilyObject(SimpleComplexBean.class,"simpleTest"));
+        Assert.assertTrue(EasyCassandraManager.INSTANCE.addFamilyObject(SimpleComplexBean.class,"simpleTest"));
     }
     
     @Test
     public void addColumnFamilyComplexIDTest() {
     	
-        Assert.assertTrue(EasyCassandraManager.addFamilyObject(SimpleBeanComplexId.class,"simpleTest"));
+        Assert.assertTrue(EasyCassandraManager.INSTANCE.addFamilyObject(SimpleBeanComplexId.class,"simpleTest"));
     }
     
     @Test
     public void addColumnFamilySuperTest() {
     	
-        Assert.assertTrue(EasyCassandraManager.addFamilyObject(SimpleBeanSubClass.class,"simpleTest"));
+        Assert.assertTrue(EasyCassandraManager.INSTANCE.addFamilyObject(SimpleBeanSubClass.class,"simpleTest"));
     }
     
     @Test
     public void addColumnFamilyEnumTest() {
     	
-        Assert.assertTrue(EasyCassandraManager.addFamilyObject(SimpleBeanEnum.class,"simpleTest"));
+        Assert.assertTrue(EasyCassandraManager.INSTANCE.addFamilyObject(SimpleBeanEnum.class,"simpleTest"));
     }
     
 }

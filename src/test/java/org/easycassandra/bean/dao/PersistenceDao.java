@@ -15,9 +15,9 @@ public class PersistenceDao<T> {
 
     public PersistenceDao(Class<T> baseClass) {
         this.baseClass = baseClass;
-        persistence = EasyCassandraManager.getPersistence("localhost", "javabahia");
+        persistence = EasyCassandraManager.INSTANCE.getPersistence("localhost", "javabahia");
         if(!classes.contains(baseClass)){
-        	EasyCassandraManager.addFamilyObject(baseClass, "javabahia");
+        	EasyCassandraManager.INSTANCE.addFamilyObject(baseClass, "javabahia");
         	classes.add(baseClass);
         }
     }
