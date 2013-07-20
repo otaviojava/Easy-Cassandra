@@ -1,13 +1,13 @@
 Easy-Cassandra
 
-Easily programming with this framework, the Easy Cassandra
-The EasyCassandra uses the Thrift implementation and has like the main objective be one simple ORM( Object relational manager). It need the jdk 7 for run, because some parts in your code was replaced reflection for invoke dynamic. So will have a behavior faster than other framework.
+Easily programming with this framework, the Easy Cassandra.
+The EasyCassandra uses the Thrift implementation and has as main objective to be a simple ORM( Object relational manager). It needs the jdk 7 to run, because some parts in his code are using invoke dynamic instead reflection. Due to it, it will have a faster behavior than other frameworks.
 
 Version: 1.1.2
 * use different keyspace with schema
 
 Version: 1.1.1
-* when you insert or merge you don't need cast for your object
+* when you insert or merge you don't need to cast to your object
 * refactoring messages errors
 
 Version: 1.1.0
@@ -45,8 +45,8 @@ Version: 1.0.5
 Version: 1.0.4
 * more performance
 * less memory
-* now is supported all primitives types
-* now is supported Byte, character, Short, BigInteger and BigDecimal
+* now, all primitives types are supported 
+* now, Byte, character, Short, BigInteger and BigDecimal are supported 
 
 Version: 1.0.3
 * Fixes bug with result
@@ -55,10 +55,10 @@ Version: 1.0.3
 
 Version: 1.0.2
 * Fixes bug with Boolean's Object
-* Now the Cassandra's lib is supported this way is possible use every Cassandra above of the version 0.8.0
+* Now the Cassandra's lib is supported. In this way is possible to use every Cassandra above of the version 0.8.0
 
 Version: 1.0.1
 Modifications
-* Allowed use ColumnValue and ColumnFamilyValue in default mode this way its get the field's name
+* Allowed use ColumnValue and ColumnFamilyValue in default mode. In this way, it gets the field's name
 * Fixes bug in Reflection
 * Auto-Increment saved in XML Document
