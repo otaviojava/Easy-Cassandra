@@ -105,8 +105,9 @@ class InsertQuery {
     private void isKeyNull(Object bean) {
         Field key = ColumnUtil.INTANCE.getKeyField(bean.getClass());
         if (key == null) {
+            
             key = ColumnUtil.INTANCE.getField(bean.getClass(), EmbeddedId.class);
-            isKeyNull(bean, key.getType().getDeclaredFields());
+            isKeyNull(ReflectionUtil.getMethod(bean, key), key.getType().getDeclaredFields());
         } else {
             isKeyNull(bean, key);
         }

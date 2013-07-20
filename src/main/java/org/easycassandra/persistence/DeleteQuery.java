@@ -16,11 +16,8 @@ package org.easycassandra.persistence;
 
 import java.lang.reflect.Field;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.easycassandra.util.ReflectionUtil;
 
-import com.datastax.driver.core.BoundStatement;
-import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.Session;
 
 /**
@@ -29,7 +26,7 @@ import com.datastax.driver.core.Session;
  * @author otaviojava
  * 
  */
-class DeleteQuery {
+class DeleteQuery extends FindByKeyQuery {
 
     public boolean deleteByKey(Object bean, Session session) {
         Field key = ColumnUtil.INTANCE.getKeyField(bean.getClass());
@@ -40,28 +37,28 @@ class DeleteQuery {
     }
 
     public boolean deleteByKey(Object key, Class<?> bean, Session session) {
-
+        QueryBean queryBean=new QueryBean();
         if (key == null) {
             throw new NullPointerException("The parameter key to column family should be passed");
         }
 
-        StringBuilder queryDelete = new StringBuilder();
-        queryDelete.append("DELETE FROM ");
-        queryDelete.append(ColumnUtil.INTANCE.getColumnFamilyName(bean)).append(" WHERE ");
+        queryBean.stringBuilder.append("DELETE FROM ");
+        queryBean.stringBuilder.append(ColumnUtil.INTANCE.getColumnFamilyName(bean)).append(" WHERE ");
 
         Field keyField = ColumnUtil.INTANCE.getKeyField(bean);
         if (keyField != null) {
-            queryDelete.append(ColumnUtil.INTANCE.getColumnName(keyField));
-            queryDelete.append(" =?");
-
-            PreparedStatement preparedStatement = session.prepare(queryDelete.toString());
-            BoundStatement boundStatement = new BoundStatement( preparedStatement);
-            session.execute(boundStatement.bind(new Object[] { key }));
+            
+            queryBean.key=keyField;
+            executeSingleKey(key, session, queryBean);
         } else {
-            throw new NotImplementedException("This version doesn't support complex key yet");
+            queryBean.key=ColumnUtil.INTANCE.getKeyComplexField(bean);
+            executeComplexKey(key, session, queryBean);
+            
         }
 
         return true;
     }
 
+        
+    
 }

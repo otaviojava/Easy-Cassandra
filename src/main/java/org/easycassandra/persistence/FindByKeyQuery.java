@@ -14,10 +14,12 @@
  */
 package org.easycassandra.persistence;
 
+import java.lang.reflect.Field;
+import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.easycassandra.KeyProblemsException;
+import org.easycassandra.util.ReflectionUtil;
 
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.PreparedStatement;
@@ -77,7 +79,8 @@ class FindByKeyQuery extends FindAllQuery {
         if (ColumnUtil.INTANCE.isIdField(byKeyBean.key)) {
             return executeSingleKey(key, session, byKeyBean);
         } else if (ColumnUtil.INTANCE.isEmbeddedIdField(byKeyBean.key)) {
-            throw new NotImplementedException("This version doesn't support complex key yet");
+            
+            return executeComplexKey(key, session, byKeyBean);
         } else if (ColumnUtil.INTANCE.isIndexField(byKeyBean.key)) {
             return executeSingleKey(key, session, byKeyBean);
         }
@@ -93,16 +96,40 @@ class FindByKeyQuery extends FindAllQuery {
      * @param byKeyBean
      * @return
      */
-    private ResultSet executeSingleKey(Object key, Session session,
-            QueryBean byKeyBean) {
-        byKeyBean.stringBuilder.append(ColumnUtil.INTANCE
-                .getColumnName(byKeyBean.key));
+    protected ResultSet executeSingleKey(Object key, Session session, QueryBean byKeyBean) {
+        
+        byKeyBean.stringBuilder.append(ColumnUtil.INTANCE.getColumnName(byKeyBean.key));
         byKeyBean.stringBuilder.append("= ? ;");
-        PreparedStatement statement = session.prepare(byKeyBean.stringBuilder
-                .toString());
+        PreparedStatement statement = session.prepare(byKeyBean.stringBuilder.toString());
         BoundStatement boundStatement = new BoundStatement(statement);
         return session.execute(boundStatement.bind(new Object[] { key }));
 
     }
 
+    /**
+     * query with complex query in column family
+     * 
+     * @param key
+     * @param session
+     * @param byKeyBean
+     * @return
+     */
+    protected ResultSet executeComplexKey(Object key, Session session, QueryBean byKeyBean) {
+        List<Object> objects=new LinkedList<Object>();
+        int count=0;
+        for(Field complexKey:ColumnUtil.INTANCE.listFields(key.getClass())){
+            if(count++ >0){
+                byKeyBean.stringBuilder.append(" AND ");    
+            }
+            
+            byKeyBean.stringBuilder.append(ColumnUtil.INTANCE.getColumnName(complexKey));
+            byKeyBean.stringBuilder.append("= ? ");
+            objects.add(ReflectionUtil.getMethod(key, complexKey));
+        }
+        byKeyBean.stringBuilder.append(";");
+        PreparedStatement statement = session.prepare(byKeyBean.stringBuilder.toString());
+        BoundStatement boundStatement = new BoundStatement(statement);
+        return session.execute(boundStatement.bind(objects.toArray()));
+
+    }
 }

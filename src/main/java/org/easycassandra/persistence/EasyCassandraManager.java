@@ -41,7 +41,7 @@ public enum EasyCassandraManager {
      * @return the client bridge for the Cassandra data base
      */
     public PersistenceCassandra getPersistence(String host, String keySpace) {
-        if (!host.equals(host)) {
+        if (!this.host.equals(host)) {
             cluter = Cluster.builder().addContactPoints(host).build();
         }
         Session session = cluter.connect();
