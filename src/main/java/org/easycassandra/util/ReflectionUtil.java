@@ -20,16 +20,14 @@ import java.util.logging.Logger;
 
 /**
  * The class does getter and setter with invoke Dynamic
- *
+ * 
  * @author otavio
  */
 public final class ReflectionUtil {
 
-    
-
     /**
      * Return The Object from the Field
-     *
+     * 
      * @param object
      * @param field
      * @return - the field value in Object
@@ -37,27 +35,25 @@ public final class ReflectionUtil {
     public static Object getMethod(Object object, Field field) {
 
         try {
-        	boolean isAccessibleCopy=field.isAccessible();
-          if(isAccessibleCopy){
-        	  return field.get(object);
-          }
-          else{
-        	  field.setAccessible(true);
-        	  Object value=field.get(object);
-        	  field.setAccessible(isAccessibleCopy);
-        	  return value;
-          }
-          
+            boolean isAccessibleCopy = field.isAccessible();
+            if (isAccessibleCopy) {
+                return field.get(object);
+            } else {
+                field.setAccessible(true);
+                Object value = field.get(object);
+                field.setAccessible(isAccessibleCopy);
+                return value;
+            }
+
         } catch (Exception exception) {
-            Logger.getLogger(ReflectionUtil.class.getName()).log(Level.SEVERE,
-                    null, exception);
+            Logger.getLogger(ReflectionUtil.class.getName()).log(Level.SEVERE, null, exception);
         }
         return null;
     }
 
     /**
      * Set the field in the Object
-     *
+     * 
      * @param object
      * @param field
      * @param value
@@ -65,31 +61,24 @@ public final class ReflectionUtil {
      */
     public static boolean setMethod(Object object, Field field, Object value) {
         try {
-        	boolean isAccessibleCopy=field.isAccessible();
-            if(isAccessibleCopy){
-          	field.set(object, value);
-            }
-            else{
-          	  field.setAccessible(true);
-          	 field.set(object, value);
-          	  field.setAccessible(isAccessibleCopy);
+            boolean isAccessibleCopy = field.isAccessible();
+            if (isAccessibleCopy) {
+                field.set(object, value);
+            } else {
+                field.setAccessible(true);
+                field.set(object, value);
+                field.setAccessible(isAccessibleCopy);
             }
         } catch (Exception exception) {
-            Logger.getLogger(ReflectionUtil.class.getName()).log(Level.SEVERE,
-                    null, exception);
+            Logger.getLogger(ReflectionUtil.class.getName()).log(Level.SEVERE,null, exception);
             return false;
         }
         return true;
     }
 
-
-
-   
-
-
     /**
      * Create new instance of this class
-     *
+     * 
      * @param clazz
      * @return the new instance that class
      */
@@ -97,15 +86,14 @@ public final class ReflectionUtil {
         try {
             return clazz.newInstance();
         } catch (Exception exception) {
-            Logger.getLogger(ReflectionUtil.class.getName()).log(Level.SEVERE,
-                    null, exception);
+            Logger.getLogger(ReflectionUtil.class.getName()).log(Level.SEVERE,null, exception);
             return null;
         }
     }
 
     /**
      * find the Field from the name field
-     *
+     * 
      * @param string
      * @return the field from the name
      */

@@ -28,84 +28,83 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Table;
 import javax.persistence.Version;
-import javax.xml.crypto.dsig.keyinfo.KeyValue;
 
 import org.easycassandra.annotations.Index;
 
 /**
  * Class Util for Column
- *
+ * 
  * @author otavio
- *
+ * 
  */
- enum ColumnUtil {
-INTANCE;
+enum ColumnUtil {
+    INTANCE;
 
-	/**
-	 * The integer class is used to enum how default
-	 */
-	public static final Class<?> DEFAULT_ENUM_CLASS=Integer.class;
+    /**
+     * The integer class is used to enum how default
+     */
+    public static final Class<?> DEFAULT_ENUM_CLASS = Integer.class;
+
     /**
      * Get The Column name from an Object
-     *
-     * @param object - Class of the object viewed
+     * 
+     * @param object
+     *            - Class of the object viewed
      * @return The name of Column name if there are not will be return null
      */
     public String getColumnFamilyName(Class<?> object) {
-    	String schema=getSchemaConcat(object);
+        String schema = getSchemaConcat(object);
         Entity columnFamily = (Entity) object.getAnnotation(Entity.class);
         Table columnFamilyTable = (Table) object.getAnnotation(Table.class);
         if (columnFamily != null) {
-            String columnName=columnFamily.name().equals("")   ? object.getSimpleName() : columnFamily.name();
+            String columnName = columnFamily.name().equals("") ? object.getSimpleName() : columnFamily.name();
             return schema.concat(columnName);
-        }else
-        if(columnFamilyTable != null){
-        	String columnName= columnFamilyTable.name().equals("")   ? object.getSimpleName() : columnFamilyTable.name();
-        	return schema.concat(columnName);
+        } else if (columnFamilyTable != null) {
+            String columnName = columnFamilyTable.name().equals("") ? object.getSimpleName() : columnFamilyTable.name();
+            return schema.concat(columnName);
         }
         return schema.concat(object.getSimpleName());
     }
-    
-    private  String getSchemaConcat(Class<?> class1) {
-    	String schema=getSchema(class1);
-    	if(!"".equals(schema)){
-    		return schema.concat(".");
-    	}
-		return "";
-	}
-    
-    public  String getSchema(Class<?> class1) {
-    	Table columnFamily = (Table) class1.getAnnotation(Table.class);
-    	 if (columnFamily != null) {
-             return columnFamily.schema().equals("") ? null : columnFamily.schema();
-         }
-		return "";
-	}
 
-    /**
-     * verifies that the name of the annotation is empty if you take the field
-     * name
-     *
-     * @param field - field for viewd
-     * @return The name inside annotations or the field's name
-     */
-    public  String getColumnName(Field field) {
-    	if(field.getAnnotation(javax.persistence.Column.class)==null){
-    		return field.getName();
-    	}
-        return field.getAnnotation(javax.persistence.Column.class).name().equals("")
-                ? field.getName() : field.getAnnotation(
-                javax.persistence.Column.class).name();
+    private String getSchemaConcat(Class<?> class1) {
+        String schema = getSchema(class1);
+        if (!"".equals(schema)) {
+            return schema.concat(".");
+        }
+        return "";
+    }
+
+    public String getSchema(Class<?> class1) {
+        Table columnFamily = (Table) class1.getAnnotation(Table.class);
+        if (columnFamily != null) {
+            return columnFamily.schema().equals("") ? null : columnFamily.schema();
+        }
+        return "";
     }
 
     /**
      * verifies that the name of the annotation is empty if you take the field
      * name
-     *
+     * 
+     * @param field
+     *            - field for viewd
+     * @return The name inside annotations or the field's name
+     */
+    public String getColumnName(Field field) {
+        if (field.getAnnotation(javax.persistence.Column.class) == null) {
+            return field.getName();
+        }
+        return field.getAnnotation(javax.persistence.Column.class).name().equals("") ? field.getName() : field.getAnnotation(javax.persistence.Column.class).name();
+    }
+
+    /**
+     * verifies that the name of the annotation is empty if you take the field
+     * name
+     * 
      * @param field
      * @return The name inside annotations or the field's name
      */
-    public  String getEnumeratedName(Field field) {
+    public String getEnumeratedName(Field field) {
         if (isNormalField(field)) {
             return getColumnName(field);
         }
@@ -114,46 +113,51 @@ INTANCE;
 
     /**
      * Return the Field with the KeyValue Annotations
-     *
+     * 
      * @see KeyValue
-     * @param persistenceClass - Class of the object viewed
+     * @param persistenceClass
+     *            - Class of the object viewed
      * @return the Field if there are not will be return null
      */
-    public  Field getKeyField(Class<?> persistenceClass) {
+    public Field getKeyField(Class<?> persistenceClass) {
         return getField(persistenceClass, Id.class);
     }
+
     /**
      * Return the Field with the complex key Annotations
-     *
+     * 
      * @see KeyValue
-     * @param persistenceClass - Class of the object viewed
+     * @param persistenceClass
+     *            - Class of the object viewed
      * @return the Field if there are not will be return null
      */
-    public  Field getKeyComplexField(Class<?> persistenceClass) {
+    public Field getKeyComplexField(Class<?> persistenceClass) {
         return getField(persistenceClass, EmbeddedId.class);
     }
-    
+
     /**
      * Return the Field with the IndexValue Annotations
-     *
+     * 
      * @see Index
-     * @param persistenceClass - Class of the object viewed
+     * @param persistenceClass
+     *            - Class of the object viewed
      * @return the Field if there are not will be return null
      */
-    public  Field getIndexField(Class<?> persistenceClass) {
+    public Field getIndexField(Class<?> persistenceClass) {
         return getField(persistenceClass, Index.class);
     }
 
     /**
      * Get the Field of the Object from annotation if there are not return will
      * be null
-     *
-     * @param object - Class of the object viewed
+     * 
+     * @param object
+     *            - Class of the object viewed
      * @param annotation
      * @return
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public  Field getField(Class object, Class annotation) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public Field getField(Class object, Class annotation) {
         for (Field field : object.getDeclaredFields()) {
             if (field.getAnnotation(annotation) != null) {
                 return field;
@@ -164,127 +168,127 @@ INTANCE;
         return null;
     }
 
-   
-
     /**
      * list the fields in the class
-     * @param class1 
+     * 
+     * @param class1
      * @return list of the fields
      */
-    public  List<Field> listFields(Class<?> class1) {
-    	List<Field> fields =new ArrayList<Field>();
-    	feedFieldList(class1, fields);
-    	if(isMappedSuperclass(class1)){
-    		feedFieldList(class1.getSuperclass(), fields);
-    			
-    	}
-		return fields;
-	}
+    public List<Field> listFields(Class<?> class1) {
+        List<Field> fields = new ArrayList<Field>();
+        feedFieldList(class1, fields);
+        if (isMappedSuperclass(class1)) {
+            feedFieldList(class1.getSuperclass(), fields);
+
+        }
+        return fields;
+    }
 
     /**
      * feed the list com Fields
+     * 
      * @param class1
      * @param fields
      */
-	private  void feedFieldList(Class<?> class1, List<Field> fields) {
-		for(Field field:class1.getDeclaredFields()){
-    		fields.add(field);
-    	}
-	}
-
+    private void feedFieldList(Class<?> class1, List<Field> fields) {
+        for (Field field : class1.getDeclaredFields()) {
+            fields.add(field);
+        }
+    }
 
     /**
      * verify if this is key of the column
-     *
+     * 
      * @param field
      * @return
      */
-    public  boolean isIdField(Field field) {
+    public boolean isIdField(Field field) {
         return field.getAnnotation(Id.class) != null;
     }
+
     /**
      * verify if this is index of the column
-     *
+     * 
      * @param field
      * @return
      */
-    public  boolean isIndexField(Field field) {
+    public boolean isIndexField(Field field) {
         return field.getAnnotation(Index.class) != null;
     }
-    
+
     @GeneratedValue
-    public  boolean isGeneratedValue(Field field) {
+    public boolean isGeneratedValue(Field field) {
         return field.getAnnotation(GeneratedValue.class) != null;
     }
 
     /**
      * verify if this is secundary index of the column
-     *
+     * 
      * @param field
      * @return
      */
-    public  boolean isSecundaryIndexField(Field field) {
+    public boolean isSecundaryIndexField(Field field) {
         return field.getAnnotation(Index.class) != null;
     }
 
     /**
      * verify if this is a normal column
-     *
+     * 
      * @param field
      * @return
      */
-    public  boolean isNormalField(Field field) {
+    public boolean isNormalField(Field field) {
         return field.getAnnotation(javax.persistence.Column.class) != null;
     }
 
     /**
      * verify if this is a enum column
-     *
+     * 
      * @param field
      * @return
      */
-    public  boolean isEnumField(Field field) {
+    public boolean isEnumField(Field field) {
         return field.getAnnotation(Enumerated.class) != null;
     }
 
     /**
      * verify if this is a Embedded column
-     *
+     * 
      * @param field
      * @return
      */
-    public  boolean isEmbeddedField(Field field) {
+    public boolean isEmbeddedField(Field field) {
         return field.getAnnotation(Embedded.class) != null;
     }
+
     /**
      * verify if this is a Embedded id column
-     *
+     * 
      * @param field
      * @return
      */
-    public  boolean isEmbeddedIdField(Field field) {
+    public boolean isEmbeddedIdField(Field field) {
         return field.getAnnotation(EmbeddedId.class) != null;
     }
 
-
     /**
      * verify if this is a Version column
-     *
+     * 
      * @param field
      * @return
      */
-    public  boolean isVersionField(Field field) {
+    public boolean isVersionField(Field field) {
         return field.getAnnotation(Version.class) != null;
     }
 
     /**
      * verify is exist father to persist
+     * 
      * @param class1
      * @return
      */
-	public  boolean isMappedSuperclass(Class<?> class1) {
-		return class1.getSuperclass().getAnnotation(MappedSuperclass.class)!=null;
-	}
-
+    public boolean isMappedSuperclass(Class<?> class1) {
+        return class1.getSuperclass().getAnnotation(MappedSuperclass.class) != null;
+    }
 
 }

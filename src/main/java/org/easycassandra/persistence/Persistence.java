@@ -1,5 +1,4 @@
 /*
- * Copyright 2013 Otávio Gonçalves de Santana (otaviojava)
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -16,30 +15,27 @@ package org.easycassandra.persistence;
 
 import java.util.List;
 
-
 /**
- * The main interface with the basics commands for nosql databases, which has in common among databases.
+ * The main interface with the basics commands for nosql databases, which has in
+ * common among databases.
+ * 
  * @author otaviojava - otaviojava@java.net
  */
 
 public interface Persistence {
 
-	boolean insert(Object bean);
-	
-	boolean delete(Object bean);
-	
-	boolean update(Object bean);
-	
-	<T> List<T> findAll(Class<T> bean);
-	
-	<T> T findByKey(Object key, Class<T> bean);
-	
-	boolean deleteByKey(Object key, Class<?> bean);
-	
-	boolean executeUpdate(String query);
-	
-	
-	
-	
-	
+    boolean insert(Object bean);
+
+    boolean delete(Object bean);
+
+    boolean update(Object bean);
+
+    <T> List<T> findAll(Class<T> bean);
+
+    <T> T findByKey(Object key, Class<T> bean);
+
+    boolean deleteByKey(Object key, Class<?> bean);
+
+    boolean executeUpdate(String query);
+
 }

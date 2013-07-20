@@ -15,15 +15,17 @@
 package org.easycassandra.persistence;
 
 import java.util.List;
-/**
- * Base to cassandra databases, the interface has all 
- * resources that may use in Cassandra database
- * @author otaviojava
- *
- */
-public interface PersistenceCassandra extends Persistence{
 
-	<T> List<T> findByIndex(Object index,Class<T> bean);
-	
-	Long count(Class<?> bean);
+/**
+ * Base to cassandra databases, the interface has all resources that may use in
+ * Cassandra database
+ * 
+ * @author otaviojava
+ * 
+ */
+public interface PersistenceCassandra extends Persistence {
+
+    <T> List<T> findByIndex(Object index, Class<T> bean);
+
+    Long count(Class<?> bean);
 }
