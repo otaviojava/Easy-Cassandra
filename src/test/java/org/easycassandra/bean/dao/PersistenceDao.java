@@ -1,6 +1,5 @@
 package org.easycassandra.bean.dao;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import org.easycassandra.persistence.cassandra.EasyCassandraManager;
@@ -8,18 +7,17 @@ import org.easycassandra.persistence.cassandra.PersistenceCassandra;
 
 public class PersistenceDao<T,K> {
 
+    private static final String KEY_SPACE = "javabahia";
+    private static final String HOST = "localhost";
     private PersistenceCassandra persistence;
     private Class<T> baseClass;
     
-    private static final List<Class<?>> classes=new LinkedList<Class<?>>();
 
     public PersistenceDao(Class<T> baseClass) {
         this.baseClass = baseClass;
-        persistence = EasyCassandraManager.INSTANCE.getPersistence("localhost", "javabahia");
-        if(!classes.contains(baseClass)){
-        	EasyCassandraManager.INSTANCE.addFamilyObject(baseClass, "javabahia");
-        	classes.add(baseClass);
-        }
+        persistence = EasyCassandraManager.INSTANCE.getPersistence(HOST, KEY_SPACE);
+        EasyCassandraManager.INSTANCE.addFamilyObject(baseClass, KEY_SPACE);
+        
     }
 
     public boolean insert(T bean) {
@@ -54,20 +52,9 @@ public class PersistenceDao<T,K> {
     public Long count() {
         return persistence.count(baseClass);
     }
-//
-//    public List<T> findKeyIn(Object... key) {
-//        return persistence.findByKeyIn(baseClass, key);
-//    }
 
     public boolean executeUpdateCql(String string) {
         return persistence.executeUpdate(string);
     }
 
-//    public List<Map<String, String>> executeCql(String string) {
-//        return persistence.executeCql(string);
-//    }
-//
-//    public JCassandra createJCassandra(String cql) {
-//        return persistence.createJCassandra(cql);
-//    }
 }

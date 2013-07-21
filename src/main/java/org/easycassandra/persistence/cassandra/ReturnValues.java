@@ -47,7 +47,7 @@ enum ReturnValues {
         @Override
         public Object getObject(Map<String, Definition> mapDefinition,Field field, Row row) {
             SetData setData = field.getAnnotation(SetData.class);
-            return RelationShipJavaCassandra.INSTANCE.getObject(row, Name.SET,ColumnUtil.INTANCE.getColumnName(field),setData.className());
+            return RelationShipJavaCassandra.INSTANCE.getObject(row, Name.SET,ColumnUtil.INTANCE.getColumnName(field),setData.classData());
 
         }
 
@@ -58,7 +58,7 @@ enum ReturnValues {
         @Override
         public Object getObject(Map<String, Definition> mapDefinition,Field field, Row row) {
             ListData listData = field.getAnnotation(ListData.class);
-            return RelationShipJavaCassandra.INSTANCE.getObject(row, Name.LIST, ColumnUtil.INTANCE.getColumnName(field),listData.className());
+            return RelationShipJavaCassandra.INSTANCE.getObject(row, Name.LIST, ColumnUtil.INTANCE.getColumnName(field),listData.classData());
 
         }
 

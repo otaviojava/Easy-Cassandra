@@ -19,7 +19,7 @@ public class Contact implements Serializable {
     
     
     @Column(name="emails")
-    @SetData(className=String.class)
+    @SetData(classData=String.class)
     private Set<String> emails;
     
     @Column

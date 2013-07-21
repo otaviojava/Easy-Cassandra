@@ -66,7 +66,7 @@ class SetAdd implements AddColumn{
         StringBuilder row=new StringBuilder();
         String columnName = ColumnUtil.INTANCE.getColumnName(field);
         SetData setData=field.getAnnotation(SetData.class);
-        row.append(columnName).append(" set<").append(javaCassandra.getPreferenceCQLType(setData.className().getName())).append(">,");
+        row.append(columnName).append(" set<").append(javaCassandra.getPreferenceCQLType(setData.classData().getName())).append(">,");
         return row.toString();
     }
     
@@ -78,7 +78,7 @@ class ListAdd implements AddColumn{
         StringBuilder row=new StringBuilder();
         String columnName = ColumnUtil.INTANCE.getColumnName(field);
         ListData listData=field.getAnnotation(ListData.class);
-        row.append(columnName).append(" list<").append(javaCassandra.getPreferenceCQLType(listData.className().getName())).append(">,");
+        row.append(columnName).append(" list<").append(javaCassandra.getPreferenceCQLType(listData.classData().getName())).append(">,");
         return row.toString();
     }
     
