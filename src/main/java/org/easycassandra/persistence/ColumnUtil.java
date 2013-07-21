@@ -32,7 +32,6 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Table;
 import javax.persistence.Version;
-import javax.xml.crypto.dsig.keyinfo.KeyValue;
 
 import org.easycassandra.annotations.Index;
 import org.easycassandra.annotations.ListData;
