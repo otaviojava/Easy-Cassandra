@@ -1,4 +1,4 @@
-package org.easycassandra.persistence;
+package org.easycassandra.persistence.cassandra;
 
 import java.util.logging.Logger;
 
@@ -14,8 +14,8 @@ import org.easycassandra.bean.model.createtable.SimpleBeanEnum;
 import org.easycassandra.bean.model.createtable.SimpleBeanSubClass;
 import org.easycassandra.bean.model.createtable.SimpleBeanWrong;
 import org.easycassandra.bean.model.createtable.SimpleComplexBean;
+import org.easycassandra.persistence.Persistence;
 import org.easycassandra.persistence.cassandra.EasyCassandraManager;
-import org.easycassandra.persistence.cassandra.Persistence;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;

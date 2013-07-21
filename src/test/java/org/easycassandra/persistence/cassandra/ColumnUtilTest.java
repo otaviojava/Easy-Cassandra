@@ -1,4 +1,4 @@
-package org.easycassandra.persistence;
+package org.easycassandra.persistence.cassandra;
 
 import java.lang.reflect.Field;
 
@@ -9,7 +9,6 @@ import org.easycassandra.bean.model.Animal;
 import org.easycassandra.bean.model.Drink;
 import org.easycassandra.bean.model.Engineer;
 import org.easycassandra.bean.model.Person;
-import org.easycassandra.persistence.cassandra.ColumnUtil;
 import org.junit.Test;
 
 public class ColumnUtilTest {
