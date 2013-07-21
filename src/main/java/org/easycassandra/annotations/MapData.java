@@ -20,14 +20,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The field with this annotation is an index Can search and retrieve
- * information from the row like KeyValue, need also use the ColumnValue
- * together with this annotatio
+ * Annotation defines a data type is a list
+ * @author otaviojava
  *
- * @see ColumnValue
- * @author otavio
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Index {
+public @interface MapData {
+
+    Class<? extends java.io.Serializable> classKey();
+    Class<? extends java.io.Serializable> classValue();
+    
 }

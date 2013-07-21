@@ -143,6 +143,6 @@ public class ColumnUtilTest {
 	@Test
 	public void listFieldsTest(){
 		
-		Assert.assertEquals(ColumnUtil.INTANCE.listFields(Engineer.class).size(), 7);
+		Assert.assertEquals(ColumnUtil.INTANCE.listFields(Engineer.class).size(), 5);
 	}
 }

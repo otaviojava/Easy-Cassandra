@@ -19,11 +19,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.easycassandra.persistence.ReturnValues.ReturnValue;
 import org.easycassandra.util.ReflectionUtil;
 
 import com.datastax.driver.core.ColumnDefinitions;
 import com.datastax.driver.core.ColumnDefinitions.Definition;
-import com.datastax.driver.core.DataType.Name;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 
@@ -55,21 +55,13 @@ enum RecoveryObject {
         Object newObjetc = ReflectionUtil.newInstance(bean);
 
         for (Field field : ColumnUtil.INTANCE.listFields(bean)) {
-            if ("serialVersionUID".equals(ColumnUtil.INTANCE.getColumnName(field))) {
-                continue;
-            }
             if (ColumnUtil.INTANCE.isEmbeddedField(field) || ColumnUtil.INTANCE.isEmbeddedIdField(field)) {
                 Object value = createObject(field.getType(), row, mapDefinition);
                 ReflectionUtil.setMethod(newObjetc, field, value);
                 continue;
-            } else if (ColumnUtil.INTANCE.isEnumField(field)) {
-                Integer value = (Integer) RelationShipJavaCassandra.INSTANCE.getObject(row, Name.INT, ColumnUtil.INTANCE.getColumnName(field));
-                Object enumValue = field.getType().getEnumConstants()[value];
-                ReflectionUtil.setMethod(newObjetc, field, enumValue);
-                continue;
-            }
-            Definition column = mapDefinition.get(ColumnUtil.INTANCE.getColumnName(field).toLowerCase());
-            Object value = RelationShipJavaCassandra.INSTANCE.getObject(row,column.getType().getName(), column.getName());
+            } 
+            ReturnValue returnValue=ReturnValues.INSTANCE.factory(field);
+            Object value = returnValue.getObject(mapDefinition, field, row);
             ReflectionUtil.setMethod(newObjetc, field, value);
         }
         return newObjetc;

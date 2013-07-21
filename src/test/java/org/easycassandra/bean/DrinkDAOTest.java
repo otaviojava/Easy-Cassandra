@@ -10,8 +10,9 @@ import org.junit.Test;
 public class DrinkDAOTest {
 
 	
-	 private PersistenceDao<Drink> dao = new PersistenceDao<Drink>(Drink.class);
-	 private PersistenceDao<Person> personDao = new PersistenceDao<Person>(Person.class);
+	 private PersistenceDao<Drink,Long> dao = new PersistenceDao<Drink,Long>(Drink.class);
+	 
+	 private PersistenceDao<Person,Long> personDao = new PersistenceDao<Person,Long>(Person.class);
 
 	    @Test
 	    public void insertTest() {

@@ -11,7 +11,7 @@ import org.junit.Test;
 * @author otavio
 */
 public class AnimalDAOTest {
-	  private PersistenceDao<Animal> dao = new PersistenceDao<Animal>(Animal.class);
+	  private PersistenceDao<Animal,String> dao = new PersistenceDao<Animal,String>(Animal.class);
 	  	@Test
 	    public void insertErrorTest() {
 	       Animal animal=new Animal();

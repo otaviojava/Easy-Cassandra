@@ -16,7 +16,7 @@ import org.junit.Test;
 public class PersonDAOTest {
 
     private static final String NAME = "otavio teste";
-	private PersistenceDao<Person> dao = new PersistenceDao<Person>(Person.class);
+	private PersistenceDao<Person,Long> dao = new PersistenceDao<Person,Long>(Person.class);
 
     @Test
     public void insertTest() {

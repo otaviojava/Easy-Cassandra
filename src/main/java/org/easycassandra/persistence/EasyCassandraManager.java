@@ -13,6 +13,9 @@
  */
 package org.easycassandra.persistence;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.easycassandra.ReplicaStrategy;
 
 import com.datastax.driver.core.Cluster;
@@ -28,6 +31,11 @@ public enum EasyCassandraManager {
     INSTANCE;
     private Cluster cluter;
     private String host = "";
+    
+    /**
+     * list of classes added by EasyCassandra
+     */
+    private List<Class<?>> classes=new LinkedList<Class<?>>();
 
     /**
      * Method for create the Cassandra's Client, if the keyspace there is not,if
@@ -70,13 +78,16 @@ public enum EasyCassandraManager {
     }
 
     public boolean addFamilyObject(Class<?> class1, String keySpace) {
-
+        if(classes.contains(class1)){
+            return true;
+        }
         String familyColumn = ColumnUtil.INTANCE.getColumnFamilyName(class1);
         Session session = cluter.connect(keySpace);
         if (!ColumnUtil.INTANCE.getSchema(class1).equals("")) {
             getPersistence(host, ColumnUtil.INTANCE.getSchema(class1));
 
         }
+        classes.add(class1);
         return new FixColumnFamily().verifyColumnFamily(session, familyColumn,class1);
     }
 

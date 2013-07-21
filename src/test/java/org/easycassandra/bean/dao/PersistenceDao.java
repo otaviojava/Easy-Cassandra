@@ -6,7 +6,7 @@ import java.util.List;
 import org.easycassandra.persistence.EasyCassandraManager;
 import org.easycassandra.persistence.PersistenceCassandra;
 
-public class PersistenceDao<T> {
+public class PersistenceDao<T,K> {
 
     private PersistenceCassandra persistence;
     private Class<T> baseClass;
@@ -30,7 +30,7 @@ public class PersistenceDao<T> {
         return persistence.delete(bean);
     }
 
-    public boolean removeFromRowKey(Object rowKey) {
+    public boolean removeFromRowKey(K rowKey) {
         return persistence.deleteByKey(rowKey, baseClass);
     }
 

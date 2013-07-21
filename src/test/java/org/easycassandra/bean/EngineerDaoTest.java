@@ -7,7 +7,7 @@ import org.junit.Test;
 
 public class EngineerDaoTest {
 
-    private PersistenceDao<Engineer> dao = new PersistenceDao<Engineer>(Engineer.class);
+    private PersistenceDao<Engineer,String> dao = new PersistenceDao<Engineer,String>(Engineer.class);
 
     @Test
     public void persistTest() {

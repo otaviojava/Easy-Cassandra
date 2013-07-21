@@ -51,9 +51,7 @@ public class FindAllQuery {
         List<Field> fields = ColumnUtil.INTANCE.listFields(class1);
 
         for (Field field : fields) {
-            if ("serialVersionUID".equals(field.getName())) {
-                continue;
-            }
+            
             if (ColumnUtil.INTANCE.isEmbeddedField(field)  || ColumnUtil.INTANCE.isEmbeddedIdField(field)) {
                 if (ColumnUtil.INTANCE.isEmbeddedIdField(field)) {
                     byKeyBean.key = field;

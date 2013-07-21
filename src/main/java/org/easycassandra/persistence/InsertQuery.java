@@ -69,9 +69,8 @@ class InsertQuery {
     public InsertBean createQueryInsert(Object bean, InsertBean insertBean) {
 
         for (Field field : ColumnUtil.INTANCE.listFields(bean.getClass())) {
-            if ("serialVersionUID".equals(field.getName())) {
-                continue;
-            } else if (ColumnUtil.INTANCE.isEmbeddedField(field) || ColumnUtil.INTANCE.isEmbeddedIdField(field)) {
+            
+            if (ColumnUtil.INTANCE.isEmbeddedField(field) || ColumnUtil.INTANCE.isEmbeddedIdField(field)) {
                 if (ReflectionUtil.getMethod(bean, field) != null) {
                     insertBean = createQueryInsert(ReflectionUtil.getMethod(bean, field), insertBean);
                 }
@@ -82,8 +81,7 @@ class InsertQuery {
                 if (insertBean.count > 0) {
                     insertBean.query.append(",");
                 }
-                insertBean.query
-                        .append(ColumnUtil.INTANCE.getColumnName(field));
+                insertBean.query.append(ColumnUtil.INTANCE.getColumnName(field));
                 insertBean.count++;
                 if (ColumnUtil.INTANCE.isEnumField(field)) {
                     Enum<?> enumS = (Enum<?>) ReflectionUtil.getMethod(bean,field);

@@ -81,7 +81,7 @@ enum RelationShipJavaCassandra {
         return getCQLType(javaTypeKey).get(0);
     }
 
-    public Object getObject(Row row, Name cqlType, String name) {
+    public Object getObject(Row row, Name cqlType, String name,Class<?>... classes) {
         switch (cqlType) {
         case ASCII:
         case TEXT:
@@ -111,11 +111,11 @@ enum RelationShipJavaCassandra {
         case TIMEUUID:
             return row.getUUID(name);
         case LIST:
-            return row.getList(name, null);
+            return row.getList(name, classes[0]);
         case MAP:
-            return row.getMap(name, null, null);
+            return row.getMap(name, classes[0], classes[1]);
         case SET:
-            return row.getSet(name, null);
+            return row.getSet(name, classes[0]);
         case INET:
             return row.getInet(name);
 

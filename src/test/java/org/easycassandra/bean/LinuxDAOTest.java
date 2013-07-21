@@ -9,7 +9,7 @@ import org.junit.Test;
 
 public class LinuxDAOTest {
 
-    private PersistenceDao<LinuxDistribuition> linuxDAO=new PersistenceDao<LinuxDistribuition>(LinuxDistribuition.class);
+    private PersistenceDao<LinuxDistribuition,IdLinux> linuxDAO=new PersistenceDao<LinuxDistribuition,IdLinux>(LinuxDistribuition.class);
     
     @Test
     public void insertTest() {

@@ -8,7 +8,7 @@ import org.junit.Test;
 public class LogDAOTest {
 
 	private static final String NICK_NAME = "otaviojava";
-	private PersistenceDao<Log> dao = new PersistenceDao<Log>(Log.class);
+	private PersistenceDao<Log,String> dao = new PersistenceDao<Log,String>(Log.class);
 	
     @Test
     public void insertTest() {

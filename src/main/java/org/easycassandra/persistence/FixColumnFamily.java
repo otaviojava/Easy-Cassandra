@@ -21,6 +21,9 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.easycassandra.FieldJavaNotEquivalentCQLException;
+import org.easycassandra.KeyProblemsException;
+import org.easycassandra.persistence.AddColumnUtil.AddColumn;
+import org.easycassandra.persistence.VerifyRowUtil.VerifyRow;
 
 import com.datastax.driver.core.ColumnDefinitions.Definition;
 import com.datastax.driver.core.ResultSet;
@@ -70,8 +73,7 @@ class FixColumnFamily {
      * 
      * @param resultSet
      */
-    private void verifyRowType(ResultSet resultSet, Class<?> class1,
-            Session session) {
+    private void verifyRowType(ResultSet resultSet, Class<?> class1, Session session) {
         Map<String, String> mapNameType = new HashMap<String, String>();
         for (Definition column : resultSet.getColumnDefinitions()) {
             mapNameType.put(column.getName(), column.getType().getName().name());
@@ -90,9 +92,8 @@ class FixColumnFamily {
             Map<String, String> mapNameType) {
 
         for (Field field : ColumnUtil.INTANCE.listFields(class1)) {
-            if ("serialVersionUID".equals(field.getName())) {
-                continue;
-            } else if (ColumnUtil.INTANCE.isEmbeddedField(field) || ColumnUtil.INTANCE.isEmbeddedIdField(field)) {
+            
+            if (ColumnUtil.INTANCE.isEmbeddedField(field) || ColumnUtil.INTANCE.isEmbeddedIdField(field)) {
                 continue;
             } else if (ColumnUtil.INTANCE.isEmbeddedField(field)) {
                 verifyRow(field.getType(), session, mapNameType);
@@ -104,13 +105,9 @@ class FixColumnFamily {
                 executeAlterTableAdd(class1, session, field);
                 continue;
             }
-            List<String> cqlTypes = null;
-
-            if (ColumnUtil.INTANCE.isEnumField(field)) {
-                cqlTypes = RelationShipJavaCassandra.INSTANCE.getCQLType(ColumnUtil.DEFAULT_ENUM_CLASS.getName());
-            } else {
-                cqlTypes = RelationShipJavaCassandra.INSTANCE.getCQLType(field.getType().getName());
-            }
+            
+            VerifyRow verifyRow=VerifyRowUtil.INTANCE.factory(field);
+            List<String> cqlTypes = verifyRow.getTypes(field);
 
             if (!cqlTypes.contains(cqlType.toLowerCase())) {
                 createMessageErro(class1, field, cqlType);
@@ -132,12 +129,10 @@ class FixColumnFamily {
     private void executeAlterTableAdd(Class<?> class1, Session session,Field field) {
         StringBuilder cqlAlterTable = new StringBuilder();
         cqlAlterTable.append("ALTER TABLE ").append( ColumnUtil.INTANCE.getColumnFamilyName(class1));
-        cqlAlterTable.append(" ADD ").append(ColumnUtil.INTANCE.getColumnName(field)).append(" ");
-        if (ColumnUtil.INTANCE.isEnumField(field)) {
-            cqlAlterTable.append(RelationShipJavaCassandra.INSTANCE.getPreferenceCQLType(ColumnUtil.DEFAULT_ENUM_CLASS.getName()));
-        } else {
-            cqlAlterTable.append(RelationShipJavaCassandra.INSTANCE.getPreferenceCQLType(field.getType().getName()));
-        }
+        cqlAlterTable.append(" ADD ");
+        AddColumn addColumn=AddColumnUtil.INSTANCE.factory(field);
+        cqlAlterTable.append(addColumn.addRow(field, RelationShipJavaCassandra.INSTANCE));
+        cqlAlterTable.deleteCharAt(cqlAlterTable.length()-1);
         cqlAlterTable.append(";");
         session.execute(cqlAlterTable.toString());
     }
@@ -174,27 +169,66 @@ class FixColumnFamily {
         cqlCreateTable.append("create table ");
 
         cqlCreateTable.append(familyColumn).append("( ");
-        RelationShipJavaCassandra javaCassandra = RelationShipJavaCassandra.INSTANCE;
-        boolean isComplexID = createQueryCreateTable(class1, cqlCreateTable,javaCassandra);
+        
+        boolean isComplexID = createQueryCreateTable(class1, cqlCreateTable);
         if (isComplexID) {
-            Field keyField = ColumnUtil.INTANCE.getKeyComplexField(class1);
-            cqlCreateTable.append(" PRIMARY KEY (");
-            boolean firstTime = true;
-            for (Field subKey : keyField.getType().getDeclaredFields()) {
-                if (firstTime) {
-                    cqlCreateTable.append(subKey.getName());
-                    firstTime = false;
-                } else {
-                    cqlCreateTable.append(",").append(subKey.getName());
-                }
-            }
-            cqlCreateTable.append(") );");
+            addComlexID(class1, cqlCreateTable);
         } else {
-            Field keyField = ColumnUtil.INTANCE.getKeyField(class1);
-            cqlCreateTable.append(" PRIMARY KEY (").append(keyField.getName()).append(") );");
+            addSimpleId(class1, cqlCreateTable);
         }
 
         session.execute(cqlCreateTable.toString());
+    }
+
+    /**
+     * add in the query a simple id
+     * @param class1
+     * @param cqlCreateTable
+     */
+    private void addSimpleId(Class<?> class1, StringBuilder cqlCreateTable) {
+        Field keyField = ColumnUtil.INTANCE.getKeyField(class1);
+        if(keyField == null){
+            createErro(class1);
+        }
+        cqlCreateTable.append(" PRIMARY KEY (").append(ColumnUtil.INTANCE.getColumnName(keyField)).append(") );");
+    }
+
+    
+    
+    
+    /**
+     * add in the query a complex key
+     * @param class1
+     * @param cqlCreateTable
+     */
+    private void addComlexID(Class<?> class1, StringBuilder cqlCreateTable) {
+        Field keyField = ColumnUtil.INTANCE.getKeyComplexField(class1);
+        cqlCreateTable.append(" PRIMARY KEY (");
+        boolean firstTime = true;
+        for (Field subKey : keyField.getType().getDeclaredFields()) {
+            if (firstTime) {
+                cqlCreateTable.append(subKey.getName());
+                firstTime = false;
+            } else {
+                cqlCreateTable.append(",").append(subKey.getName());
+            }
+        }
+        cqlCreateTable.append(") );");
+    }
+
+    /**
+     * 
+     * @param bean
+     */
+    private void createErro(Class<?> bean) {
+        
+        StringBuilder erroMensage=new StringBuilder();
+           
+        erroMensage.append("the bean ").append(ColumnUtil.INTANCE.getColumnFamilyName(bean));
+        erroMensage.append(" hasn't  a field with id annotation, you may to use either javax.persistence.Id");
+        erroMensage.append(" to simple id or javax.persistence.EmbeddedId");
+        erroMensage.append(" to complex id, another object with one or more fields annotated with java.persistence.Column.");
+        throw new KeyProblemsException(erroMensage.toString());
     }
 
     /**
@@ -205,30 +239,20 @@ class FixColumnFamily {
      * @param javaCassandra
      * @return
      */
-    private boolean createQueryCreateTable(Class<?> class1,StringBuilder cqlCreateTable, RelationShipJavaCassandra javaCassandra) {
+    private boolean createQueryCreateTable(Class<?> class1,StringBuilder cqlCreateTable) {
         boolean isComplexID = false;
         for (Field field : ColumnUtil.INTANCE.listFields(class1)) {
-            if ("serialVersionUID".equals(field.getName())) {
-                continue;
-            }
-            if (ColumnUtil.INTANCE.isEnumField(field)) {
-
-                String columnName = ColumnUtil.INTANCE.getColumnName(field);
-                cqlCreateTable.append(columnName).append(" ").append(javaCassandra.getPreferenceCQLType(ColumnUtil.DEFAULT_ENUM_CLASS.getName())).append(", ");
-                continue;
-            }
             if (ColumnUtil.INTANCE.isEmbeddedField(field) || ColumnUtil.INTANCE.isEmbeddedIdField(field)) {
 
-                isComplexID = createQueryCreateTable(field.getType(),  cqlCreateTable, javaCassandra);
+                isComplexID = createQueryCreateTable(field.getType(),  cqlCreateTable);
                 if (ColumnUtil.INTANCE.isEmbeddedIdField(field)) {
                     isComplexID = true;
                 }
                 continue;
             }
-
-            String columnName = ColumnUtil.INTANCE.getColumnName(field);
-            cqlCreateTable.append(columnName).append(" ").append(javaCassandra.getPreferenceCQLType(field.getType().getName())).append(", ");
-
+            
+            AddColumn addColumn=AddColumnUtil.INSTANCE.factory(field);
+            cqlCreateTable.append(addColumn.addRow(field, RelationShipJavaCassandra.INSTANCE));
         }
         return isComplexID;
     }

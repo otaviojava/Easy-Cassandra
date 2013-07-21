@@ -14,10 +14,14 @@
  */
 package org.easycassandra.persistence;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
@@ -28,8 +32,12 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Table;
 import javax.persistence.Version;
+import javax.xml.crypto.dsig.keyinfo.KeyValue;
 
 import org.easycassandra.annotations.Index;
+import org.easycassandra.annotations.ListData;
+import org.easycassandra.annotations.MapData;
+import org.easycassandra.annotations.SetData;
 
 /**
  * Class Util for Column
@@ -44,7 +52,25 @@ enum ColumnUtil {
      * The integer class is used to enum how default
      */
     public static final Class<?> DEFAULT_ENUM_CLASS = Integer.class;
-
+    /**
+     * list contains the annotations to map a bean
+     */
+    private List<String> annotations;
+    {
+        annotations=new LinkedList<String>();
+        annotations.add(Id.class.getName());
+        annotations.add(SetData.class.getName());
+        annotations.add(ListData.class.getName());
+        annotations.add(MapData.class.getName());
+        annotations.add(Column.class.getName());
+        annotations.add(Embedded.class.getName());
+        annotations.add(EmbeddedId.class.getName());
+        annotations.add(Enumerated.class.getName());
+        annotations.add(Index.class.getName());
+        Collections.sort(annotations);  
+    }
+    
+    
     /**
      * Get The Column name from an Object
      * 
@@ -191,11 +217,32 @@ enum ColumnUtil {
      * @param fields
      */
     private void feedFieldList(Class<?> class1, List<Field> fields) {
+        
         for (Field field : class1.getDeclaredFields()) {
-            fields.add(field);
+            
+            if(isColumnToPersist(field)){
+                fields.add(field);
+            }
+            
         }
     }
-
+    
+    /**
+     * verify is field has some annotations within 
+     * {@link #ColumnUtil#annotations}
+     * @param field
+     * @return 
+     */
+    private boolean isColumnToPersist(Field field) {
+        
+        for(Annotation annotation:field.getAnnotations()){
+            int result=Collections.binarySearch(annotations,annotation.annotationType().getName());
+            if(result >= 0){
+                return true;
+            }
+        }
+        return false;
+    }
     /**
      * verify if this is key of the column
      * 
@@ -290,5 +337,32 @@ enum ColumnUtil {
     public boolean isMappedSuperclass(Class<?> class1) {
         return class1.getSuperclass().getAnnotation(MappedSuperclass.class) != null;
     }
-
+    /**
+     * verify if the field is a list
+     * @param field
+     * @return
+     */
+    public boolean isList(Field field){
+        return field.getAnnotation(ListData.class) != null;
+    }
+    /**
+     * verify if the field is a map
+     * @param field
+     * @return
+     */
+    public boolean isMap(Field field){
+        return field.getAnnotation(MapData.class) != null;
+    }
+    /**
+     * verify if the field is a set
+     * @param field
+     * @return
+     */
+    public boolean isSet(Field field){
+        return field.getAnnotation(SetData.class) != null;
+    }
+   
+    
+    
+   
 }
