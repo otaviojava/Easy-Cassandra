@@ -3,8 +3,8 @@ package org.easycassandra.bean.dao;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.easycassandra.persistence.EasyCassandraManager;
-import org.easycassandra.persistence.PersistenceCassandra;
+import org.easycassandra.persistence.cassandra.EasyCassandraManager;
+import org.easycassandra.persistence.cassandra.PersistenceCassandra;
 
 public class PersistenceDao<T,K> {
 

@@ -4,6 +4,7 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.easycassandra.persistence.cassandra.RelationShipJavaCassandra;
 import org.junit.Test;
 
 public class RelationShipJavaCassandraTest {

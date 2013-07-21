@@ -12,9 +12,11 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.easycassandra.persistence;
+package org.easycassandra.persistence.cassandra;
 
 import java.util.List;
+
+import org.easycassandra.persistence.Persistence;
 
 /**
  * Base to cassandra databases, the interface has all resources that may use in

@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.easycassandra.persistence;
+package org.easycassandra.persistence.cassandra;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -22,8 +22,8 @@ import java.util.logging.Logger;
 
 import org.easycassandra.FieldJavaNotEquivalentCQLException;
 import org.easycassandra.KeyProblemsException;
-import org.easycassandra.persistence.AddColumnUtil.AddColumn;
-import org.easycassandra.persistence.VerifyRowUtil.VerifyRow;
+import org.easycassandra.persistence.cassandra.AddColumnUtil.AddColumn;
+import org.easycassandra.persistence.cassandra.VerifyRowUtil.VerifyRow;
 
 import com.datastax.driver.core.ColumnDefinitions.Definition;
 import com.datastax.driver.core.ResultSet;

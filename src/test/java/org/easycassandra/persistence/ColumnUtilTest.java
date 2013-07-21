@@ -9,6 +9,7 @@ import org.easycassandra.bean.model.Animal;
 import org.easycassandra.bean.model.Drink;
 import org.easycassandra.bean.model.Engineer;
 import org.easycassandra.bean.model.Person;
+import org.easycassandra.persistence.cassandra.ColumnUtil;
 import org.junit.Test;
 
 public class ColumnUtilTest {

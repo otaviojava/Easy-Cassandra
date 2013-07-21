@@ -1,4 +1,4 @@
-package org.easycassandra.persistence;
+package org.easycassandra.persistence.cassandra;
 
 import java.util.HashMap;
 import java.util.LinkedList;

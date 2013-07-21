@@ -1,4 +1,4 @@
-package org.easycassandra.persistence;
+package org.easycassandra.persistence.cassandra;
 
 import java.lang.reflect.Field;
 import java.util.Map;
