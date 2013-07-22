@@ -15,10 +15,11 @@
 package org.easycassandra.persistence.cassandra;
 
 import java.lang.reflect.Field;
+import java.nio.ByteBuffer;
 
-import org.easycassandra.annotations.ListData;
-import org.easycassandra.annotations.MapData;
-import org.easycassandra.annotations.SetData;
+import org.easycassandra.ListData;
+import org.easycassandra.MapData;
+import org.easycassandra.SetData;
 
 /**
  * create a column to cassandra checking the annotation 
@@ -40,11 +41,25 @@ enum AddColumnUtil {
         if(ColumnUtil.INTANCE.isMap(field)){
             return new MapAdd();
         }
+        if(ColumnUtil.INTANCE.isCustom(field)){
+            return new CustomAdd();
+        }
         
         return new DefaultAdd();
     }
     
+class CustomAdd implements AddColumn{
 
+    @Override
+    public String addRow(Field field, RelationShipJavaCassandra javaCassandra) {
+        String columnName = ColumnUtil.INTANCE.getColumnName(field);
+        StringBuilder row=new StringBuilder();
+        row.append(columnName).append(" ").append(javaCassandra.getPreferenceCQLType(ByteBuffer.class.getName())).append(",");
+        return row.toString();
+    }
+    
+}
+    
 class MapAdd implements AddColumn{
 
     @Override

@@ -20,6 +20,7 @@ import java.util.List;
 import javax.persistence.EmbeddedId;
 
 import org.easycassandra.KeyProblemsException;
+import org.easycassandra.persistence.cassandra.InsertColumnUtil.InsertColumn;
 import org.easycassandra.util.ReflectionUtil;
 
 import com.datastax.driver.core.BoundStatement;
@@ -83,12 +84,8 @@ class InsertQuery {
                 }
                 insertBean.query.append(ColumnUtil.INTANCE.getColumnName(field));
                 insertBean.count++;
-                if (ColumnUtil.INTANCE.isEnumField(field)) {
-                    Enum<?> enumS = (Enum<?>) ReflectionUtil.getMethod(bean,field);
-                    insertBean.objets.add(enumS.ordinal());
-                } else {
-                    insertBean.objets.add(ReflectionUtil.getMethod(bean, field));
-                }
+                InsertColumn insertColumn=InsertColumnUtil.INSTANCE.factory(field);
+                insertBean.objets.add(insertColumn.getObject(bean, field));
 
             }
         }

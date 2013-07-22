@@ -12,7 +12,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.easycassandra.annotations;
+package org.easycassandra;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -20,15 +20,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation defines a data type is a list
- * @author otaviojava
+ * The field with this annotation is an index Can search and retrieve
+ * information from the row like KeyValue, need also use the ColumnValue
+ * together with this annotatio
  *
+ * @see ColumnValue
+ * @author otavio
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface MapData {
-
-    Class<? extends java.io.Serializable> classKey();
-    Class<? extends java.io.Serializable> classValue();
-    
+public @interface Index {
 }

@@ -5,7 +5,7 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-import org.easycassandra.annotations.Index;
+import org.easycassandra.Index;
 
 @Entity(name = "SimpleComplexBean")
 public class SimpleComplexBean {

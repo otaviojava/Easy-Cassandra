@@ -7,7 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-import org.easycassandra.annotations.SetData;
+import org.easycassandra.SetData;
 
 
 @Entity(name="contact")

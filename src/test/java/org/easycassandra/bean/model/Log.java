@@ -6,7 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-import org.easycassandra.annotations.Index;
+import org.easycassandra.Index;
 
 @Entity
 public class Log implements Serializable {

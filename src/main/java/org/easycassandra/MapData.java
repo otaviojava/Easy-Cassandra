@@ -12,7 +12,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.easycassandra.annotations;
+package org.easycassandra;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -26,8 +26,9 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ListData {
+public @interface MapData {
 
-    Class<? extends java.io.Serializable> classData();
+    Class<? extends java.io.Serializable> classKey();
+    Class<? extends java.io.Serializable> classValue();
     
 }

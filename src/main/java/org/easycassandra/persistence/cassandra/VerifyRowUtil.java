@@ -38,6 +38,8 @@ INTANCE;
        }
         else if(ColumnUtil.INTANCE.isMap(field)){
             return new MapVerify();
+        }else if(ColumnUtil.INTANCE.isCustom(field)){
+            return new CustomVerify();
         }
            return new DefaultVerify();
    }
@@ -45,7 +47,16 @@ INTANCE;
 
     
     
-    
+    class CustomVerify implements VerifyRow{
+
+        @Override
+        public List<String> getTypes(Field field) {
+            
+            return Arrays.asList(new String[]{"blob"});
+        }
+        
+        
+    }
     
     class DefaultVerify implements VerifyRow{
 

@@ -7,7 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-import org.easycassandra.annotations.ListData;
+import org.easycassandra.ListData;
 
 @Entity(name="shopping")
 public class ShoppingList {

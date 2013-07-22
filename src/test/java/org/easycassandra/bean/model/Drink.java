@@ -6,7 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.easycassandra.annotations.Index;
+import org.easycassandra.Index;
 
 
 @Table(name="drink",schema="schemaA")

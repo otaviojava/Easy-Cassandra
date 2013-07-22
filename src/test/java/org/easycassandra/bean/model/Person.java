@@ -13,7 +13,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.Id;
 
 import org.apache.commons.lang.StringUtils;
-import org.easycassandra.annotations.Index;
+import org.easycassandra.Index;
 
 /**
  *

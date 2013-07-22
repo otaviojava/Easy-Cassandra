@@ -33,10 +33,11 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
-import org.easycassandra.annotations.Index;
-import org.easycassandra.annotations.ListData;
-import org.easycassandra.annotations.MapData;
-import org.easycassandra.annotations.SetData;
+import org.easycassandra.CustomData;
+import org.easycassandra.Index;
+import org.easycassandra.ListData;
+import org.easycassandra.MapData;
+import org.easycassandra.SetData;
 
 /**
  * Class Util for Column
@@ -66,6 +67,7 @@ enum ColumnUtil {
         annotations.add(EmbeddedId.class.getName());
         annotations.add(Enumerated.class.getName());
         annotations.add(Index.class.getName());
+        annotations.add(CustomData.class.getName());
         Collections.sort(annotations);  
     }
     
@@ -359,6 +361,16 @@ enum ColumnUtil {
      */
     public boolean isSet(Field field){
         return field.getAnnotation(SetData.class) != null;
+    }
+
+    /**
+     * verify if the field is custom
+     * @param field
+     * @return
+     */
+    public boolean isCustom(Field field) {
+        
+        return field.getAnnotation(CustomData.class) != null;
     }
    
     

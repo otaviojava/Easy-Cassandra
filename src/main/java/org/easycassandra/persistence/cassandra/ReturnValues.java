@@ -1,11 +1,14 @@
 package org.easycassandra.persistence.cassandra;
 
 import java.lang.reflect.Field;
+import java.nio.ByteBuffer;
 import java.util.Map;
 
-import org.easycassandra.annotations.ListData;
-import org.easycassandra.annotations.MapData;
-import org.easycassandra.annotations.SetData;
+import org.easycassandra.CustomData;
+import org.easycassandra.ListData;
+import org.easycassandra.MapData;
+import org.easycassandra.SetData;
+import org.easycassandra.util.ReflectionUtil;
 
 import com.datastax.driver.core.ColumnDefinitions.Definition;
 import com.datastax.driver.core.DataType.Name;
@@ -27,10 +30,28 @@ enum ReturnValues {
         if (ColumnUtil.INTANCE.isMap(field)) {
             return new MapReturnValue();
         }
+        if(ColumnUtil.INTANCE.isCustom(field)){
+            return new CustomReturnValue();
+        }
 
         return new DefaultGetObject();
     }
 
+    
+    class CustomReturnValue implements ReturnValue{
+
+        @Override
+        public Object getObject(Map<String, Definition> mapDefinition,Field field, Row row) {
+            Definition column = mapDefinition.get(ColumnUtil.INTANCE.getColumnName(field).toLowerCase());
+            ByteBuffer buffer= (ByteBuffer)RelationShipJavaCassandra.INSTANCE.getObject(row, column.getType().getName(), column.getName());
+            CustomData customData=field.getAnnotation(CustomData.class);
+            Customizable customizable=Customizable.class.cast(ReflectionUtil.newInstance(customData.classCustmo()));
+            
+            return customizable.write(buffer);
+        }
+        
+        
+    }
     class MapReturnValue implements ReturnValue {
 
         @Override
