@@ -3,6 +3,13 @@ Easy-Cassandra
 Easily programming with this framework, the Easy Cassandra.
 The EasyCassandra uses the Thrift implementation and has as main objective to be a simple ORM( Object relational manager). It needs the jdk 7 to run, because some parts in his code are using invoke dynamic instead reflection. Due to it, it will have a faster behavior than other frameworks.
 
+Version: 2.0.0
+* Complex rowkey (a key with tow or more keyrow).
+* Map some collections (java.util.List, java.util.Set, java.util.Map).
+* Find automatically the others clusters which do part of the same cluster.	
+* Objects may use a different keyspace using schema.	
+* Custom storage way with CustomData annotation.
+
 Version: 1.1.2
 * use different keyspace with schema
 
