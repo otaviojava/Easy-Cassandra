@@ -46,12 +46,10 @@ class PersistenceCassandraImpl implements PersistenceCassandra {
         new FixKeySpace().verifyKeySpace(keySpace, session);
     }
 
-    public PersistenceCassandraImpl(Session session, String keySpace,
-            ReplicaStrategy replicaStrategy, int factor) {
+    public PersistenceCassandraImpl(Session session, String keySpace,ReplicaStrategy replicaStrategy, int factor) {
         this.session = session;
         this.keySpace = keySpace;
-        new FixKeySpace().verifyKeySpace(keySpace, session, replicaStrategy,
-                factor);
+        new FixKeySpace().verifyKeySpace(keySpace, session, replicaStrategy,factor);
     }
 
     public void execute(String string) {

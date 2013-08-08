@@ -11,12 +11,13 @@ public class PersistenceDao<T,K> {
     private static final String HOST = "localhost";
     private PersistenceCassandra persistence;
     private Class<T> baseClass;
-    
+    private static EasyCassandraManager easyCassandraManager=new EasyCassandraManager(); 
 
     public PersistenceDao(Class<T> baseClass) {
         this.baseClass = baseClass;
-        persistence = EasyCassandraManager.INSTANCE.getPersistence(HOST, KEY_SPACE);
-        EasyCassandraManager.INSTANCE.addFamilyObject(baseClass, KEY_SPACE);
+        
+        persistence = easyCassandraManager.getPersistence(HOST, KEY_SPACE);
+        easyCassandraManager.addFamilyObject(baseClass, KEY_SPACE);
         
     }
 

@@ -27,8 +27,8 @@ import com.datastax.driver.core.Session;
  * @author otaviojava
  * @version 2.0
  */
-public enum EasyCassandraManager {
-    INSTANCE;
+public class EasyCassandraManager {
+    
     private Cluster cluter;
     private String host = "";
     
