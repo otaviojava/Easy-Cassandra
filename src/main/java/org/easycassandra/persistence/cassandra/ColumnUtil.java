@@ -45,7 +45,7 @@ import org.easycassandra.SetData;
  * @author otavio
  * 
  */
-enum ColumnUtil {
+public enum ColumnUtil {
     INTANCE;
 
     /**

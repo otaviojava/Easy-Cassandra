@@ -14,8 +14,6 @@ import org.easycassandra.bean.model.createtable.SimpleBeanEnum;
 import org.easycassandra.bean.model.createtable.SimpleBeanSubClass;
 import org.easycassandra.bean.model.createtable.SimpleBeanWrong;
 import org.easycassandra.bean.model.createtable.SimpleComplexBean;
-import org.easycassandra.persistence.Persistence;
-import org.easycassandra.persistence.cassandra.EasyCassandraManager;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -24,7 +22,7 @@ public class EasyCassandraManagerTest {
 
     private static final String COLUMN_FAMILY = "simpleTest";
     private static final String HOST_TEST = "localhost";
-    private static EasyCassandraManager easyCassandraManager=new EasyCassandraManager();
+    private static EasyCassandraManager easyCassandraManager=new EasyCassandraManager(HOST_TEST,COLUMN_FAMILY);
     @BeforeClass
 	public static void beforeClass(){
     	easyCassandraManager.getPersistence(HOST_TEST, COLUMN_FAMILY,ReplicaStrategy.SIMPLES_TRATEGY,3);

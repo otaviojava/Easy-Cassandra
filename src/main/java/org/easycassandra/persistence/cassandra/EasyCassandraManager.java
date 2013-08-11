@@ -21,23 +21,26 @@ import org.easycassandra.ReplicaStrategy;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 
+
 /**
  * Class for manage Connections
  * 
  * @author otaviojava
  * @version 2.0
  */
-public class EasyCassandraManager {
+public class EasyCassandraManager extends AbstractCassandraFactory  {
     
-    private Cluster cluter;
-    private String host = "";
-    
-    /**
-     * list of classes added by EasyCassandra
-     */
-    private List<Class<?>> classes=new LinkedList<Class<?>>();
 
-    /**
+	public EasyCassandraManager(String host,String keySpace){
+		super(host, keySpace);
+	}
+	public EasyCassandraManager(String host,String keySpace,int port){
+		super(host, keySpace, port);
+	}
+	
+	
+	
+	 /**
      * Method for create the Cassandra's Client, if the keyspace there is not,if
      * keyspace there isn't, it will created with simple strategy replica and
      * number of fator 3
@@ -48,12 +51,14 @@ public class EasyCassandraManager {
      *            - the keyspace's name
      * @return the client bridge for the Cassandra data base
      */
-    public PersistenceCassandra getPersistence(String host, String keySpace) {
-        if (!this.host.equals(host)) {
+    public Persistence getPersistence(String host, String keySpace) {
+    	   Cluster cluter=getCluster();
+        if (!this.getHost().equals(host)) {
             cluter = Cluster.builder().addContactPoints(host).build();
         }
-        Session session = cluter.connect();
-        return new PersistenceCassandraImpl(session, keySpace);
+        	Session session = cluter.connect();
+        	verifyKeySpace(keySpace, cluter.connect());
+        return new PersistenceSimpleImpl(session, keySpace);
     }
 
     /**
@@ -71,24 +76,30 @@ public class EasyCassandraManager {
      *            - number of the factor
      * @return the client bridge for the Cassandra data base
      */
-    public PersistenceCassandra getPersistence(String host, String keySpace,ReplicaStrategy replicaStrategy, int factor) {
-        cluter = Cluster.builder().addContactPoints(host).build();
+    public Persistence getPersistence(String host, String keySpace,ReplicaStrategy replicaStrategy, int factor) {
+        Cluster cluter = Cluster.builder().addContactPoints(host).build();
         Session session = cluter.connect();
-        return new PersistenceCassandraImpl(session, keySpace, replicaStrategy,factor);
+        verifyKeySpace(keySpace, cluter.connect(), replicaStrategy,factor);
+        return new PersistenceSimpleImpl(session, keySpace);
     }
-
+    
+    /**
+     * list of classes added by Cassandra
+     */
+    private List<Class<?>> classes=new LinkedList<Class<?>>();
+	
     public boolean addFamilyObject(Class<?> class1, String keySpace) {
         if(classes.contains(class1)){
             return true;
         }
         String familyColumn = ColumnUtil.INTANCE.getColumnFamilyName(class1);
-        Session session = cluter.connect(keySpace);
+        Session session = getCluster().connect(keySpace);
         if (!ColumnUtil.INTANCE.getSchema(class1).equals("")) {
-            getPersistence(host, ColumnUtil.INTANCE.getSchema(class1));
+            getPersistence(getHost(), ColumnUtil.INTANCE.getSchema(class1));
 
         }
         classes.add(class1);
         return new FixColumnFamily().verifyColumnFamily(session, familyColumn,class1);
     }
-
+    
 }
