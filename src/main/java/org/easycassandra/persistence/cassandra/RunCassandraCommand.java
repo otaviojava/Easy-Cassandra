@@ -28,6 +28,19 @@ public class RunCassandraCommand {
 	public boolean deleteByKey(Object key, Class<?> bean,Session session){
 		return new DeleteQuery().deleteByKey(key, bean, session);
 	}
+	public <K, T> void delete(Iterable<K> keys, Class<T> entity,Session session){
+		
+		for(K key:keys){
+			deleteByKey(keys, entity, session);
+		}
+	}
+	
+	public <K> boolean deleteByKey(Iterable<K> keys, Class<?> bean,Session session){
+		for(K key:keys){
+		return new DeleteQuery().deleteByKey(key, bean, session);
+		}
+		return true;
+	}
 	
 	public <T> List<T> findByIndex(Object index, Class<T> bean,Session session){
 		return new FindByIndexQuery().findByIndex(index, bean, session);

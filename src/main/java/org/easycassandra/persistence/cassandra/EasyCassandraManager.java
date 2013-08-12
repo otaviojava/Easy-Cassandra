@@ -84,6 +84,14 @@ public class EasyCassandraManager extends AbstractCassandraFactory  {
     }
     
     /**
+     * returns a persistence
+     * @return
+     */
+    public Persistence getPersistence(){
+    	return getPersistence(getHost(), getKeySpace());
+    }
+    
+    /**
      * list of classes added by Cassandra
      */
     private List<Class<?>> classes=new LinkedList<Class<?>>();
