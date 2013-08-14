@@ -85,10 +85,14 @@ public class PersistenceSimpleImpl implements Persistence {
         return true;
     }
 
+    /**
+     * Edited by Dinusha Nandika
+     * Add indexName parameter 
+     */
     @Override
-    public <T,I> List<T> findByIndex(I index, Class<T> bean) {
+    public <T,I> List<T> findByIndex(String indexName, I index, Class<T> bean) {
 
-        return command.findByIndex(index, bean, session);
+        return command.findByIndex(indexName,index, bean, session);
     }
 
     @Override

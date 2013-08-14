@@ -119,7 +119,7 @@ public interface CassandraTemplate{
 	     * @param entity
 	     * @return
 	     */
-	    <T,I> List<T> findByIndex(I index,Class<T> entity);
+	    <T,I> List<T> findByIndex(String columnName,I index,Class<T> entity);
 	    
 	    /**
 	     * verify if exist

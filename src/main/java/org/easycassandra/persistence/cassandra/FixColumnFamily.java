@@ -259,21 +259,25 @@ class FixColumnFamily {
 
     /**
      * Find if exists
+     * REMARK edited by : Dinusha Nandika;
      */
     private void findIndex(Class<?> familyColumn, Session session) {
-        StringBuilder createIndexQuery = new StringBuilder();
-        Field index = ColumnUtil.INTANCE.getIndexField(familyColumn);
-        if (index == null) {
+        StringBuilder createIndexQuery = null;
+        List<Field> indexes = ColumnUtil.INTANCE.getIndexFields(familyColumn);
+        if (indexes.size()==0) {
             return;
         }
-        createIndexQuery.append("CREATE INDEX ");
-        createIndexQuery.append(ColumnUtil.INTANCE.getColumnName(index)).append("INDEX ON ");
-        createIndexQuery.append(ColumnUtil.INTANCE.getColumnFamilyName(familyColumn));
-        createIndexQuery.append(" (").append(ColumnUtil.INTANCE.getColumnName(index)).append(");");
-        try {
-            session.execute(createIndexQuery.toString());
-        } catch (InvalidQueryException exception) {
-            Logger.getLogger(FixColumnFamily.class.getName()).info("Index already exists");
-        }
+        for (Field index : indexes) {
+        	createIndexQuery = new StringBuilder();
+        	createIndexQuery.append("CREATE INDEX ");
+        	createIndexQuery.append(ColumnUtil.INTANCE.getColumnName(index)).append("INDEX ON ");
+        	createIndexQuery.append(ColumnUtil.INTANCE.getColumnFamilyName(familyColumn));
+        	createIndexQuery.append(" (").append(ColumnUtil.INTANCE.getColumnName(index)).append(");");
+        	try {
+        		session.execute(createIndexQuery.toString());
+        	} catch (InvalidQueryException exception) {
+        		Logger.getLogger(FixColumnFamily.class.getName()).info("Index already exists");
+        	}
+		}
     }
 }
