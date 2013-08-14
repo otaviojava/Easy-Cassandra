@@ -96,6 +96,12 @@ public class EasyCassandraManager extends AbstractCassandraFactory  {
      */
     private List<Class<?>> classes=new LinkedList<Class<?>>();
 	
+    /**
+     * add an objetc to Cassandra management 
+     * @param class1
+     * @param keySpace
+     * @return
+     */
     public boolean addFamilyObject(Class<?> class1, String keySpace) {
         if(classes.contains(class1)){
             return true;
@@ -108,6 +114,15 @@ public class EasyCassandraManager extends AbstractCassandraFactory  {
         }
         classes.add(class1);
         return new FixColumnFamily().verifyColumnFamily(session, familyColumn,class1);
+    }
+    
+    /**
+     * add an objetc to Cassandra management and use the default keyspace
+     * {@link EasyCassandraManager#addFamilyObject(Class, String)}
+     * @return
+     */
+    public boolean addFamilyObject(Class<?> class1){
+    	return addFamilyObject(class1, getKeySpace());
     }
     
 }
