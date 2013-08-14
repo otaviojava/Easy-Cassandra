@@ -8,7 +8,7 @@ import org.easycassandra.persistence.cassandra.Persistence;
 public class PersistenceDao<T,K> {
 
     private static final String KEY_SPACE = "javabahia";
-    private static final String HOST = "10.179.3.116";
+    private static final String HOST = "localhost";
     private Persistence persistence;
     private Class<T> baseClass;
     private static EasyCassandraManager easyCassandraManager=new EasyCassandraManager(HOST,KEY_SPACE); 
@@ -46,8 +46,8 @@ public class PersistenceDao<T,K> {
         return persistence.findAll(baseClass);
     }
 
-    public List<T> listByIndex(Object index) {
-        return persistence.findByIndex("",index, baseClass);
+    public List<T> listByIndex(String indexName,Object index) {
+        return persistence.findByIndex(indexName,index, baseClass);
     }
 
     public Long count() {

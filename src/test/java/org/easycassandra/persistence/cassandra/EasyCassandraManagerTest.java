@@ -21,7 +21,7 @@ import org.junit.Test;
 public class EasyCassandraManagerTest {
 
     private static final String COLUMN_FAMILY = "simpleTest";
-    private static final String HOST_TEST = "10.179.3.116";
+    private static final String HOST_TEST = "localhost";
     private static EasyCassandraManager easyCassandraManager=new EasyCassandraManager(HOST_TEST,COLUMN_FAMILY);
     @BeforeClass
 	public static void beforeClass(){
