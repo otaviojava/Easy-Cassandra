@@ -50,6 +50,10 @@ public class RunCassandraCommand {
 		return new FindByIndexQuery().findByIndex(indexName,index, bean, session);
 	}
 	
+	public <T> List<T> findByIndex(Object index, Class<T> bean,Session session){
+		return new FindByIndexQuery().findByIndex(index, bean, session);
+	}
+	
 	public <T> Long count(Class<T> bean,Session session){
 		return new CountQuery().count(bean, session);
 	}

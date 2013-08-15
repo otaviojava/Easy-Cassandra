@@ -37,6 +37,7 @@ import javax.xml.crypto.dsig.keyinfo.KeyValue;
 
 import org.easycassandra.CustomData;
 import org.easycassandra.Index;
+import org.easycassandra.IndexProblemException;
 import org.easycassandra.ListData;
 import org.easycassandra.MapData;
 import org.easycassandra.SetData;
@@ -407,11 +408,24 @@ public enum ColumnUtil {
 		try {
 			field = class1.getField(columnName);
 		} catch (Exception exception) {
-			Logger.getLogger(ColumnUtil.class.getName()).severe("No such column name "+columnName+" in "+class1.getSimpleName()+" class. "+exception.getMessage());
+			StringBuffer erro=new StringBuffer();
+			erro.append("No such column name ").append(columnName);
+			erro.append(" in ").append(class1.getSimpleName());
+			erro.append(" class. ");
+			Logger.getLogger(ColumnUtil.class.getName()).severe(erro.toString()+" "+exception.getMessage());
+			throw new IndexProblemException(erro.toString());
+			
 		}
-		if (field == null)
-			return null;
-		return field.getAnnotation(Index.class) != null ? field : null;
+		if(field.getAnnotation(Index.class) == null){
+			StringBuffer erro=new StringBuffer();
+			erro.append("The field ").append(columnName);
+			erro.append(" should have annoted with @org.easycassandra.Index");
+			erro.append(" whithin ").append(class1.getSimpleName());
+			erro.append(" class.");
+			throw new IndexProblemException(erro.toString());
+			
+		}
+		return field;
 	}
     
     

@@ -13,6 +13,7 @@
  */
 package org.easycassandra.persistence.cassandra;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import com.datastax.driver.core.ResultSet;
@@ -26,7 +27,17 @@ import com.datastax.driver.core.Session;
  */
 class FindByIndexQuery extends FindByKeyQuery {
 
-
+	public <T> List<T> findByIndex(Object key, Class<T> bean, Session session) {
+		Field field=ColumnUtil.INTANCE.getIndexField(bean);
+		if(field==null){
+			StringBuffer erro=new StringBuffer();
+			erro.append("No found some field with @org.easycassandra.Index within ");
+			erro.append(bean.getName()).append(" class.");
+			throw new IndexOutOfBoundsException(erro.toString());
+		}
+		return findByIndex(field.getName(),key, bean, session);
+	}
+	
     public <T> List<T> findByIndex(String indexName, Object key, Class<T> bean, Session session) {
    	 	/**
          * Edited by Dinusha Nandika

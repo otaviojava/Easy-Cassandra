@@ -25,10 +25,6 @@ import java.util.List;
  */
 public interface Persistence  {
 
-    <T,I> List<T> findByIndex(String indexName,I index, Class<T> bean);
-
-    <T> Long count(Class<T> bean);
-    
 
     <T> boolean insert(T bean);
     
@@ -53,4 +49,9 @@ public interface Persistence  {
     boolean executeUpdate(String query);
     
     <T> void removeAll(Class<T> bean);
+    
+    <T,I> List<T> findByIndex(String indexName,I index, Class<T> bean);
+
+    <T,I> List<T> findByIndex(I index, Class<T> bean);
+    <T> Long count(Class<T> bean);
 }

@@ -94,6 +94,12 @@ public class PersistenceSimpleImpl implements Persistence {
 
         return command.findByIndex(indexName,index, bean, session);
     }
+    
+	@Override
+	public <T, I> List<T> findByIndex(I index, Class<T> bean) {
+		
+		return command.findByIndex(index, bean, session);
+	}
 
     @Override
     public <T> Long count(Class<T> bean) {
@@ -130,5 +136,7 @@ public class PersistenceSimpleImpl implements Persistence {
 	 private void setSession(){
 	    	session.execute("use "+keySpace);
 	    }
+
+
 
 }
