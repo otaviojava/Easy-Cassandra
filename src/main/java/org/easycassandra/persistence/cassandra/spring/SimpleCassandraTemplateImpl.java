@@ -114,8 +114,8 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
 	}
 
 	@Override
-	public <T,I> List<T> findByIndex(I index,Class<T> entity) {
-		return command.findByIndex(index, entity, session);
+	public <T,I> List<T> findByIndex(String indexName,I index,Class<T> entity) {
+		return command.findByIndex(indexName,index, entity, session);
 	}
 
 	@Override

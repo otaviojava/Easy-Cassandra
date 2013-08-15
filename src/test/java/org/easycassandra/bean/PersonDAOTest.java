@@ -125,7 +125,7 @@ public class PersonDAOTest {
 
     @Test
     public void findIndexTest(){
-    	List<Person> persons= dao.listByIndex(NAME);
+    	List<Person> persons= dao.listByIndex("name",NAME);
     	Assert.assertNotNull(persons);
     }
 
