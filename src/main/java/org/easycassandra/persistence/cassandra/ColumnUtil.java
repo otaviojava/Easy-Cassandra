@@ -33,13 +33,13 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Table;
 import javax.persistence.Version;
+import javax.xml.crypto.dsig.keyinfo.KeyValue;
 
 import org.easycassandra.CustomData;
 import org.easycassandra.Index;
 import org.easycassandra.ListData;
 import org.easycassandra.MapData;
 import org.easycassandra.SetData;
-import org.easycassandra.persistence.cassandra.Customizable.DefaultCustmomizable;
 
 /**
  * Class Util for Column
@@ -406,7 +406,7 @@ public enum ColumnUtil {
 		Field field = null;
 		try {
 			field = class1.getField(columnName);
-		} catch (NoSuchFieldException | SecurityException exception) {
+		} catch (Exception exception) {
 			Logger.getLogger(ColumnUtil.class.getName()).severe("No such column name "+columnName+" in "+class1.getSimpleName()+" class. "+exception.getMessage());
 		}
 		if (field == null)
