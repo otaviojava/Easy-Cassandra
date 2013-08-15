@@ -2,22 +2,21 @@ package org.easycassandra.bean.dao;
 
 import java.util.List;
 
+import org.easycassandra.Constants;
 import org.easycassandra.persistence.cassandra.EasyCassandraManager;
 import org.easycassandra.persistence.cassandra.Persistence;
 
 public class PersistenceDao<T,K> {
 
-    private static final String KEY_SPACE = "javabahia";
-    private static final String HOST = "localhost";
     private Persistence persistence;
     private Class<T> baseClass;
-    private static EasyCassandraManager easyCassandraManager=new EasyCassandraManager(HOST,KEY_SPACE); 
+    private static EasyCassandraManager easyCassandraManager=new EasyCassandraManager(Constants.HOST,Constants.KEY_SPACE); 
 
     public PersistenceDao(Class<T> baseClass) {
         this.baseClass = baseClass;
         
-        persistence = easyCassandraManager.getPersistence(HOST, KEY_SPACE);
-        easyCassandraManager.addFamilyObject(baseClass, KEY_SPACE);
+        persistence = easyCassandraManager.getPersistence(Constants.HOST, Constants.KEY_SPACE);
+        easyCassandraManager.addFamilyObject(baseClass, Constants.KEY_SPACE);
         
     }
 
