@@ -30,6 +30,6 @@ public class LogDAOTest {
             dao.insert(log);
     	}
     	
-    	Assert.assertTrue(dao.listByIndex(NICK_NAME).size()==10);
+    	Assert.assertTrue(dao.listByIndex("user_uuid",NICK_NAME).size()==10);
     }
 }

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -38,6 +39,7 @@ import org.easycassandra.Index;
 import org.easycassandra.ListData;
 import org.easycassandra.MapData;
 import org.easycassandra.SetData;
+import org.easycassandra.persistence.cassandra.Customizable.DefaultCustmomizable;
 
 /**
  * Class Util for Column
@@ -174,6 +176,26 @@ public enum ColumnUtil {
         return getField(persistenceClass, Index.class);
     }
 
+    /**
+     * Return the Fields with the IndexValue Annotations
+     * @author Dinusha Nandika
+     * @see Index
+     * @param persistenceClass
+     *            - Class of the object viewed
+     * @return the Fields if there are not will be return empty list
+     */
+    public List<Field> getIndexFields(Class<?> persistenceClass) {
+    	List<Field> indexFieldList = new ArrayList<Field>();
+    	  for (Field field : persistenceClass.getDeclaredFields()) {
+              if (field.getAnnotation(Index.class) != null) {
+                  indexFieldList.add(field);
+              } else if (field.getAnnotation(Embeddable.class) != null) {
+            	  indexFieldList.add( getField(field.getType(), Index.class));
+              }
+          }
+          return indexFieldList;
+    }
+    
     /**
      * Get the Field of the Object from annotation if there are not return will
      * be null
@@ -372,7 +394,25 @@ public enum ColumnUtil {
         
         return field.getAnnotation(CustomData.class) != null;
     }
-   
+    
+   /**
+    * get the Field for parsing <b>columnName</b> in the <b>class1</b>. if there is no such column name or if it denies access  return null.
+    * @param columnName
+    * @param class1
+    * @return
+    */
+	public Field getFieldByColumnName(String columnName, Class<?> class1) {
+
+		Field field = null;
+		try {
+			field = class1.getField(columnName);
+		} catch (NoSuchFieldException | SecurityException exception) {
+			Logger.getLogger(ColumnUtil.class.getName()).severe("No such column name "+columnName+" in "+class1.getSimpleName()+" class. "+exception.getMessage());
+		}
+		if (field == null)
+			return null;
+		return field.getAnnotation(Index.class) != null ? field : null;
+	}
     
     
    

@@ -37,7 +37,7 @@ public class AnimalDAOTest {
 	    }
 	  	@Test
 	  	public void listIndexInitializeTest(){
-	  		Assert.assertEquals(dao.listByIndex("Brazil").size(),2);
+	  		Assert.assertEquals(dao.listByIndex("country","Brazil").size(),2);
 	  	}
 	  
     

@@ -26,19 +26,29 @@ import com.datastax.driver.core.Session;
  */
 class FindByIndexQuery extends FindByKeyQuery {
 
-    public <T> List<T> findByIndex(Object key, Class<T> bean, Session session) {
-        QueryBean byKeyBean = new QueryBean();
+
+    public <T> List<T> findByIndex(String indexName, Object key, Class<T> bean, Session session) {
+   	 	/**
+         * Edited by Dinusha Nandika
+         * Add indexName parameter 
+         */
+    	QueryBean byKeyBean = new QueryBean();
 
         byKeyBean.stringBuilder.append("select ");
         byKeyBean = prepare(byKeyBean, bean);
         byKeyBean.stringBuilder.deleteCharAt(byKeyBean.stringBuilder.length() - 1);
         byKeyBean.stringBuilder.append(" from ");
         byKeyBean.stringBuilder.append(ColumnUtil.INTANCE.getColumnFamilyName(bean));
-        return executeConditions(key, bean, session, byKeyBean);
+        return executeConditions(indexName,key, bean, session, byKeyBean);
     }
 
-    private <T> List<T> executeConditions(Object key, Class<T> bean,Session session, QueryBean byKeyBean) {
-        byKeyBean.key = ColumnUtil.INTANCE.getIndexField(bean);
+ 
+    private <T> List<T> executeConditions(String indexName, Object key, Class<T> bean,Session session, QueryBean byKeyBean) {
+    	  /**
+         * Edited by Dinusha Nandika
+         * Add indexName parameter 
+         */
+    	byKeyBean.key = ColumnUtil.INTANCE.getIndexField(bean);
         if (byKeyBean.key == null) {
             StringBuilder erro = new StringBuilder();
             erro.append("Some field in a class ").append(bean.getName());

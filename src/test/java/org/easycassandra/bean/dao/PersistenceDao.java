@@ -46,8 +46,8 @@ public class PersistenceDao<T,K> {
         return persistence.findAll(baseClass);
     }
 
-    public List<T> listByIndex(Object index) {
-        return persistence.findByIndex(index, baseClass);
+    public List<T> listByIndex(String indexName,Object index) {
+        return persistence.findByIndex(indexName,index, baseClass);
     }
 
     public Long count() {

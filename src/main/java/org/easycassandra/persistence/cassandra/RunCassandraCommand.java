@@ -42,8 +42,12 @@ public class RunCassandraCommand {
 		return true;
 	}
 	
-	public <T> List<T> findByIndex(Object index, Class<T> bean,Session session){
-		return new FindByIndexQuery().findByIndex(index, bean, session);
+	  /**
+     * Edited by Dinusha Nandika
+     * Add indexName parameter 
+     */
+	public <T> List<T> findByIndex(String indexName,Object index, Class<T> bean,Session session){
+		return new FindByIndexQuery().findByIndex(indexName,index, bean, session);
 	}
 	
 	public <T> Long count(Class<T> bean,Session session){
