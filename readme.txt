@@ -9,6 +9,7 @@ Version: 2.0.0
 * Find automatically the others clusters which do part of the same cluster.	
 * Objects may use a different keyspace using schema.	
 * Custom storage way with CustomData annotation.
+* supports multiple index
 
 Version: 1.1.2
 * use different keyspace with schema
