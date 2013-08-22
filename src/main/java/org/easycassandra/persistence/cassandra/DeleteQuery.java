@@ -33,7 +33,7 @@ class DeleteQuery extends FindByKeyQuery {
         if (key == null) {
             key = ColumnUtil.INTANCE.getKeyComplexField(bean.getClass());
         }
-        return deleteByKey(ReflectionUtil.getMethod(bean, key),bean.getClass(), session);
+        return deleteByKey(ReflectionUtil.INSTANCE.getMethod(bean, key),bean.getClass(), session);
     }
 
     public boolean deleteByKey(Object key, Class<?> bean, Session session) {

@@ -124,7 +124,7 @@ class FindByKeyQuery extends FindAllQuery {
             
             byKeyBean.stringBuilder.append(ColumnUtil.INTANCE.getColumnName(complexKey));
             byKeyBean.stringBuilder.append("= ? ");
-            objects.add(ReflectionUtil.getMethod(key, complexKey));
+            objects.add(ReflectionUtil.INSTANCE.getMethod(key, complexKey));
         }
         byKeyBean.stringBuilder.append(";");
         PreparedStatement statement = session.prepare(byKeyBean.stringBuilder.toString());

@@ -52,17 +52,17 @@ enum RecoveryObject {
     }
 
     private <T> Object createObject(Class<T> bean, Row row,Map<String, Definition> mapDefinition) {
-        Object newObjetc = ReflectionUtil.newInstance(bean);
+        Object newObjetc = ReflectionUtil.INSTANCE.newInstance(bean);
 
         for (Field field : ColumnUtil.INTANCE.listFields(bean)) {
             if (ColumnUtil.INTANCE.isEmbeddedField(field) || ColumnUtil.INTANCE.isEmbeddedIdField(field)) {
                 Object value = createObject(field.getType(), row, mapDefinition);
-                ReflectionUtil.setMethod(newObjetc, field, value);
+                ReflectionUtil.INSTANCE.setMethod(newObjetc, field, value);
                 continue;
             } 
             ReturnValue returnValue=ReturnValues.INSTANCE.factory(field);
             Object value = returnValue.getObject(mapDefinition, field, row);
-            ReflectionUtil.setMethod(newObjetc, field, value);
+            ReflectionUtil.INSTANCE.setMethod(newObjetc, field, value);
         }
         return newObjetc;
     }

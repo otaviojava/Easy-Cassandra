@@ -72,13 +72,13 @@ class InsertQuery {
         for (Field field : ColumnUtil.INTANCE.listFields(bean.getClass())) {
             
             if (ColumnUtil.INTANCE.isEmbeddedField(field) || ColumnUtil.INTANCE.isEmbeddedIdField(field)) {
-                if (ReflectionUtil.getMethod(bean, field) != null) {
-                    insertBean = createQueryInsert(ReflectionUtil.getMethod(bean, field), insertBean);
+                if (ReflectionUtil.INSTANCE.getMethod(bean, field) != null) {
+                    insertBean = createQueryInsert(ReflectionUtil.INSTANCE.getMethod(bean, field), insertBean);
                 }
                 continue;
             }
 
-            else if (ReflectionUtil.getMethod(bean, field) != null) {
+            else if (ReflectionUtil.INSTANCE.getMethod(bean, field) != null) {
                 if (insertBean.count > 0) {
                     insertBean.query.append(",");
                 }
@@ -102,7 +102,7 @@ class InsertQuery {
         if (key == null) {
             
             key = ColumnUtil.INTANCE.getField(bean.getClass(), EmbeddedId.class);
-            isKeyNull(ReflectionUtil.getMethod(bean, key), key.getType().getDeclaredFields());
+            isKeyNull(ReflectionUtil.INSTANCE.getMethod(bean, key), key.getType().getDeclaredFields());
         } else {
             isKeyNull(bean, key);
         }
@@ -111,7 +111,7 @@ class InsertQuery {
 
     private void isKeyNull(Object bean, Field... fields) {
         for (Field field : fields) {
-            if (ReflectionUtil.getMethod(bean, field) == null) {
+            if (ReflectionUtil.INSTANCE.getMethod(bean, field) == null) {
                 throw new KeyProblemsException("Key is mandatory to insert a new column family");
             }
         }

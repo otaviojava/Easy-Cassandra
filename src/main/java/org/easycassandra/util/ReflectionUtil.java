@@ -19,12 +19,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * The class does getter and setter with invoke Dynamic
+ * The class does getter, setter and util for reflection 
  * 
  * @author otavio
  */
-public final class ReflectionUtil {
+public enum ReflectionUtil {
 
+	INSTANCE;
+	
     /**
      * Return The Object from the Field
      * 
@@ -32,7 +34,7 @@ public final class ReflectionUtil {
      * @param field
      * @return - the field value in Object
      */
-    public static Object getMethod(Object object, Field field) {
+    public  Object getMethod(Object object, Field field) {
 
         try {
             boolean isAccessibleCopy = field.isAccessible();
@@ -59,7 +61,7 @@ public final class ReflectionUtil {
      * @param value
      * @return - if the operation was execute with sucess
      */
-    public static boolean setMethod(Object object, Field field, Object value) {
+    public boolean setMethod(Object object, Field field, Object value) {
         try {
             boolean isAccessibleCopy = field.isAccessible();
             if (isAccessibleCopy) {
@@ -82,7 +84,7 @@ public final class ReflectionUtil {
      * @param clazz
      * @return the new instance that class
      */
-    public static Object newInstance(Class<?> clazz) {
+    public Object newInstance(Class<?> clazz) {
         try {
             return clazz.newInstance();
         } catch (Exception exception) {
@@ -97,7 +99,7 @@ public final class ReflectionUtil {
      * @param string
      * @return the field from the name
      */
-    public static Field getField(String string, Class<?> clazz) {
+    public Field getField(String string, Class<?> clazz) {
         for (Field field : clazz.getDeclaredFields()) {
             if (field.getName().equals(string)) {
                 return field;
@@ -106,9 +108,4 @@ public final class ReflectionUtil {
         return null;
     }
 
-    /**
-     * Singleton
-     */
-    private ReflectionUtil() {
-    }
 }

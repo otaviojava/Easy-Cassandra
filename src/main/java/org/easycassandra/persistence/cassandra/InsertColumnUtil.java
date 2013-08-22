@@ -25,8 +25,8 @@ class CustomInsert implements InsertColumn{
     @Override
     public Object getObject(Object bean, Field field) {
        CustomData customData=field.getAnnotation(CustomData.class);
-       Customizable customizable=(Customizable) ReflectionUtil.newInstance(customData.classCustmo());
-       return customizable.read(ReflectionUtil.getMethod(bean, field));
+       Customizable customizable=(Customizable) ReflectionUtil.INSTANCE.newInstance(customData.classCustmo());
+       return customizable.read(ReflectionUtil.INSTANCE.getMethod(bean, field));
     }
     
     
@@ -36,7 +36,7 @@ class EnumInsert implements InsertColumn{
 
     @Override
     public Object getObject(Object bean, Field field) {
-        Enum<?> enumS = (Enum<?>) ReflectionUtil.getMethod(bean,field);
+        Enum<?> enumS = (Enum<?>) ReflectionUtil.INSTANCE.getMethod(bean,field);
         return enumS.ordinal();
     }
     
@@ -45,7 +45,7 @@ class DefaultInsert implements InsertColumn{
 
     @Override
     public Object getObject(Object bean, Field field) {
-        return ReflectionUtil.getMethod(bean, field);
+        return ReflectionUtil.INSTANCE.getMethod(bean, field);
     }
     
 }

@@ -1,13 +1,11 @@
 package org.easycassandra.persistence.cassandra;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.nio.ByteBuffer;
 import java.util.Map;
 
 import org.easycassandra.CustomData;
-import org.easycassandra.ListData;
-import org.easycassandra.MapData;
-import org.easycassandra.SetData;
 import org.easycassandra.util.ReflectionUtil;
 
 import com.datastax.driver.core.ColumnDefinitions.Definition;
@@ -45,7 +43,7 @@ enum ReturnValues {
             Definition column = mapDefinition.get(ColumnUtil.INTANCE.getColumnName(field).toLowerCase());
             ByteBuffer buffer= (ByteBuffer)RelationShipJavaCassandra.INSTANCE.getObject(row, column.getType().getName(), column.getName());
             CustomData customData=field.getAnnotation(CustomData.class);
-            Customizable customizable=Customizable.class.cast(ReflectionUtil.newInstance(customData.classCustmo()));
+            Customizable customizable=Customizable.class.cast(ReflectionUtil.INSTANCE.newInstance(customData.classCustmo()));
             
             return customizable.write(buffer);
         }
@@ -56,8 +54,10 @@ enum ReturnValues {
 
         @Override
         public Object getObject(Map<String, Definition> mapDefinition,Field field, Row row) {
-            MapData mapData = field.getAnnotation(MapData.class);
-            return RelationShipJavaCassandra.INSTANCE.getObject(row, Name.MAP,ColumnUtil.INTANCE.getColumnName(field),mapData.classKey(), mapData.classValue());
+        	ParameterizedType genericType=(ParameterizedType)field.getGenericType();
+            Class<?> keyClass=(Class<?>) genericType.getActualTypeArguments()[0];
+            Class<?> valueClass=(Class<?>) genericType.getActualTypeArguments()[1];
+            return RelationShipJavaCassandra.INSTANCE.getObject(row, Name.MAP,ColumnUtil.INTANCE.getColumnName(field),keyClass, valueClass);
 
         }
 
@@ -67,8 +67,9 @@ enum ReturnValues {
 
         @Override
         public Object getObject(Map<String, Definition> mapDefinition,Field field, Row row) {
-            SetData setData = field.getAnnotation(SetData.class);
-            return RelationShipJavaCassandra.INSTANCE.getObject(row, Name.SET,ColumnUtil.INTANCE.getColumnName(field),setData.classData());
+        	ParameterizedType genericType=(ParameterizedType)field.getGenericType();
+            Class<?> clazz=(Class<?>) genericType.getActualTypeArguments()[0];
+            return RelationShipJavaCassandra.INSTANCE.getObject(row, Name.SET,ColumnUtil.INTANCE.getColumnName(field),clazz);
 
         }
 
@@ -78,8 +79,9 @@ enum ReturnValues {
 
         @Override
         public Object getObject(Map<String, Definition> mapDefinition,Field field, Row row) {
-            ListData listData = field.getAnnotation(ListData.class);
-            return RelationShipJavaCassandra.INSTANCE.getObject(row, Name.LIST, ColumnUtil.INTANCE.getColumnName(field),listData.classData());
+            ParameterizedType genericType=(ParameterizedType)field.getGenericType();
+            Class<?> clazz=(Class<?>) genericType.getActualTypeArguments()[0];
+            return RelationShipJavaCassandra.INSTANCE.getObject(row, Name.LIST, ColumnUtil.INTANCE.getColumnName(field),clazz);
 
         }
 
