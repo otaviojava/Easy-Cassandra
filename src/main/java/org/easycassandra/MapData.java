@@ -27,8 +27,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MapData {
-
-    Class<? extends java.io.Serializable> classKey();
-    Class<? extends java.io.Serializable> classValue();
     
 }

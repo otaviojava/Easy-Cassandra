@@ -16,7 +16,7 @@ public class Book {
     @Column(name="booksname")
     private String name;
     
-    @MapData(classKey=Long.class,classValue=String.class)
+    @MapData
     private Map<Long, String> chapterResume;
 
     public Map<Long, String> getChapterResume() {

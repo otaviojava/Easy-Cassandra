@@ -13,13 +13,16 @@ import org.easycassandra.SetData;
 @Entity(name="contact")
 public class Contact implements Serializable {
 
-    @Id
+	private static final long serialVersionUID = 8651158874397737993L;
+
+
+	@Id
     @Column(name="id")
     private String name;
     
     
     @Column(name="emails")
-    @SetData(classData=String.class)
+    @SetData
     private Set<String> emails;
     
     @Column

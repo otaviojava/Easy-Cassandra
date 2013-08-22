@@ -18,7 +18,7 @@ public class ShoppingList {
     @Column(name="day")
     private Date day;
     
-    @ListData(classData=String.class)
+    @ListData
     @Column(name="frutis")
     private List<String> fruits;
     
