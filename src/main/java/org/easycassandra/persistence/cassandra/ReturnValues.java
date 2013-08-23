@@ -1,7 +1,6 @@
 package org.easycassandra.persistence.cassandra;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 import java.nio.ByteBuffer;
 import java.util.Map;
 
@@ -54,10 +53,8 @@ enum ReturnValues {
 
         @Override
         public Object getObject(Map<String, Definition> mapDefinition,Field field, Row row) {
-        	ParameterizedType genericType=(ParameterizedType)field.getGenericType();
-            Class<?> keyClass=(Class<?>) genericType.getActualTypeArguments()[0];
-            Class<?> valueClass=(Class<?>) genericType.getActualTypeArguments()[1];
-            return RelationShipJavaCassandra.INSTANCE.getObject(row, Name.MAP,ColumnUtil.INTANCE.getColumnName(field),keyClass, valueClass);
+        	ReflectionUtil.KeyValueClass keyValueClass=ReflectionUtil.INSTANCE.getGenericKeyValue(field);
+            return RelationShipJavaCassandra.INSTANCE.getObject(row, Name.MAP,ColumnUtil.INTANCE.getColumnName(field),keyValueClass.getKeyClass(), keyValueClass.getValueClass());
 
         }
 
@@ -67,9 +64,7 @@ enum ReturnValues {
 
         @Override
         public Object getObject(Map<String, Definition> mapDefinition,Field field, Row row) {
-        	ParameterizedType genericType=(ParameterizedType)field.getGenericType();
-            Class<?> clazz=(Class<?>) genericType.getActualTypeArguments()[0];
-            return RelationShipJavaCassandra.INSTANCE.getObject(row, Name.SET,ColumnUtil.INTANCE.getColumnName(field),clazz);
+            return RelationShipJavaCassandra.INSTANCE.getObject(row, Name.SET,ColumnUtil.INTANCE.getColumnName(field),ReflectionUtil.INSTANCE.getGenericType(field));
 
         }
 
@@ -79,9 +74,7 @@ enum ReturnValues {
 
         @Override
         public Object getObject(Map<String, Definition> mapDefinition,Field field, Row row) {
-            ParameterizedType genericType=(ParameterizedType)field.getGenericType();
-            Class<?> clazz=(Class<?>) genericType.getActualTypeArguments()[0];
-            return RelationShipJavaCassandra.INSTANCE.getObject(row, Name.LIST, ColumnUtil.INTANCE.getColumnName(field),clazz);
+            return RelationShipJavaCassandra.INSTANCE.getObject(row, Name.LIST, ColumnUtil.INTANCE.getColumnName(field),ReflectionUtil.INSTANCE.getGenericType(field));
 
         }
 

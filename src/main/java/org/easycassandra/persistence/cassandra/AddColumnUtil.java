@@ -15,8 +15,9 @@
 package org.easycassandra.persistence.cassandra;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 import java.nio.ByteBuffer;
+
+import org.easycassandra.util.ReflectionUtil;
 
 /**
  * create a column to cassandra checking the annotation 
@@ -63,11 +64,10 @@ class MapAdd implements AddColumn{
     public String addRow(Field field, RelationShipJavaCassandra javaCassandra) {
         StringBuilder row=new StringBuilder();
         String columnName = ColumnUtil.INTANCE.getColumnName(field);
-        ParameterizedType genericType=(ParameterizedType)field.getGenericType();
-        Class<?> keyClass=(Class<?>) genericType.getActualTypeArguments()[0];
-        Class<?> valueClass=(Class<?>) genericType.getActualTypeArguments()[1];
-        row.append(columnName).append(" map<").append(javaCassandra.getPreferenceCQLType(keyClass.getName())).append(",");
-        row.append(javaCassandra.getPreferenceCQLType(valueClass.getName())).append(">,");
+        ReflectionUtil.KeyValueClass keyValueClass=ReflectionUtil.INSTANCE.getGenericKeyValue(field);
+        
+        row.append(columnName).append(" map<").append(javaCassandra.getPreferenceCQLType(keyValueClass.getKeyClass().getName())).append(",");
+        row.append(javaCassandra.getPreferenceCQLType(keyValueClass.getValueClass().getName())).append(">,");
         return row.toString();
     }
     
@@ -79,8 +79,7 @@ class SetAdd implements AddColumn{
     public String addRow(Field field, RelationShipJavaCassandra javaCassandra) {
         StringBuilder row=new StringBuilder();
         String columnName = ColumnUtil.INTANCE.getColumnName(field);
-        ParameterizedType genericType=(ParameterizedType)field.getGenericType();
-        Class<?> clazz=(Class<?>) genericType.getActualTypeArguments()[0];
+        Class<?> clazz=ReflectionUtil.INSTANCE.getGenericType(field);
         row.append(columnName).append(" set<").append(javaCassandra.getPreferenceCQLType(clazz.getName())).append(">,");
         return row.toString();
     }
@@ -92,8 +91,7 @@ class ListAdd implements AddColumn{
     public String addRow(Field field, RelationShipJavaCassandra javaCassandra) {
         StringBuilder row=new StringBuilder();
         String columnName = ColumnUtil.INTANCE.getColumnName(field);
-        ParameterizedType genericType=(ParameterizedType)field.getGenericType();
-        Class<?> clazz=(Class<?>) genericType.getActualTypeArguments()[0];
+        Class<?> clazz=ReflectionUtil.INSTANCE.getGenericType(field);
         row.append(columnName).append(" list<").append(javaCassandra.getPreferenceCQLType(clazz.getName())).append(">,");
         return row.toString();
     }

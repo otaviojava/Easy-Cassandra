@@ -15,6 +15,7 @@
 package org.easycassandra.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -108,4 +109,44 @@ public enum ReflectionUtil {
         return null;
     }
 
+    /**
+     * returns the generic type of field
+     * @param field
+     * @return
+     */
+    public Class<?> getGenericType(Field field){
+    	ParameterizedType genericType=(ParameterizedType)field.getGenericType();
+        return (Class<?>) genericType.getActualTypeArguments()[0];
+    	
+    }
+    
+    /**
+     * return the key and value of field
+     * @param field
+     * @return
+     */
+    public KeyValueClass getGenericKeyValue(Field field){
+    	ParameterizedType genericType=(ParameterizedType)field.getGenericType();
+    	KeyValueClass keyValueClass=new KeyValueClass();
+    	keyValueClass.keyClass=(Class<?>) genericType.getActualTypeArguments()[0];
+    	keyValueClass.valueClass=(Class<?>) genericType.getActualTypeArguments()[1];
+    	return keyValueClass;
+    }
+    
+    
+    /**
+     * data struteded to store key and value class to map collection 
+     * @author otaviojava
+     */
+    public class KeyValueClass{
+    	private Class<?> keyClass;
+    	private Class<?> valueClass;
+		public Class<?> getKeyClass() {
+			return keyClass;
+		}
+		public Class<?> getValueClass() {
+			return valueClass;
+		}
+    	
+    }
 }
