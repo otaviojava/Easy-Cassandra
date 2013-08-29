@@ -1,7 +1,7 @@
 Easy-Cassandra
 
 Easily programming with this framework, the Easy Cassandra.
-The EasyCassandra uses the Thrift implementation and has as main objective to be a simple ORM( Object relational manager). It needs the jdk 7 to run, because some parts in his code are using invoke dynamic instead reflection. Due to it, it will have a faster behavior than other frameworks.
+The EasyCassandra uses the Cassandra Driver and has as main objective to be a simple ORM( Object relational manager). 
 
 Version: 2.0.0
 * Complex rowkey (a key with tow or more keyrow).
