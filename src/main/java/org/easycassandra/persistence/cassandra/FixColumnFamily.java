@@ -205,7 +205,7 @@ class FixColumnFamily {
         Field keyField = ColumnUtil.INTANCE.getKeyComplexField(class1);
         cqlCreateTable.append(" PRIMARY KEY (");
         boolean firstTime = true;
-        for (Field subKey : keyField.getType().getDeclaredFields()) {
+        for (Field subKey : ColumnUtil.INTANCE.listFields(keyField.getType())) {
             if (firstTime) {
                 cqlCreateTable.append(subKey.getName());
                 firstTime = false;
