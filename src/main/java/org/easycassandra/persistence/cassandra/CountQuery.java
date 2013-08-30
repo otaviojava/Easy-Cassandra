@@ -36,7 +36,7 @@ class CountQuery {
     public Long count(Class<?> bean, Session session) {
         StringBuilder countQuery = new StringBuilder();
         countQuery.append("SELECT COUNT(*) FROM ");
-        countQuery.append(ColumnUtil.INTANCE.getColumnFamilyName(bean)).append(";");
+        countQuery.append(ColumnUtil.INTANCE.getColumnFamilyNameSchema(bean)).append(";");
         ResultSet resultSet = session.execute(countQuery.toString());
         return resultSet.all().get(0).getLong(0);
     }

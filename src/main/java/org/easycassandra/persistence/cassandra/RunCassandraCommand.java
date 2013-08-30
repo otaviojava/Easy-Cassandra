@@ -8,13 +8,14 @@ import com.datastax.driver.core.Session;
 public class RunCassandraCommand {
 
 	
-	public <T> T  insert(T bean,Session session){
-          new InsertQuery().prepare(bean, session);
+	public <T> T  insert(T bean,Session session,String keySpace){
+		
+          new InsertQuery(keySpace).prepare(bean, session);
           return bean;
 	}
 	
-	public <T> boolean delete(T bean,Session session) {
-		return new DeleteQuery().deleteByKey(bean, session);
+	public <T> boolean delete(T bean,Session session,String keySpace) {
+		return new DeleteQuery(keySpace).deleteByKey(bean, session);
 	}
 	
 	public <T> List<T> findAll(Class<T> bean,Session session){
@@ -25,19 +26,19 @@ public class RunCassandraCommand {
 		return new FindByKeyQuery().findByKey(key, bean, session);
 	}
 	
-	public boolean deleteByKey(Object key, Class<?> bean,Session session){
-		return new DeleteQuery().deleteByKey(key, bean, session);
+	public boolean deleteByKey(Object key, Class<?> bean,Session session,String keySpace){
+		return new DeleteQuery(keySpace).deleteByKey(key, bean, session);
 	}
-	public <K, T> void delete(Iterable<K> keys, Class<T> entity,Session session){
+	public <K, T> void delete(Iterable<K> keys, Class<T> entity,Session session,String keySpace){
 		
 		for(K key:keys){
-			deleteByKey(keys, entity, session);
+			deleteByKey(key, entity, session,keySpace);
 		}
 	}
 	
-	public <K> boolean deleteByKey(Iterable<K> keys, Class<?> bean,Session session){
+	public <K> boolean deleteByKey(Iterable<K> keys, Class<?> bean,Session session,String keySpace){
 		for(K key:keys){
-		return new DeleteQuery().deleteByKey(key, bean, session);
+		return new DeleteQuery(keySpace).deleteByKey(key, bean, session);
 		}
 		return true;
 	}
@@ -58,15 +59,13 @@ public class RunCassandraCommand {
 		return new CountQuery().count(bean, session);
 	}
 	
-	public <T> boolean insert(Iterable<T> beans,Session session){
-		for(T bean:beans){
-			insert(bean,session);
-		}
+	public <T> boolean insert(Iterable<T> beans,Session session,String keySpace){
+		  new InsertQuery(keySpace).prepare(beans, session);
 		return true;
 	}
-	public <T> boolean delete(Iterable<T> beans,Session session) {
+	public <T> boolean delete(Iterable<T> beans,Session session,String keySpace) {
 		for(T bean:beans){
-			delete(bean,session);
+			delete(bean,session,keySpace);
 		}
 		return true;
 	}

@@ -128,7 +128,7 @@ class FixColumnFamily {
      */
     private void executeAlterTableAdd(Class<?> class1, Session session,Field field) {
         StringBuilder cqlAlterTable = new StringBuilder();
-        cqlAlterTable.append("ALTER TABLE ").append( ColumnUtil.INTANCE.getColumnFamilyName(class1));
+        cqlAlterTable.append("ALTER TABLE ").append( ColumnUtil.INTANCE.getColumnFamilyNameSchema(class1));
         cqlAlterTable.append(" ADD ");
         AddColumn addColumn=AddColumnUtil.INSTANCE.factory(field);
         cqlAlterTable.append(addColumn.addRow(field, RelationShipJavaCassandra.INSTANCE));
@@ -224,7 +224,7 @@ class FixColumnFamily {
         
         StringBuilder erroMensage=new StringBuilder();
            
-        erroMensage.append("the bean ").append(ColumnUtil.INTANCE.getColumnFamilyName(bean));
+        erroMensage.append("the bean ").append(ColumnUtil.INTANCE.getColumnFamilyNameSchema(bean));
         erroMensage.append(" hasn't  a field with id annotation, you may to use either javax.persistence.Id");
         erroMensage.append(" to simple id or javax.persistence.EmbeddedId");
         erroMensage.append(" to complex id, another object with one or more fields annotated with java.persistence.Column.");
@@ -282,7 +282,7 @@ class FixColumnFamily {
 		createIndexQuery = new StringBuilder();
 		createIndexQuery.append("CREATE INDEX ");
 		createIndexQuery.append(ColumnUtil.INTANCE.getColumnName(index)).append(" ON ");
-		createIndexQuery.append(ColumnUtil.INTANCE.getColumnFamilyName(familyColumn));
+		createIndexQuery.append(ColumnUtil.INTANCE.getColumnFamilyNameSchema(familyColumn));
 		createIndexQuery.append(" (").append(ColumnUtil.INTANCE.getColumnName(index)).append(");");
 		try {
 			session.execute(createIndexQuery.toString());

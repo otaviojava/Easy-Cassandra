@@ -82,19 +82,23 @@ public enum ColumnUtil {
      *            - Class of the object viewed
      * @return The name of Column name if there are not will be return null
      */
-    public String getColumnFamilyName(Class<?> object) {
+    public String getColumnFamilyNameSchema(Class<?> object) {
         String schema = getSchemaConcat(object);
-        Entity columnFamily = (Entity) object.getAnnotation(Entity.class);
+        return schema.concat(getColumnFamily(object));
+    }
+
+	private String getColumnFamily(Class<?> object) {
+		Entity columnFamily = (Entity) object.getAnnotation(Entity.class);
         Table columnFamilyTable = (Table) object.getAnnotation(Table.class);
         if (columnFamily != null) {
             String columnName = columnFamily.name().equals("") ? object.getSimpleName() : columnFamily.name();
-            return schema.concat(columnName);
+            return columnName;
         } else if (columnFamilyTable != null) {
             String columnName = columnFamilyTable.name().equals("") ? object.getSimpleName() : columnFamilyTable.name();
-            return schema.concat(columnName);
+            return columnName;
         }
-        return schema.concat(object.getSimpleName());
-    }
+        return object.getSimpleName();
+	}
 
     private String getSchemaConcat(Class<?> class1) {
         String schema = getSchema(class1);
@@ -428,6 +432,32 @@ public enum ColumnUtil {
 		return field;
 	}
     
+	
+	public KeySpaceInformation getKeySpace(String keySpace,Class<?> bean){
+		String keySchema=getSchema(bean);
+		KeySpaceInformation key=new KeySpaceInformation();
+		key.keySpace=keySchema== ""?keySpace:keySchema;
+		key.columnFamily=getColumnFamily(bean);
+	   return key ;	
+	}
+	
+	
+	
+	public class KeySpaceInformation{
+		private String keySpace;
+		
+		private String columnFamily;
+
+		public String getKeySpace() {
+			return keySpace;
+		}
+
+		public String getColumnFamily() {
+			return columnFamily;
+		}
+		
+		
+	}
     
    
 }

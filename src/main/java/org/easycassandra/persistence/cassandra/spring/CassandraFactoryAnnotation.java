@@ -53,7 +53,7 @@ public class CassandraFactoryAnnotation extends AbstractCassandraFactory impleme
 	 * @return
 	 */
 	public boolean mappedBean(Class<?> entity){
-		   String familyColumn = ColumnUtil.INTANCE.getColumnFamilyName(entity);
+		   String familyColumn = ColumnUtil.INTANCE.getColumnFamilyNameSchema(entity);
 	        Session session = getCluster().connect(getKeySpace());
 	        if (!ColumnUtil.INTANCE.getSchema(entity).equals("")) {
 	            getTemplate(getHost(), ColumnUtil.INTANCE.getSchema(entity));

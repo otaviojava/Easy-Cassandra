@@ -106,7 +106,7 @@ public class EasyCassandraManager extends AbstractCassandraFactory  {
         if(classes.contains(class1)){
             return true;
         }
-        String familyColumn = ColumnUtil.INTANCE.getColumnFamilyName(class1);
+        String familyColumn = ColumnUtil.INTANCE.getColumnFamilyNameSchema(class1);
         Session session = getCluster().connect(keySpace);
         if (!ColumnUtil.INTANCE.getSchema(class1).equals("")) {
             getPersistence(getHost(), ColumnUtil.INTANCE.getSchema(class1));

@@ -14,18 +14,19 @@
 package org.easycassandra.persistence.cassandra;
 
 import java.lang.reflect.Field;
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.persistence.EmbeddedId;
 
 import org.easycassandra.KeyProblemsException;
+import org.easycassandra.persistence.cassandra.ColumnUtil.KeySpaceInformation;
 import org.easycassandra.persistence.cassandra.InsertColumnUtil.InsertColumn;
 import org.easycassandra.util.ReflectionUtil;
 
-import com.datastax.driver.core.BoundStatement;
-import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.Statement;
+import com.datastax.driver.core.querybuilder.Batch;
+import com.datastax.driver.core.querybuilder.Insert;
+import com.datastax.driver.core.querybuilder.QueryBuilder;
 
 /**
  * Class to mounts and runs the query to insert a row in a column family
@@ -35,63 +36,63 @@ import com.datastax.driver.core.Session;
  */
 class InsertQuery {
 
-    public boolean prepare(Object bean, Session session) {
-
-        isKeyNull(bean);
-        InsertBean insertBean = new InsertBean();
-
-        createBeginInsertQuery(bean, insertBean);
-        insertBean = createQueryInsert(bean, insertBean);
-        createEndInsertQuery(insertBean);
-
-        PreparedStatement statement = session.prepare(insertBean.query.toString());
-        BoundStatement boundStatement = new BoundStatement(statement);
-        session.execute(boundStatement.bind(insertBean.objets.toArray()));
+	private String keySpace;
+	
+	InsertQuery(String keySpace){
+		this.keySpace = keySpace;
+	}
+	
+    public <T> boolean prepare(T bean, Session session) {
+    	
+        session.execute(createStatment(bean, session));
         return true;
     }
-
-    private void createEndInsertQuery(InsertBean insertBean) {
-        insertBean.query.append(") VALUES (");
-        for (int index = 1; index <= insertBean.count; index++) {
-            if (index > 1) {
-                insertBean.query.append(",");
-            }
-            insertBean.query.append(" ?");
-        }
-        insertBean.query.append(" );");
+    public <T> boolean prepare(Iterable<T> beans, Session session) {
+    	
+    	Batch batch = null;
+    	
+    	for(T bean:beans){
+    		if(batch == null){
+    	 	 batch=QueryBuilder.batch(createStatment(bean, session));
+    	 	}else{
+    	 		batch.add(createStatment(bean, session));
+    	 	}
+    	}
+    	session.execute(batch);
+    	return true;
     }
+    
+    
+	private <T> Statement createStatment(T bean, Session session) {
+		isKeyNull(bean);
+		KeySpaceInformation key=ColumnUtil.INTANCE.getKeySpace(keySpace, bean.getClass());
+        Insert insert=QueryBuilder.insertInto(key.getKeySpace(), key.getColumnFamily());
+        insert=createInsert(bean, insert);
+        
+       return insert;
+	}
 
-    private void createBeginInsertQuery(Object bean, InsertBean insertBean) {
-        insertBean.query.append("insert into ");
-        insertBean.query.append(ColumnUtil.INTANCE.getColumnFamilyName(bean.getClass()));
-        insertBean.query.append("(");
-    }
+	
+	private <T> Insert createInsert(T bean, Insert insert){
+		
+		 for (Field field : ColumnUtil.INTANCE.listFields(bean.getClass())) {
+	            
+	            if (ColumnUtil.INTANCE.isEmbeddedField(field) || ColumnUtil.INTANCE.isEmbeddedIdField(field)) {
+	                if (ReflectionUtil.INSTANCE.getMethod(bean, field) != null) {
+	                	insert = createInsert(ReflectionUtil.INSTANCE.getMethod(bean, field), insert);
+	                }
+	                continue;
+	            }
 
-    public InsertBean createQueryInsert(Object bean, InsertBean insertBean) {
+	            else if (ReflectionUtil.INSTANCE.getMethod(bean, field) != null) {
+	                InsertColumn insertColumn=InsertColumnUtil.INSTANCE.factory(field);
+	                insert.value(ColumnUtil.INTANCE.getColumnName(field), insertColumn.getObject(bean, field));
 
-        for (Field field : ColumnUtil.INTANCE.listFields(bean.getClass())) {
-            
-            if (ColumnUtil.INTANCE.isEmbeddedField(field) || ColumnUtil.INTANCE.isEmbeddedIdField(field)) {
-                if (ReflectionUtil.INSTANCE.getMethod(bean, field) != null) {
-                    insertBean = createQueryInsert(ReflectionUtil.INSTANCE.getMethod(bean, field), insertBean);
-                }
-                continue;
-            }
-
-            else if (ReflectionUtil.INSTANCE.getMethod(bean, field) != null) {
-                if (insertBean.count > 0) {
-                    insertBean.query.append(",");
-                }
-                insertBean.query.append(ColumnUtil.INTANCE.getColumnName(field));
-                insertBean.count++;
-                InsertColumn insertColumn=InsertColumnUtil.INSTANCE.factory(field);
-                insertBean.objets.add(insertColumn.getObject(bean, field));
-
-            }
-        }
-        return insertBean;
-    }
-
+	            }
+	        }
+		return insert;
+	}
+  
     /**
      * Verify if key is nut and make a exception
      * 
@@ -117,9 +118,5 @@ class InsertQuery {
         }
     }
 
-    private class InsertBean {
-        private StringBuilder query = new StringBuilder();
-        private int count;
-        private List<Object> objets = new LinkedList<Object>();
-    }
+
 }

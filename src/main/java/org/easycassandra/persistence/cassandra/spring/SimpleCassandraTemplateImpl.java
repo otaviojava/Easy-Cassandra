@@ -53,34 +53,34 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
 	@Override
 	public <T> T save(T entity) {
 		
-		return command.insert(entity, session);
+		return command.insert(entity, session,keySpace);
 	}
 
 	@Override
 	public <T> Iterable<T> save(Iterable<T> entities) {
-		command.insert(entities, session);
+		command.insert(entities, session,keySpace);
 		return entities;
 	}
 
 	@Override
 	public <T> void delete(T entity) {
-		command.delete(entity, session);
+		command.delete(entity, session,keySpace);
 	}
 
 	@Override
 	public <T> void delete(Iterable<T> entities) {
-		command.delete(entities, session);
+		command.delete(entities, session,keySpace);
 	}
 
 	@Override
 	public <K> void delete(K key, Class<?> entity) {
-		command.deleteByKey(key, entity, session);
+		command.deleteByKey(key, entity, session,keySpace);
 		
 	}
 
 	@Override
 	public <K, T> void delete(Iterable<K> keys, Class<T> entity) {
-		command.deleteByKey(keys, entity, session);
+		command.deleteByKey(keys, entity, session,keySpace);
 	}
 
 	@Override

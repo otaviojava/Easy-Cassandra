@@ -49,14 +49,14 @@ public class PersistenceSimpleImpl implements Persistence {
 
     @Override
     public <T> boolean insert(T bean) {
-        return command.insert(bean, session)!=null;
+        return command.insert(bean, session,keySpace)!=null;
 
     }
 
     @Override
      public <T> boolean delete(T bean) {
 
-        return command.delete(bean, session);
+        return command.delete(bean, session,keySpace);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class PersistenceSimpleImpl implements Persistence {
 
     @Override
     public <K,T> boolean deleteByKey(K key, Class<T> bean) {
-        return command.deleteByKey(key, bean, session);
+        return command.deleteByKey(key, bean, session,keySpace);
     }
 
     @Override
@@ -108,12 +108,12 @@ public class PersistenceSimpleImpl implements Persistence {
 
 	@Override
 	public <T> boolean insert(Iterable<T> beans) {
-		return command.insert(beans, session);
+		return command.insert(beans, session,keySpace);
 	}
 
 	@Override
 	public <T> boolean delete(Iterable<T> beans) {
-		return command.delete(beans, session);
+		return command.delete(beans, session,keySpace);
 	}
 
 	@Override

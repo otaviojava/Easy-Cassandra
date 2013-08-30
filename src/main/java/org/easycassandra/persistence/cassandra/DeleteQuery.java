@@ -16,9 +16,12 @@ package org.easycassandra.persistence.cassandra;
 
 import java.lang.reflect.Field;
 
+import org.easycassandra.persistence.cassandra.ColumnUtil.KeySpaceInformation;
 import org.easycassandra.util.ReflectionUtil;
 
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.querybuilder.Delete;
+import com.datastax.driver.core.querybuilder.QueryBuilder;
 
 /**
  * Class to create a query to delete beans
@@ -26,38 +29,56 @@ import com.datastax.driver.core.Session;
  * @author otaviojava
  * 
  */
-class DeleteQuery extends FindByKeyQuery {
+class DeleteQuery{
 
+	private String keySpace;
+	
+	public DeleteQuery(String keySpace){
+	  this.keySpace = keySpace;	
+	}
     public boolean deleteByKey(Object bean, Session session) {
+    	
         Field key = ColumnUtil.INTANCE.getKeyField(bean.getClass());
         if (key == null) {
             key = ColumnUtil.INTANCE.getKeyComplexField(bean.getClass());
         }
+     
         return deleteByKey(ReflectionUtil.INSTANCE.getMethod(bean, key),bean.getClass(), session);
     }
 
     public boolean deleteByKey(Object key, Class<?> bean, Session session) {
-        QueryBean queryBean=new QueryBean();
-        if (key == null) {
+        Delete delete=runDelete(key, bean);
+        session.execute(delete);
+        return true;
+    }
+    
+    
+	private Delete runDelete(Object key, Class<?> bean) {
+		if (key == null) {
             throw new NullPointerException("The parameter key to column family should be passed");
         }
-
-        queryBean.stringBuilder.append("DELETE FROM ");
-        queryBean.stringBuilder.append(ColumnUtil.INTANCE.getColumnFamilyName(bean)).append(" WHERE ");
+        
+        KeySpaceInformation keyInformation=ColumnUtil.INTANCE.getKeySpace(keySpace, bean);
+    	Delete delete=QueryBuilder.delete().all().from(keyInformation.getKeySpace(), keyInformation.getColumnFamily());
 
         Field keyField = ColumnUtil.INTANCE.getKeyField(bean);
         if (keyField != null) {
-            
-            queryBean.key=keyField;
-            executeSingleKey(key, session, queryBean);
+        	
+           delete.where(QueryBuilder.eq(ColumnUtil.INTANCE.getColumnName(keyField), key));  
         } else {
-            queryBean.key=ColumnUtil.INTANCE.getKeyComplexField(bean);
-            executeComplexKey(key, session, queryBean);
-            
+        	runComplexKey(bean, delete, key);
         }
-
-        return true;
-    }
+        
+        return delete;
+	}
+    
+    
+	private void runComplexKey(Class<?> bean, Delete delete, Object key) {
+		
+		for(Field subKey:ColumnUtil.INTANCE.listFields(key.getClass())){
+		  delete.where(QueryBuilder.eq(ColumnUtil.INTANCE.getColumnName(subKey), ReflectionUtil.INSTANCE.getMethod(key, subKey)));
+		}
+	}
 
         
     

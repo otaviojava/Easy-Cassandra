@@ -6,7 +6,7 @@ import com.datastax.driver.core.Session;
 
 	 public <T> void truncate(Class<T> bean, Session session){
 			StringBuilder query=new StringBuilder();
-			query.append("TRUNCATE ").append(ColumnUtil.INTANCE.getColumnFamilyName(bean)).append(";");
+			query.append("TRUNCATE ").append(ColumnUtil.INTANCE.getColumnFamilyNameSchema(bean)).append(";");
 			session.execute(query.toString());
 		}
 }
