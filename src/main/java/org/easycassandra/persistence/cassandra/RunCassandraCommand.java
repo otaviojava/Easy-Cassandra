@@ -14,9 +14,6 @@ public class RunCassandraCommand {
           return bean;
 	}
 	
-	public <T> boolean delete(T bean,Session session,String keySpace) {
-		return new DeleteQuery(keySpace).deleteByKey(bean, session);
-	}
 	
 	public <T> List<T> findAll(Class<T> bean,Session session){
 		return new FindAllQuery().listAll(bean, session);
@@ -29,19 +26,22 @@ public class RunCassandraCommand {
 	public boolean deleteByKey(Object key, Class<?> bean,Session session,String keySpace){
 		return new DeleteQuery(keySpace).deleteByKey(key, bean, session);
 	}
-	public <K, T> void delete(Iterable<K> keys, Class<T> entity,Session session,String keySpace){
-		
-		for(K key:keys){
-			deleteByKey(key, entity, session,keySpace);
-		}
+	
+	
+	public <T> boolean delete(T bean,Session session,String keySpace) {
+		return new DeleteQuery(keySpace).deleteByKey(bean, session);
 	}
 	
-	public <K> boolean deleteByKey(Iterable<K> keys, Class<?> bean,Session session,String keySpace){
-		for(K key:keys){
-		return new DeleteQuery(keySpace).deleteByKey(key, bean, session);
-		}
-		return true;
+	public <K, T> boolean deleteByKey(Iterable<K> keys, Class<T> entity,Session session,String keySpace){
+		 new DeleteQuery(keySpace).deleteByKey(keys,entity, session);
+		 return true;
 	}
+	public <T> boolean delete(Iterable<T> beans,Session session,String keySpace) {
+		return new DeleteQuery(keySpace).deleteByKey(beans, session);
+	}
+	
+	
+	
 	
 	  /**
      * Edited by Dinusha Nandika
@@ -63,12 +63,7 @@ public class RunCassandraCommand {
 		  new InsertQuery(keySpace).prepare(beans, session);
 		return true;
 	}
-	public <T> boolean delete(Iterable<T> beans,Session session,String keySpace) {
-		for(T bean:beans){
-			delete(bean,session,keySpace);
-		}
-		return true;
-	}
+	
 	public <K, T> List<T> findByKeys(Iterable<K> keys, Class<T> bean,Session session){
 		List<T> beans = new LinkedList<T>();
 

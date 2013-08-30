@@ -15,11 +15,14 @@
 package org.easycassandra.persistence.cassandra;
 
 import java.lang.reflect.Field;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.easycassandra.persistence.cassandra.ColumnUtil.KeySpaceInformation;
 import org.easycassandra.util.ReflectionUtil;
 
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.querybuilder.Batch;
 import com.datastax.driver.core.querybuilder.Delete;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 
@@ -36,22 +39,47 @@ class DeleteQuery{
 	public DeleteQuery(String keySpace){
 	  this.keySpace = keySpace;	
 	}
-    public boolean deleteByKey(Object bean, Session session) {
+    public <T> boolean deleteByKey(T bean, Session session) {
     	
-        Field key = ColumnUtil.INTANCE.getKeyField(bean.getClass());
-        if (key == null) {
-            key = ColumnUtil.INTANCE.getKeyComplexField(bean.getClass());
-        }
+        Field key = getKeyField(bean);
      
         return deleteByKey(ReflectionUtil.INSTANCE.getMethod(bean, key),bean.getClass(), session);
     }
+    
+    public <T> boolean deleteByKey(Iterable<T> beans, Session session) {
+    	
+    	List<Object> keys=new LinkedList<Object>();
+    	Class<?> beanClass=null;
+    	for(T bean:beans){
+    		
+    		if(beanClass == null){
+    			beanClass=bean.getClass();
+    		}
+    		
+    	}
+    	deleteByKey(keys, beanClass, session);
+    	return true;
+    }
 
-    public boolean deleteByKey(Object key, Class<?> bean, Session session) {
+    public <K> boolean deleteByKey(K key, Class<?> bean, Session session) {
         Delete delete=runDelete(key, bean);
         session.execute(delete);
         return true;
     }
     
+    public <K> boolean deleteByKey(Iterable<K> keys, Class<?> bean, Session session) {
+    	
+    	Batch batch= null;
+    	for(K key:keys){
+    		if(batch ==null){
+    			QueryBuilder.batch(runDelete(key, bean));
+    		}else{
+    			batch.add(batch);
+    		}
+    	}
+        session.execute(batch);
+        return true;
+    }
     
 	private Delete runDelete(Object key, Class<?> bean) {
 		if (key == null) {
@@ -80,6 +108,13 @@ class DeleteQuery{
 		}
 	}
 
+	private <T> Field getKeyField(T bean) {
+		Field key = ColumnUtil.INTANCE.getKeyField(bean.getClass());
+        if (key == null) {
+            key = ColumnUtil.INTANCE.getKeyComplexField(bean.getClass());
+        }
+		return key;
+	}
         
     
 }
