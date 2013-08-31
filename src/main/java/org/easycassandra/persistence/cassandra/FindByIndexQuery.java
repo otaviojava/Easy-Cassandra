@@ -16,6 +16,8 @@ package org.easycassandra.persistence.cassandra;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import org.easycassandra.IndexProblemException;
+
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Session;
 
@@ -27,29 +29,23 @@ import com.datastax.driver.core.Session;
  */
 class FindByIndexQuery extends FindByKeyQuery {
 
-	public <T> List<T> findByIndex(Object key, Class<T> bean, Session session) {
+	public FindByIndexQuery(String keySpace) {
+		super(keySpace);
+	}
+
+	public <T,I> List<T> findByIndex(I index, Class<T> bean, Session session) {
 		Field field=ColumnUtil.INTANCE.getIndexField(bean);
 		if(field==null){
 			StringBuffer erro=new StringBuffer();
 			erro.append("No found some field with @org.easycassandra.Index within ");
 			erro.append(bean.getName()).append(" class.");
-			throw new IndexOutOfBoundsException(erro.toString());
+			throw new IndexProblemException(erro.toString());
 		}
-		return findByIndex(field.getName(),key, bean, session);
+		return findByIndex(field.getName(),index, bean, session);
 	}
 	
-    public <T> List<T> findByIndex(String indexName, Object key, Class<T> bean, Session session) {
-   	 	/**
-         * Edited by Dinusha Nandika
-         * Add indexName parameter 
-         */
-    	QueryBean byKeyBean = new QueryBean();
-
-        byKeyBean.stringBuilder.append("select ");
-        byKeyBean = prepare(byKeyBean, bean);
-        byKeyBean.stringBuilder.deleteCharAt(byKeyBean.stringBuilder.length() - 1);
-        byKeyBean.stringBuilder.append(" from ");
-        byKeyBean.stringBuilder.append(ColumnUtil.INTANCE.getColumnFamilyNameSchema(bean));
+    public <T,I> List<T> findByIndex(String indexName, I key, Class<T> bean, Session session) {
+    	QueryBean byKeyBean = createQueryBean(bean);
         return executeConditions(indexName,key, bean, session, byKeyBean);
     }
 
@@ -59,14 +55,18 @@ class FindByIndexQuery extends FindByKeyQuery {
          * Edited by Dinusha Nandika
          * Add indexName parameter 
          */
-    	byKeyBean.key = ColumnUtil.INTANCE.getIndexField(bean);
-        if (byKeyBean.key == null) {
-            StringBuilder erro = new StringBuilder();
-            erro.append("Some field in a class ").append(bean.getName());
-            erro.append(" should be a annotation: @org.easycassandra.annotations.Index ");
-            throw new NullPointerException(erro.toString());
-        }
+    	byKeyBean.key = ColumnUtil.INTANCE.getFieldByColumnName(indexName,bean);
+        checkIndexProblem(bean, byKeyBean);
         ResultSet resultSet = executeQuery(key, bean, session, byKeyBean);
         return RecoveryObject.INTANCE.recoverObjet(bean, resultSet);
     }
+
+	private <T> void checkIndexProblem(Class<T> bean, QueryBean byKeyBean) {
+		if (byKeyBean.key == null) {
+            StringBuilder erro = new StringBuilder();
+            erro.append("Some field in a class ").append(bean.getName());
+            erro.append(" should be a annotation: @org.easycassandra.annotations.Index ");
+            throw new IndexProblemException(erro.toString());
+        }
+	}
 }

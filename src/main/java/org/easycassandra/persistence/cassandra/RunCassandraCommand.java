@@ -15,12 +15,12 @@ public class RunCassandraCommand {
 	}
 	
 	
-	public <T> List<T> findAll(Class<T> bean,Session session){
-		return new FindAllQuery().listAll(bean, session);
+	public <T> List<T> findAll(Class<T> bean,Session session,String keySpace){
+		return new FindAllQuery(keySpace).listAll(bean, session);
 	}
 	
-	public <T> T findByKey(Object key, Class<T> bean,Session session){
-		return new FindByKeyQuery().findByKey(key, bean, session);
+	public <T> T findByKey(Object key, Class<T> bean,Session session,String keySpace){
+		return new FindByKeyQuery(keySpace).findByKey(key, bean, session);
 	}
 	
 	public boolean deleteByKey(Object key, Class<?> bean,Session session,String keySpace){
@@ -47,12 +47,12 @@ public class RunCassandraCommand {
      * Edited by Dinusha Nandika
      * Add indexName parameter 
      */
-	public <T> List<T> findByIndex(String indexName,Object index, Class<T> bean,Session session){
-		return new FindByIndexQuery().findByIndex(indexName,index, bean, session);
+	public <T> List<T> findByIndex(String indexName,Object index, Class<T> bean,Session session,String keySpace){
+		return new FindByIndexQuery(keySpace).findByIndex(indexName,index, bean, session);
 	}
 	
-	public <T> List<T> findByIndex(Object index, Class<T> bean,Session session){
-		return new FindByIndexQuery().findByIndex(index, bean, session);
+	public <T> List<T> findByIndex(Object index, Class<T> bean,Session session,String keySpace){
+		return new FindByIndexQuery(keySpace).findByIndex(index, bean, session);
 	}
 	
 	public <T> Long count(Class<T> bean,Session session){
@@ -64,11 +64,11 @@ public class RunCassandraCommand {
 		return true;
 	}
 	
-	public <K, T> List<T> findByKeys(Iterable<K> keys, Class<T> bean,Session session){
+	public <K, T> List<T> findByKeys(Iterable<K> keys, Class<T> bean,Session session,String keySpace){
 		List<T> beans = new LinkedList<T>();
 
 		for (K key : keys) {
-			T entity = findByKey(key, bean, session);
+			T entity = findByKey(key, bean, session,keySpace);
 			if (entity != null) {
 				beans.add(entity);
 			}

@@ -15,10 +15,14 @@
 package org.easycassandra.persistence.cassandra;
 
 import java.lang.reflect.Field;
+import java.util.LinkedList;
 import java.util.List;
 
-import com.datastax.driver.core.ResultSet;
+import org.easycassandra.persistence.cassandra.ColumnUtil.KeySpaceInformation;
+
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.querybuilder.QueryBuilder;
+import com.datastax.driver.core.querybuilder.Select;
 
 /**
  * Mount and run the query to returns all data from column family
@@ -28,24 +32,26 @@ import com.datastax.driver.core.Session;
  */
 public class FindAllQuery {
 
+	
+	private String keySpace;
+	
+	public FindAllQuery(String keySpace){
+		this.keySpace = keySpace;
+	}
+	
     public <T> List<T> listAll(Class<T> bean, Session session) {
-        QueryBean byKeyBean = new QueryBean();
-
-        byKeyBean.stringBuilder.append("select ");
-        byKeyBean = prepare(byKeyBean, bean);
-        byKeyBean.stringBuilder.deleteCharAt(byKeyBean.stringBuilder.length() - 1);
-        byKeyBean.stringBuilder.append(" from ");
-        byKeyBean.stringBuilder.append(ColumnUtil.INTANCE.getColumnFamilyNameSchema(bean));
-
-        return executeConditions(bean, session, byKeyBean);
+    	
+    	
+        QueryBean byKeyBean = createQueryBean(bean);
+    	return RecoveryObject.INTANCE.recoverObjet(bean, session.execute(byKeyBean.select));
     }
 
-    private <T> List<T> executeConditions(Class<T> bean, Session session,
-            QueryBean queryBean) {
-        queryBean.stringBuilder.append(";");
-        ResultSet resultSet = session.execute(queryBean.stringBuilder.toString());
-        return RecoveryObject.INTANCE.recoverObjet(bean, resultSet);
-    }
+	protected <T> QueryBean createQueryBean(Class<T> bean) {
+		QueryBean byKeyBean = prepare(new QueryBean(), bean);
+        KeySpaceInformation key=ColumnUtil.INTANCE.getKeySpace(keySpace, bean);
+        byKeyBean.select=QueryBuilder.select(byKeyBean.getArray()).from(key.getKeySpace(), key.getColumnFamily());
+		return byKeyBean;
+	}
 
     protected QueryBean prepare(QueryBean byKeyBean, Class<?> class1) {
         List<Field> fields = ColumnUtil.INTANCE.listFields(class1);
@@ -63,9 +69,8 @@ public class FindAllQuery {
             else if (ColumnUtil.INTANCE.isIdField(field)) {
                 byKeyBean.key = field;
             }
-            String columnName = ColumnUtil.INTANCE.getColumnName(field);
-
-            byKeyBean.stringBuilder.append(columnName).append(" ,");
+            byKeyBean.columns.add(ColumnUtil.INTANCE.getColumnName(field));
+            
 
         }
         return byKeyBean;
@@ -73,6 +78,11 @@ public class FindAllQuery {
 
     protected class QueryBean {
         protected Field key;
-        protected StringBuilder stringBuilder = new StringBuilder();
+        protected List<String> columns = new LinkedList<String>();
+        protected Select select;
+        
+        String[] getArray(){
+        	return columns.toArray(new String[0]);
+        }
     }
 }

@@ -66,12 +66,12 @@ public class PersistenceSimpleImpl implements Persistence {
 
     @Override
     public <T> List<T> findAll(Class<T> bean) {
-        return command.findAll(bean, session);
+        return command.findAll(bean, session,keySpace);
     }
 
     @Override
     public <K,T> T findByKey(K key, Class<T> bean) {
-        return command.findByKey(key, bean, session);
+        return command.findByKey(key, bean, session,keySpace);
     }
 
     @Override
@@ -92,13 +92,13 @@ public class PersistenceSimpleImpl implements Persistence {
     @Override
     public <T,I> List<T> findByIndex(String indexName, I index, Class<T> bean) {
 
-        return command.findByIndex(indexName,index, bean, session);
+        return command.findByIndex(indexName,index, bean, session,keySpace);
     }
     
 	@Override
 	public <T, I> List<T> findByIndex(I index, Class<T> bean) {
 		
-		return command.findByIndex(index, bean, session);
+		return command.findByIndex(index, bean, session,keySpace);
 	}
 
     @Override
@@ -124,7 +124,7 @@ public class PersistenceSimpleImpl implements Persistence {
 
 	@Override
 	public <K, T> List<T> findByKeys(Iterable<K> keys, Class<T> bean) {
-		return command.findAll(bean, session);
+		return command.findAll(bean, session,keySpace);
 	}
 
 	@Override

@@ -100,22 +100,22 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
 
 	@Override
 	public <T, K> T findOne(K key, Class<T> entity) {
-		return command.findByKey(key, entity, session);
+		return command.findByKey(key, entity, session,keySpace);
 	}
 
 	@Override
 	public <T, K> List<T> findAll(Iterable<K> keys, Class<T> entity) {
-		return command.findByKeys(keys, entity, session);
+		return command.findByKeys(keys, entity, session,keySpace);
 	}
 
 	@Override
 	public <T> List<T> findAll(Class<T> entity) {
-		return command.findAll(entity, session);
+		return command.findAll(entity, session,keySpace);
 	}
 
 	@Override
 	public <T,I> List<T> findByIndex(String indexName,I index,Class<T> entity) {
-		return command.findByIndex(indexName,index, entity, session);
+		return command.findByIndex(indexName,index, entity, session,keySpace);
 	}
 
 	@Override

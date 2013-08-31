@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -407,29 +406,17 @@ public enum ColumnUtil {
     * @return
     */
 	public Field getFieldByColumnName(String columnName, Class<?> class1) {
-
-		Field field = null;
-		try {
-			field = class1.getField(columnName);
-		} catch (Exception exception) {
-			StringBuffer erro=new StringBuffer();
-			erro.append("No such column name ").append(columnName);
-			erro.append(" in ").append(class1.getSimpleName());
-			erro.append(" class. ");
-			Logger.getLogger(ColumnUtil.class.getName()).severe(erro.toString()+" "+exception.getMessage());
-			throw new IndexProblemException(erro.toString());
-			
+		
+		for(Field index:getIndexFields(class1)){
+			if(index.getName().equals(columnName)){
+				return index;
+			}
 		}
-		if(field.getAnnotation(Index.class) == null){
-			StringBuffer erro=new StringBuffer();
-			erro.append("The field ").append(columnName);
-			erro.append(" should have annoted with @org.easycassandra.Index");
-			erro.append(" whithin ").append(class1.getSimpleName());
-			erro.append(" class.");
-			throw new IndexProblemException(erro.toString());
-			
-		}
-		return field;
+		
+		StringBuilder erro=new StringBuilder();
+		erro.append("Not found index on ").append(class1.getName());
+		erro.append(" with name ").append(columnName);
+	    throw new IndexProblemException(erro.toString()); 
 	}
     
 	

@@ -15,16 +15,14 @@
 package org.easycassandra.persistence.cassandra;
 
 import java.lang.reflect.Field;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.easycassandra.KeyProblemsException;
 import org.easycassandra.util.ReflectionUtil;
 
-import com.datastax.driver.core.BoundStatement;
-import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.querybuilder.QueryBuilder;
 
 /**
  * Class to execute query for find by id
@@ -34,14 +32,13 @@ import com.datastax.driver.core.Session;
  */
 class FindByKeyQuery extends FindAllQuery {
 
-    public <T> T findByKey(Object key, Class<T> bean, Session session) {
-        QueryBean byKeyBean = new QueryBean();
+    public FindByKeyQuery(String keySpace) {
+		super(keySpace);
+	}
 
-        byKeyBean.stringBuilder.append("select ");
-        byKeyBean = prepare(byKeyBean, bean);
-        byKeyBean.stringBuilder.deleteCharAt(byKeyBean.stringBuilder.length() - 1);
-        byKeyBean.stringBuilder.append(" from ");
-        byKeyBean.stringBuilder.append(ColumnUtil.INTANCE.getColumnFamilyNameSchema(bean));
+	public <T> T findByKey(Object key, Class<T> bean, Session session) {
+    	QueryBean byKeyBean = createQueryBean(bean);
+    	
         return executeConditions(key, bean, session, byKeyBean);
     }
 
@@ -68,25 +65,22 @@ class FindByKeyQuery extends FindAllQuery {
      */
     protected ResultSet executeQuery(Object key, Class<?> bean,Session session, QueryBean byKeyBean) {
 
-        byKeyBean.stringBuilder.append(" where ");
-
         if (!key.getClass().equals(byKeyBean.key.getType())) {
-            StringBuilder erro = new StringBuilder();
-            erro.append("The parameter key should be the same type of the key of column family, the type passed was ");
-            erro.append(key.getClass().getName()).append(" and was expected ").append(byKeyBean.key.getType().getName());
-            throw new KeyProblemsException(erro.toString());
+            createKeyProblemMensage(key, byKeyBean);
         }
-        if (ColumnUtil.INTANCE.isIdField(byKeyBean.key)) {
-            return executeSingleKey(key, session, byKeyBean);
-        } else if (ColumnUtil.INTANCE.isEmbeddedIdField(byKeyBean.key)) {
-            
-            return executeComplexKey(key, session, byKeyBean);
-        } else if (ColumnUtil.INTANCE.isIndexField(byKeyBean.key)) {
-            return executeSingleKey(key, session, byKeyBean);
+        if (ColumnUtil.INTANCE.isEmbeddedIdField(byKeyBean.key)) {
+        	return executeComplexKey(key, session, byKeyBean);
+        } else{
+        	return executeSingleKey(key, session, byKeyBean); 
         }
-
-        return null;
     }
+
+	private void createKeyProblemMensage(Object key, QueryBean byKeyBean) {
+		StringBuilder erro = new StringBuilder();
+		erro.append("The parameter key should be the same type of the key of column family, the type passed was ");
+		erro.append(key.getClass().getName()).append(" and was expected ").append(byKeyBean.key.getType().getName());
+		throw new KeyProblemsException(erro.toString());
+	}
 
     /**
      * query with just one key in column family
@@ -97,12 +91,8 @@ class FindByKeyQuery extends FindAllQuery {
      * @return
      */
     protected ResultSet executeSingleKey(Object key, Session session, QueryBean byKeyBean) {
-        
-        byKeyBean.stringBuilder.append(ColumnUtil.INTANCE.getColumnName(byKeyBean.key));
-        byKeyBean.stringBuilder.append("= ? ;");
-        PreparedStatement statement = session.prepare(byKeyBean.stringBuilder.toString());
-        BoundStatement boundStatement = new BoundStatement(statement);
-        return session.execute(boundStatement.bind(new Object[] { key }));
+        byKeyBean.select.where(QueryBuilder.eq(ColumnUtil.INTANCE.getColumnName(byKeyBean.key), key));
+        return session.execute(byKeyBean.select);
 
     }
 
@@ -115,21 +105,10 @@ class FindByKeyQuery extends FindAllQuery {
      * @return
      */
     protected ResultSet executeComplexKey(Object key, Session session, QueryBean byKeyBean) {
-        List<Object> objects=new LinkedList<Object>();
-        int count=0;
         for(Field complexKey:ColumnUtil.INTANCE.listFields(key.getClass())){
-            if(count++ >0){
-                byKeyBean.stringBuilder.append(" AND ");    
-            }
-            
-            byKeyBean.stringBuilder.append(ColumnUtil.INTANCE.getColumnName(complexKey));
-            byKeyBean.stringBuilder.append("= ? ");
-            objects.add(ReflectionUtil.INSTANCE.getMethod(key, complexKey));
+        	 byKeyBean.select.where(QueryBuilder.eq(ColumnUtil.INTANCE.getColumnName(complexKey), ReflectionUtil.INSTANCE.getMethod(key, complexKey)));
         }
-        byKeyBean.stringBuilder.append(";");
-        PreparedStatement statement = session.prepare(byKeyBean.stringBuilder.toString());
-        BoundStatement boundStatement = new BoundStatement(statement);
-        return session.execute(boundStatement.bind(objects.toArray()));
+        return session.execute(byKeyBean.select);
 
     }
 }
