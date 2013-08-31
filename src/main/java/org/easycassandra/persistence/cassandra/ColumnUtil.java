@@ -22,7 +22,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -32,6 +31,7 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Table;
 import javax.persistence.Version;
+import javax.xml.crypto.dsig.keyinfo.KeyValue;
 
 import org.easycassandra.CustomData;
 import org.easycassandra.Index;
@@ -211,7 +211,7 @@ public enum ColumnUtil {
         for (Field field : object.getDeclaredFields()) {
             if (field.getAnnotation(annotation) != null) {
                 return field;
-            } else if (field.getAnnotation(Embeddable.class) != null) {
+            } else if (field.getAnnotation(Embedded.class) != null) {
                 return getField(field.getType(), annotation);
             }
         }
