@@ -190,8 +190,8 @@ public enum ColumnUtil {
     	  for (Field field : persistenceClass.getDeclaredFields()) {
               if (field.getAnnotation(Index.class) != null) {
                   indexFieldList.add(field);
-              } else if (field.getAnnotation(Embeddable.class) != null) {
-            	  indexFieldList.add( getField(field.getType(), Index.class));
+              } else if (field.getAnnotation(Embedded.class) != null) {
+            	  indexFieldList.addAll(getIndexFields(field.getType()));
               }
           }
           return indexFieldList;
