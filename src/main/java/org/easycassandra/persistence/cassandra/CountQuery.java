@@ -13,8 +13,12 @@
  */
 package org.easycassandra.persistence.cassandra;
 
+import org.easycassandra.persistence.cassandra.ColumnUtil.KeySpaceInformation;
+
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.querybuilder.QueryBuilder;
+import com.datastax.driver.core.querybuilder.Select;
 
 /**
  * Class to mount and execute a query to return the number of column in a family
@@ -25,6 +29,11 @@ import com.datastax.driver.core.Session;
  */
 class CountQuery {
 
+	private String keySpace;
+	
+	public CountQuery(String keySpace) {
+		this.keySpace = keySpace;
+	}
     /**
      * return the number of row in a column family
      * 
@@ -34,10 +43,9 @@ class CountQuery {
      * @return number of register in a column family
      */
     public Long count(Class<?> bean, Session session) {
-        StringBuilder countQuery = new StringBuilder();
-        countQuery.append("SELECT COUNT(*) FROM ");
-        countQuery.append(ColumnUtil.INTANCE.getColumnFamilyNameSchema(bean)).append(";");
-        ResultSet resultSet = session.execute(countQuery.toString());
+    	KeySpaceInformation key=ColumnUtil.INTANCE.getKeySpace(keySpace, bean);
+    	Select select =QueryBuilder.select().countAll().from(key.getKeySpace(), key.getColumnFamily());
+        ResultSet resultSet = session.execute(select);
         return resultSet.all().get(0).getLong(0);
     }
 }

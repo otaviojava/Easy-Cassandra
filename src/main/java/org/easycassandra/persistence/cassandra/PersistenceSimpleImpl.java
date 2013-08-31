@@ -103,7 +103,7 @@ public class PersistenceSimpleImpl implements Persistence {
 
     @Override
     public <T> Long count(Class<T> bean) {
-        return command.count(bean, session);
+        return command.count(bean, session,keySpace);
     }
 
 	@Override

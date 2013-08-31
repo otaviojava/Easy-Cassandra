@@ -55,8 +55,8 @@ public class RunCassandraCommand {
 		return new FindByIndexQuery(keySpace).findByIndex(index, bean, session);
 	}
 	
-	public <T> Long count(Class<T> bean,Session session){
-		return new CountQuery().count(bean, session);
+	public <T> Long count(Class<T> bean,Session session,String keySpace){
+		return new CountQuery(keySpace).count(bean, session);
 	}
 	
 	public <T> boolean insert(Iterable<T> beans,Session session,String keySpace){

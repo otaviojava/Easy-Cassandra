@@ -14,24 +14,11 @@ import org.junit.Test;
 public class ColumnUtilTest {
 	
 	@Test
-	public void getColumnFamilyNameTest(){
-		
-		
-		Assert.assertEquals("person", ColumnUtil.INTANCE.getColumnFamilyName(Person.class));
-	}
-	@Test
 	public void getColumnFamilyNameByTableTest(){
 		
-		
-		Assert.assertEquals("schemaA.drink", ColumnUtil.INTANCE.getColumnFamilyName(Drink.class));
+		Assert.assertEquals("schemaA.drink", ColumnUtil.INTANCE.getColumnFamilyNameSchema(Drink.class));
 	}
 	
-	@Test
-	public void getColumnFamilyNameWithDefaultTest(){
-		
-		
-		Assert.assertEquals("Animal", ColumnUtil.INTANCE.getColumnFamilyName(Animal.class));
-	}
 	
 	@Test
 	public void getColumnNameTest() {

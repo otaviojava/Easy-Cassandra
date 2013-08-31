@@ -131,7 +131,7 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
 
 	@Override
 	public <T>long count(Class<T> entity){
-		return command.count(entity, session);
+		return command.count(entity, session,keySpace);
 	}
 
 	
