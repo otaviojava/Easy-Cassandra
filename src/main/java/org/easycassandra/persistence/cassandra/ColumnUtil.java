@@ -32,7 +32,6 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Table;
 import javax.persistence.Version;
-import javax.xml.crypto.dsig.keyinfo.KeyValue;
 
 import org.easycassandra.CustomData;
 import org.easycassandra.Index;
@@ -90,11 +89,9 @@ public enum ColumnUtil {
 		Entity columnFamily = (Entity) object.getAnnotation(Entity.class);
         Table columnFamilyTable = (Table) object.getAnnotation(Table.class);
         if (columnFamily != null) {
-            String columnName = columnFamily.name().equals("") ? object.getSimpleName() : columnFamily.name();
-            return columnName;
+            return columnFamily.name().equals("") ? object.getSimpleName() : columnFamily.name();
         } else if (columnFamilyTable != null) {
-            String columnName = columnFamilyTable.name().equals("") ? object.getSimpleName() : columnFamilyTable.name();
-            return columnName;
+            return columnFamilyTable.name().equals("") ? object.getSimpleName() : columnFamilyTable.name();
         }
         return object.getSimpleName();
 	}
@@ -423,7 +420,7 @@ public enum ColumnUtil {
 	public KeySpaceInformation getKeySpace(String keySpace,Class<?> bean){
 		String keySchema=getSchema(bean);
 		KeySpaceInformation key=new KeySpaceInformation();
-		key.keySpace=keySchema== ""?keySpace:keySchema;
+		key.keySpace="".equals(keySchema)?keySpace:keySchema;
 		key.columnFamily=getColumnFamily(bean);
 	   return key ;	
 	}

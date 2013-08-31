@@ -5,7 +5,7 @@ import java.lang.reflect.ParameterizedType;
 
 import org.springframework.data.repository.CrudRepository;
 
-public abstract class CassandraRepository<T,ID extends Serializable> implements CrudRepository<T, ID> {
+public abstract class CassandraRepository<T,K extends Serializable> implements CrudRepository<T, K> {
 
 	protected abstract CassandraTemplate getCassandraTemplate();
 	
@@ -22,12 +22,12 @@ public abstract class CassandraRepository<T,ID extends Serializable> implements 
 	}
 
 	@Override
-	public T findOne(ID id) {
+	public T findOne(K id) {
 		return getCassandraTemplate().findOne(id, beanClass);
 	}
 
 	@Override
-	public boolean exists(ID id) {
+	public boolean exists(K id) {
 		
 		return findOne(id) != null;
 	}
@@ -38,7 +38,7 @@ public abstract class CassandraRepository<T,ID extends Serializable> implements 
 	}
 
 	@Override
-	public Iterable<T> findAll(Iterable<ID> ids) {
+	public Iterable<T> findAll(Iterable<K> ids) {
 		return getCassandraTemplate().findAll(ids, beanClass);
 	}
 
@@ -48,7 +48,7 @@ public abstract class CassandraRepository<T,ID extends Serializable> implements 
 	}
 
 	@Override
-	public void delete(ID id) {
+	public void delete(K id) {
 		getCassandraTemplate().delete(id, beanClass);
 	}
 

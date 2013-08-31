@@ -51,7 +51,7 @@ public interface Customizable {
 	 * @author osantana
 	 *
 	 */
-	public class DefaultCustmomizable implements Customizable{
+	 class DefaultCustmomizable implements Customizable{
 
 		public ByteBuffer read(Object object) {
 			

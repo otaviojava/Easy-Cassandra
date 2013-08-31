@@ -20,6 +20,7 @@ import java.util.List;
 import org.easycassandra.KeyProblemsException;
 import org.easycassandra.util.ReflectionUtil;
 
+import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
@@ -36,8 +37,8 @@ class FindByKeyQuery extends FindAllQuery {
 		super(keySpace);
 	}
 
-	public <T> T findByKey(Object key, Class<T> bean, Session session) {
-    	QueryBean byKeyBean = createQueryBean(bean);
+	public <T> T findByKey(Object key, Class<T> bean, Session session,ConsistencyLevel consistency) {
+    	QueryBean byKeyBean = createQueryBean(bean,consistency);
     	
         return executeConditions(key, bean, session, byKeyBean);
     }

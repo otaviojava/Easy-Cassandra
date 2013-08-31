@@ -22,6 +22,7 @@ import org.easycassandra.persistence.cassandra.ColumnUtil.KeySpaceInformation;
 import org.easycassandra.persistence.cassandra.InsertColumnUtil.InsertColumn;
 import org.easycassandra.util.ReflectionUtil;
 
+import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.querybuilder.Batch;
@@ -42,20 +43,20 @@ class InsertQuery {
 		this.keySpace = keySpace;
 	}
 	
-    public <T> boolean prepare(T bean, Session session) {
+    public <T> boolean prepare(T bean, Session session,ConsistencyLevel consistency) {
     	
-        session.execute(createStatment(bean, session));
+        session.execute(createStatment(bean,consistency));
         return true;
     }
-    public <T> boolean prepare(Iterable<T> beans, Session session) {
+    public <T> boolean prepare(Iterable<T> beans, Session session,ConsistencyLevel consistency) {
     	
     	Batch batch = null;
     	
     	for(T bean:beans){
     		if(batch == null){
-    	 	 batch=QueryBuilder.batch(createStatment(bean, session));
+    	 	 batch=QueryBuilder.batch(createStatment(bean,consistency));
     	 	}else{
-    	 		batch.add(createStatment(bean, session));
+    	 		batch.add(createStatment(bean,consistency));
     	 	}
     	}
     	session.execute(batch);
@@ -63,12 +64,12 @@ class InsertQuery {
     }
     
     
-	private <T> Statement createStatment(T bean, Session session) {
+	private <T> Statement createStatment(T bean, ConsistencyLevel consistency) {
 		isKeyNull(bean);
 		KeySpaceInformation key=ColumnUtil.INTANCE.getKeySpace(keySpace, bean.getClass());
         Insert insert=QueryBuilder.insertInto(key.getKeySpace(), key.getColumnFamily());
         insert=createInsert(bean, insert);
-        
+        insert.setConsistencyLevel(consistency);
        return insert;
 	}
 

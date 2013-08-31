@@ -43,7 +43,7 @@ class FixKeySpace {
      * @param session
      *            - session of Cassandra
      */
-    public void verifyKeySpace(String keySpace, Session session) {
+    public final void verifyKeySpace(String keySpace, Session session) {
         verifyKeySpace(keySpace, session, DEFAULT_REPLICA_STRATEGY, DEFAULT_REPLICATION_FACTOR);
     }
 

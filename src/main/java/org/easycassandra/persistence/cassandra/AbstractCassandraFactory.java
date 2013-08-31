@@ -98,7 +98,7 @@ class AbstractCassandraFactory implements CassandraFactory{
 	/**
 	 * init the default connection
 	 */
-    private void initConection(){
+    private  void initConection(){
     	 cluter = Cluster.builder().withPort(port).addContactPoints(hostDefault).build();
     	 new FixKeySpace().verifyKeySpace(keySpaceDefault, getSession());
     }

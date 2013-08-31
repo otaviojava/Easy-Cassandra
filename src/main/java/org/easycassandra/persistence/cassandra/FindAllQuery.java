@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.easycassandra.persistence.cassandra.ColumnUtil.KeySpaceInformation;
 
+import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.core.querybuilder.Select;
@@ -39,17 +40,17 @@ public class FindAllQuery {
 		this.keySpace = keySpace;
 	}
 	
-    public <T> List<T> listAll(Class<T> bean, Session session) {
+    public <T> List<T> listAll(Class<T> bean, Session session,ConsistencyLevel consistency) {
     	
-    	
-        QueryBean byKeyBean = createQueryBean(bean);
+        QueryBean byKeyBean = createQueryBean(bean,consistency);
     	return RecoveryObject.INTANCE.recoverObjet(bean, session.execute(byKeyBean.select));
     }
 
-	protected <T> QueryBean createQueryBean(Class<T> bean) {
+	protected <T> QueryBean createQueryBean(Class<T> bean,ConsistencyLevel consistency) {
 		QueryBean byKeyBean = prepare(new QueryBean(), bean);
         KeySpaceInformation key=ColumnUtil.INTANCE.getKeySpace(keySpace, bean);
         byKeyBean.select=QueryBuilder.select(byKeyBean.getArray()).from(key.getKeySpace(), key.getColumnFamily());
+        byKeyBean.select.setConsistencyLevel(consistency);
 		return byKeyBean;
 	}
 

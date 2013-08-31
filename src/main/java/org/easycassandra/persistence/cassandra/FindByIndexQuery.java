@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.easycassandra.IndexProblemException;
 
+import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Session;
 
@@ -33,19 +34,23 @@ class FindByIndexQuery extends FindByKeyQuery {
 		super(keySpace);
 	}
 
-	public <T,I> List<T> findByIndex(I index, Class<T> bean, Session session) {
+	public <T,I> List<T> findByIndex(I index, Class<T> bean, Session session,ConsistencyLevel consistency) {
 		Field field=ColumnUtil.INTANCE.getIndexField(bean);
+		checkFieldNull(bean, field);
+		return findByIndex(field.getName(),index, bean, session,consistency);
+	}
+
+	private <T> void checkFieldNull(Class<T> bean, Field field) {
 		if(field==null){
 			StringBuffer erro=new StringBuffer();
 			erro.append("No found some field with @org.easycassandra.Index within ");
 			erro.append(bean.getName()).append(" class.");
 			throw new IndexProblemException(erro.toString());
 		}
-		return findByIndex(field.getName(),index, bean, session);
 	}
 	
-    public <T,I> List<T> findByIndex(String indexName, I key, Class<T> bean, Session session) {
-    	QueryBean byKeyBean = createQueryBean(bean);
+    public <T,I> List<T> findByIndex(String indexName, I key, Class<T> bean, Session session,ConsistencyLevel consistency) {
+    	QueryBean byKeyBean = createQueryBean(bean,consistency);
         return executeConditions(indexName,key, bean, session, byKeyBean);
     }
 

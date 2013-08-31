@@ -16,6 +16,7 @@ package org.easycassandra.persistence.cassandra;
 
 import java.util.List;
 
+import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.Session;
 
 /**
@@ -136,6 +137,77 @@ public class PersistenceSimpleImpl implements Persistence {
 	 private void setSession(){
 	    	session.execute("use "+keySpace);
 	    }
+
+	@Override
+	public <T> boolean insert(T bean, ConsistencyLevel consistency) {
+		command.insert(bean, session, keySpace,consistency);
+		return true;
+	}
+
+	@Override
+	public <T> boolean insert(Iterable<T> beans, ConsistencyLevel consistency) {
+		command.insert(beans, session, keySpace,consistency);
+		return true;
+	}
+
+	@Override
+	public <T> boolean delete(T bean, ConsistencyLevel consistency) {
+		command.delete(bean, session, keySpace,consistency);
+		return false;
+	}
+
+	@Override
+	public <T> boolean delete(Iterable<T> beans, ConsistencyLevel consistency) {
+		command.delete(beans, session, keySpace,consistency);
+		return false;
+	}
+
+	@Override
+	public <T> boolean update(T bean, ConsistencyLevel consistency) {
+		return insert(bean, consistency);
+	}
+
+	@Override
+	public <T> boolean update(Iterable<T> beans, ConsistencyLevel consistency) {
+
+		return insert(beans, consistency);
+	}
+
+	@Override
+	public <T> List<T> findAll(Class<T> bean, ConsistencyLevel consistency) {
+		return command.findAll(bean, session, keySpace,consistency);
+	}
+
+	@Override
+	public <K, T> List<T> findByKeys(Iterable<K> keys, Class<T> bean,ConsistencyLevel consistency) {
+		return command.findByKeys(keys, bean, session, keySpace, consistency);
+	}
+
+	@Override
+	public <K, T> T findByKey(K key, Class<T> bean, ConsistencyLevel consistency) {
+		return command.findByKey(key, bean, session, keySpace, consistency);
+	}
+
+	@Override
+	public <K, T> boolean deleteByKey(K key, Class<T> bean,	ConsistencyLevel consistency) {
+		return command.deleteByKey(key, bean, session, keySpace,consistency);
+	}
+
+	@Override
+	public <T, I> List<T> findByIndex(String indexName, I index, Class<T> bean,ConsistencyLevel consistency) {
+		return command.findByIndex(index, bean, session, indexName, consistency);
+	}
+
+	@Override
+	public <T, I> List<T> findByIndex(I index, Class<T> bean,ConsistencyLevel consistency) {
+
+		return command.findByIndex(index, bean, session, keySpace, consistency);
+	}
+
+	@Override
+	public <T> Long count(Class<T> bean, ConsistencyLevel consistency) {
+		return command.count(bean, session, keySpace, consistency);
+	}
 
 
 
