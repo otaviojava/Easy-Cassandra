@@ -10,14 +10,14 @@ public class PersistenceDao<T,K> {
 
     private Persistence persistence;
     private Class<T> baseClass;
-    private static EasyCassandraManager easyCassandraManager=new EasyCassandraManager(Constants.HOST,Constants.KEY_SPACE); 
+    private static EasyCassandraManager easyCassandraManager=new EasyCassandraManager(Constants.HOST,Constants.KEY_SPACE);
 
     public PersistenceDao(Class<T> baseClass) {
         this.baseClass = baseClass;
-        
+
         persistence = easyCassandraManager.getPersistence(Constants.HOST, Constants.KEY_SPACE);
         easyCassandraManager.addFamilyObject(baseClass, Constants.KEY_SPACE);
-        
+
     }
 
     public boolean insert(T bean) {
@@ -37,7 +37,7 @@ public class PersistenceDao<T,K> {
     }
 
     public T retrieve(Object id) {
-    	
+
         return   persistence.findByKey(id, baseClass);
     }
 
@@ -47,6 +47,16 @@ public class PersistenceDao<T,K> {
 
     public List<T> listByIndex(String indexName,Object index) {
         return persistence.findByIndex(indexName,index, baseClass);
+    }
+
+    /**
+     * Find by key and annotated index
+     *
+     * @author Nenita Casuga
+     * Date 10/30/2013
+     */
+    public List<T> listByKeyAndIndex(Object id, Object index) {
+        return persistence.findByKeyAndIndex(id, index, baseClass);
     }
 
     public Long count() {

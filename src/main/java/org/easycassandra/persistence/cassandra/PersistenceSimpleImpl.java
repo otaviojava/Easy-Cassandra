@@ -21,9 +21,9 @@ import com.datastax.driver.core.Session;
 
 /**
  * Class to persist information in cassandra database
- * 
+ *
  * @author otaviojava
- * 
+ *
  */
 public class PersistenceSimpleImpl implements Persistence {
 
@@ -32,7 +32,7 @@ public class PersistenceSimpleImpl implements Persistence {
      * when don't define the persistence will use it as keyspace
      */
     private String keySpace;
-    
+
     private RunCassandraCommand command = new RunCassandraCommand();
 
     PersistenceSimpleImpl(Session session, String keySpace) {
@@ -42,7 +42,7 @@ public class PersistenceSimpleImpl implements Persistence {
     }
 
     public PersistenceSimpleImpl(CassandraFactory cassandraFactory){
-    	this(cassandraFactory.getSession(), cassandraFactory.getKeySpace());
+        this(cassandraFactory.getSession(), cassandraFactory.getKeySpace());
     }
     public void execute(String string) {
         session.execute(string);
@@ -55,7 +55,7 @@ public class PersistenceSimpleImpl implements Persistence {
     }
 
     @Override
-     public <T> boolean delete(T bean) {
+    public <T> boolean delete(T bean) {
 
         return command.delete(bean, session,keySpace);
     }
@@ -95,119 +95,130 @@ public class PersistenceSimpleImpl implements Persistence {
 
         return command.findByIndex(indexName,index, bean, session,keySpace);
     }
-    
-	@Override
-	public <T, I> List<T> findByIndex(I index, Class<T> bean) {
-		
-		return command.findByIndex(index, bean, session,keySpace);
-	}
+
+    @Override
+    public <T, I> List<T> findByIndex(I index, Class<T> bean) {
+
+        return command.findByIndex(index, bean, session,keySpace);
+    }
 
     @Override
     public <T> Long count(Class<T> bean) {
         return command.count(bean, session,keySpace);
     }
 
-	@Override
-	public <T> boolean insert(Iterable<T> beans) {
-		return command.insert(beans, session,keySpace);
-	}
+    @Override
+    public <T> boolean insert(Iterable<T> beans) {
+        return command.insert(beans, session,keySpace);
+    }
 
-	@Override
-	public <T> boolean delete(Iterable<T> beans) {
-		return command.delete(beans, session,keySpace);
-	}
+    @Override
+    public <T> boolean delete(Iterable<T> beans) {
+        return command.delete(beans, session,keySpace);
+    }
 
-	@Override
-	public <T> boolean update(Iterable<T> beans) {
-		
-		return insert(beans);
-	}
+    @Override
+    public <T> boolean update(Iterable<T> beans) {
 
-	@Override
-	public <K, T> List<T> findByKeys(Iterable<K> keys, Class<T> bean) {
-		return command.findAll(bean, session,keySpace);
-	}
+        return insert(beans);
+    }
 
-	@Override
-	public <T> void removeAll(Class<T> bean) {
-		command.removeAll(bean, session);
-	}
+    @Override
+    public <K, T> List<T> findByKeys(Iterable<K> keys, Class<T> bean) {
+        return command.findAll(bean, session,keySpace);
+    }
 
-	
-	 private void setSession(){
-	    	session.execute("use "+keySpace);
-	    }
+    @Override
+    public <T> void removeAll(Class<T> bean) {
+        command.removeAll(bean, session);
+    }
 
-	@Override
-	public <T> boolean insert(T bean, ConsistencyLevel consistency) {
-		command.insert(bean, session, keySpace,consistency);
-		return true;
-	}
 
-	@Override
-	public <T> boolean insert(Iterable<T> beans, ConsistencyLevel consistency) {
-		command.insert(beans, session, keySpace,consistency);
-		return true;
-	}
+    private void setSession(){
+        session.execute("use "+keySpace);
+    }
 
-	@Override
-	public <T> boolean delete(T bean, ConsistencyLevel consistency) {
-		command.delete(bean, session, keySpace,consistency);
-		return false;
-	}
+    @Override
+    public <T> boolean insert(T bean, ConsistencyLevel consistency) {
+        command.insert(bean, session, keySpace,consistency);
+        return true;
+    }
 
-	@Override
-	public <T> boolean delete(Iterable<T> beans, ConsistencyLevel consistency) {
-		command.delete(beans, session, keySpace,consistency);
-		return false;
-	}
+    @Override
+    public <T> boolean insert(Iterable<T> beans, ConsistencyLevel consistency) {
+        command.insert(beans, session, keySpace,consistency);
+        return true;
+    }
 
-	@Override
-	public <T> boolean update(T bean, ConsistencyLevel consistency) {
-		return insert(bean, consistency);
-	}
+    @Override
+    public <T> boolean delete(T bean, ConsistencyLevel consistency) {
+        command.delete(bean, session, keySpace,consistency);
+        return false;
+    }
 
-	@Override
-	public <T> boolean update(Iterable<T> beans, ConsistencyLevel consistency) {
+    @Override
+    public <T> boolean delete(Iterable<T> beans, ConsistencyLevel consistency) {
+        command.delete(beans, session, keySpace,consistency);
+        return false;
+    }
 
-		return insert(beans, consistency);
-	}
+    @Override
+    public <T> boolean update(T bean, ConsistencyLevel consistency) {
+        return insert(bean, consistency);
+    }
 
-	@Override
-	public <T> List<T> findAll(Class<T> bean, ConsistencyLevel consistency) {
-		return command.findAll(bean, session, keySpace,consistency);
-	}
+    @Override
+    public <T> boolean update(Iterable<T> beans, ConsistencyLevel consistency) {
 
-	@Override
-	public <K, T> List<T> findByKeys(Iterable<K> keys, Class<T> bean,ConsistencyLevel consistency) {
-		return command.findByKeys(keys, bean, session, keySpace, consistency);
-	}
+        return insert(beans, consistency);
+    }
 
-	@Override
-	public <K, T> T findByKey(K key, Class<T> bean, ConsistencyLevel consistency) {
-		return command.findByKey(key, bean, session, keySpace, consistency);
-	}
+    @Override
+    public <T> List<T> findAll(Class<T> bean, ConsistencyLevel consistency) {
+        return command.findAll(bean, session, keySpace,consistency);
+    }
 
-	@Override
-	public <K, T> boolean deleteByKey(K key, Class<T> bean,	ConsistencyLevel consistency) {
-		return command.deleteByKey(key, bean, session, keySpace,consistency);
-	}
+    @Override
+    public <K, T> List<T> findByKeys(Iterable<K> keys, Class<T> bean,ConsistencyLevel consistency) {
+        return command.findByKeys(keys, bean, session, keySpace, consistency);
+    }
 
-	@Override
-	public <T, I> List<T> findByIndex(String indexName, I index, Class<T> bean,ConsistencyLevel consistency) {
-		return command.findByIndex(index, bean, session, indexName, consistency);
-	}
+    @Override
+    public <K, T> T findByKey(K key, Class<T> bean, ConsistencyLevel consistency) {
+        return command.findByKey(key, bean, session, keySpace, consistency);
+    }
 
-	@Override
-	public <T, I> List<T> findByIndex(I index, Class<T> bean,ConsistencyLevel consistency) {
+    @Override
+    public <K, T> boolean deleteByKey(K key, Class<T> bean,	ConsistencyLevel consistency) {
+        return command.deleteByKey(key, bean, session, keySpace,consistency);
+    }
 
-		return command.findByIndex(index, bean, session, keySpace, consistency);
-	}
+    @Override
+    public <T, I> List<T> findByIndex(String indexName, I index, Class<T> bean,ConsistencyLevel consistency) {
+        return command.findByIndex(index, bean, session, indexName, consistency);
+    }
 
-	@Override
-	public <T> Long count(Class<T> bean, ConsistencyLevel consistency) {
-		return command.count(bean, session, keySpace, consistency);
-	}
+    @Override
+    public <T, I> List<T> findByIndex(I index, Class<T> bean,ConsistencyLevel consistency) {
+
+        return command.findByIndex(index, bean, session, keySpace, consistency);
+    }
+
+    /**
+     * Find by primary key and index
+     *
+     * @author Nenita Casuga
+     *         Date 10/30/2013
+     */
+    @Override
+    public <T,I> List<T> findByKeyAndIndex(Object key, I index, Class<T> bean){
+        return command.findByKeyAndIndex(key, index, bean, session, keySpace);
+    }
+
+    @Override
+    public <T> Long count(Class<T> bean, ConsistencyLevel consistency) {
+        return command.count(bean, session, keySpace, consistency);
+    }
 
 
 

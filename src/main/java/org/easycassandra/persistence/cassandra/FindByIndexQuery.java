@@ -40,7 +40,11 @@ class FindByIndexQuery extends FindByKeyQuery {
 		return findByIndex(field.getName(),index, bean, session,consistency);
 	}
 
-	private <T> void checkFieldNull(Class<T> bean, Field field) {
+    /**
+     * Edited by Nenita Casuga to make method static and package protected so it can be reused
+     *
+     */
+	static <T> void checkFieldNull(Class<T> bean, Field field) {
 		if(field==null){
 			StringBuffer erro=new StringBuffer();
 			erro.append("No found some field with @org.easycassandra.Index within ");
@@ -66,7 +70,11 @@ class FindByIndexQuery extends FindByKeyQuery {
         return RecoveryObject.INTANCE.recoverObjet(bean, resultSet);
     }
 
-	private <T> void checkIndexProblem(Class<T> bean, QueryBean byKeyBean) {
+    /**
+     * Edited by Nenita Casuga to make method static and package protected so it can be reused
+     *
+     */
+	 static <T> void checkIndexProblem(Class<T> bean, QueryBean byKeyBean) {
 		if (byKeyBean.key == null) {
             StringBuilder erro = new StringBuilder();
             erro.append("Some field in a class ").append(bean.getName());

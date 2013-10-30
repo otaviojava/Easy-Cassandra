@@ -203,6 +203,13 @@ class FixColumnFamily {
      */
     private void addComlexID(Class<?> class1, StringBuilder cqlCreateTable) {
         Field keyField = ColumnUtil.INTANCE.getKeyComplexField(class1);
+        /*
+         * Added by Nenita Casuga to allow embedded id from the super class
+         */
+        // Add embedded id from the super class
+        if (keyField == null){
+            keyField = ColumnUtil.INTANCE.getKeyComplexField(class1.getSuperclass());
+        }
         cqlCreateTable.append(" PRIMARY KEY (");
         boolean firstTime = true;
         for (Field subKey : ColumnUtil.INTANCE.listFields(keyField.getType())) {
