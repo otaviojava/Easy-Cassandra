@@ -13,18 +13,18 @@ public class IdLifestyle {
     private Long personId;
 
     @Column
-    private Integer type;
+    private Integer companyId;
 
     @Column
-    private Integer companyId;
+    private Integer type;
 
     public IdLifestyle() {
 
     }
 
-    public IdLifestyle(final Integer companyId, final Long personId, final Integer type) {
-        this.companyId = companyId;
+    public IdLifestyle(final Long personId, final Integer companyId, final Integer type) {
         this.personId = personId;
+        this.companyId = companyId;
         this.type = type;
     }
 
@@ -36,13 +36,6 @@ public class IdLifestyle {
         this.personId = personId;
     }
 
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(final Integer type) {
-        this.type = type;
-    }
 
     public Integer getCompanyId() {
         return companyId;
@@ -50,5 +43,13 @@ public class IdLifestyle {
 
     public void setCompanyId(final Integer companyId) {
         this.companyId = companyId;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(final Integer type) {
+        this.type = type;
     }
 }

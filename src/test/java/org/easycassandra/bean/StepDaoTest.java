@@ -17,9 +17,13 @@ import org.junit.Test;
 public class StepDaoTest {
     private PersistenceDao<Step, IdLifestyle> dao = new PersistenceDao<Step, IdLifestyle>(Step.class);
 
+    /*
+     * CREATE TABLE lifestyle (personid bigint, companyid int, type int, date timestamp, value double,
+     * primary key ((personid, companyid, type),date));
+     */
     @Test
     public void insertTest() {
-        Step step = new Step(1, 1L);
+        Step step = new Step(1L, 1);
 
         Calendar cal = Calendar.getInstance();
         cal.set(2013, Calendar.NOVEMBER, 11, 0, 0, 0);
@@ -28,7 +32,7 @@ public class StepDaoTest {
         step.setValue(125.00);
         Assert.assertTrue(dao.insert(step));
 
-        Step step2 = new Step(1, 2L);
+        Step step2 = new Step(2L, 1);
         step2.setDate(new Date(cal.getTimeInMillis()));
         step2.setValue(175.50);
         Assert.assertTrue(dao.insert(step2));
@@ -53,7 +57,7 @@ public class StepDaoTest {
         cal.set(Calendar.MILLISECOND, 0);
         cal.set(2013, Calendar.NOVEMBER, 11, 0, 0, 0);
 
-        List<Step> steps = dao.listByKeyAndIndex(new IdLifestyle(1, 1L, 3), new Date(cal.getTimeInMillis()));
+        List<Step> steps = dao.listByKeyAndIndex(new IdLifestyle(1L, 1, 3), new Date(cal.getTimeInMillis()));
         Assert.assertTrue(steps.size() == 1);
         Assert.assertTrue(steps.get(0).getValue().doubleValue() == 125.00);
 
@@ -68,7 +72,7 @@ public class StepDaoTest {
         //Assert.assertTrue(steps.size() == 1);
         //Assert.assertTrue(steps.get(0).getValue().doubleValue() == 187.25);
 
-        steps = dao.listByKeyAndIndex(new IdLifestyle(1, 2L, 3), new Date(cal.getTimeInMillis()));
+        steps = dao.listByKeyAndIndex(new IdLifestyle(2L, 1, 3), new Date(cal.getTimeInMillis()));
         Assert.assertTrue(steps.size() == 1);
         Assert.assertTrue(steps.get(0).getValue().doubleValue() == 175.50);
     }
@@ -77,7 +81,7 @@ public class StepDaoTest {
     public void retrieveByKeyTest() {
 
         // This will return the last inserted record if there are multiple match on the PK
-        Step step = dao.retrieve(new IdLifestyle(1, 1L, 3));
+        Step step = dao.retrieve(new IdLifestyle(1L, 1, 3));
         Assert.assertNotNull(step);
     }
 }

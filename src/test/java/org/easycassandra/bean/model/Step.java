@@ -25,8 +25,8 @@ public class Step extends Lifestyle {
     }
 
 
-    public Step(Integer companyId, Long personId) {
-        setId(new IdLifestyle(companyId, personId, 3));
+    public Step(Long personId, Integer companyId) {
+        setId(new IdLifestyle(personId, companyId, 3));
     }
 
     public Date getDate() {

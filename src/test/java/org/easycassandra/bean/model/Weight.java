@@ -24,8 +24,8 @@ public class Weight extends Lifestyle {
 
     }
 
-    public Weight(Integer companyId, Long personId) {
-        setId(new IdLifestyle(companyId, personId, 2));
+    public Weight(Long personId, Integer companyId) {
+        setId(new IdLifestyle(personId, companyId, 2));
     }
 
     public Date getDate() {
