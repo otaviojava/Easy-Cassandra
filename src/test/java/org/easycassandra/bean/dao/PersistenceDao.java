@@ -53,10 +53,20 @@ public class PersistenceDao<T,K> {
      * Find by key and annotated index
      *
      * @author Nenita Casuga
-     * Date 10/30/2013
+     * @since 10/30/2013
      */
     public List<T> listByKeyAndIndex(Object id, Object index) {
         return persistence.findByKeyAndIndex(id, index, baseClass);
+    }
+
+    /**
+     * Find by key and annotated index range
+     *
+     * @author Nenita Casuga
+     * @since 10/30/2013
+     */
+    public List<T> listByKeyAndIndexRange(Object id, Object indexStart, Object indexEnd, boolean inclusive) {
+        return persistence.findByKeyAndIndexRange(id, indexStart, indexEnd, inclusive, baseClass);
     }
 
     public Long count() {

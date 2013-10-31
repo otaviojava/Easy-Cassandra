@@ -101,10 +101,20 @@ public class RunCassandraCommand {
      * Find by primary key and index
      *
      * @author Nenita Casuga
-     *         Date 10/30/2013
+     * @since 10/30/2013
      */
     public <T,I> List<T> findByKeyAndIndex(Object key, I index, Class<T> bean, Session session, String keySpace){
         return new FindByKeyAndIndexQuery(keySpace).findByKeyAndIndex(key, index, bean, session, DEFAULT_CASSANDRA_CL);
+    }
+
+    /**
+     * Find by primary key and index range
+     *
+     * @author Nenita Casuga
+     * @since 10/30/2013
+     */
+    public <T,I> List<T> findByKeyAndIndexRange(Object key, I indexStart, I indexEnd, boolean inclusive,  Class<T> bean, Session session, String keySpace){
+        return new FindByKeyAndIndexQuery(keySpace).findByKeyAndIndex(key, indexStart, indexEnd, inclusive, bean, session, DEFAULT_CASSANDRA_CL);
     }
 
     public <T> Long count(Class<T> bean,Session session,String keySpace){

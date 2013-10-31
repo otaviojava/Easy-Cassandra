@@ -11,6 +11,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
+ * PRE-REQUISITE: Same as StepDaoTest pre-requisite
+ *
  * @author Nenita Casuga
  */
 public class WeightDaoTest {

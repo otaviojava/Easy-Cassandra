@@ -208,11 +208,22 @@ public class PersistenceSimpleImpl implements Persistence {
      * Find by primary key and index
      *
      * @author Nenita Casuga
-     *         Date 10/30/2013
+     * @since 10/30/2013
      */
     @Override
     public <T,I> List<T> findByKeyAndIndex(Object key, I index, Class<T> bean){
         return command.findByKeyAndIndex(key, index, bean, session, keySpace);
+    }
+
+    /**
+     * Find by primary key and index range
+     *
+     * @author Nenita Casuga
+     * @since 10/30/2013
+     */
+    @Override
+    public <T,I> List<T> findByKeyAndIndexRange(Object key, Object indexStart, Object indexEnd, boolean inclusive, Class<T> bean){
+         return command.findByKeyAndIndexRange(key, indexStart, indexEnd, inclusive, bean, session,keySpace);
     }
 
     @Override

@@ -11,16 +11,18 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
+ * PRE-REQUISITE:
+ * Execute this first on your local Cassandra
+ * <p/>
+ * CREATE TABLE lifestyle (personid bigint, companyid int, type int, date timestamp, value double,
+ * primary key ((personid, companyid, type),date));
+ *
  * @author Nenita Casuga
- *         Date 10/30/2013
+ * @since 10/30/2013
  */
 public class StepDaoTest {
     private PersistenceDao<Step, IdLifestyle> dao = new PersistenceDao<Step, IdLifestyle>(Step.class);
 
-    /*
-     * CREATE TABLE lifestyle (personid bigint, companyid int, type int, date timestamp, value double,
-     * primary key ((personid, companyid, type),date));
-     */
     @Test
     public void insertTest() {
         Step step = new Step(1L, 1);
@@ -37,17 +39,15 @@ public class StepDaoTest {
         step2.setValue(175.50);
         Assert.assertTrue(dao.insert(step2));
 
-        // Note that this will only work if the table was created using
-        // CREATE TABLE (person_id, type_id... primary key((person_id, type_id), date));
-        // Otherwise, the second write will overwrite the first one and since we can't control the create table
-        // here, comment out this test
-        //Calendar cal2 = Calendar.getInstance();
-        //cal2.set(2013, Calendar.NOVEMBER, 2, 0, 0, 0);
-        //cal2.set(Calendar.MILLISECOND, 0);
-        //Step step3 = new Step(1);
-        //step3.setDate(new Date(cal2.getTimeInMillis()));
-        //step3.setValue(187.25);
-        //Assert.assertTrue(dao.insert(step3));
+        // Note that this will only work if the table was created using the above pre-requisite requirements
+        // notes in the test class
+        Calendar cal2 = Calendar.getInstance();
+        cal2.set(2013, Calendar.NOVEMBER, 2, 0, 0, 0);
+        cal2.set(Calendar.MILLISECOND, 0);
+        Step step3 = new Step(1L, 1);
+        step3.setDate(new Date(cal2.getTimeInMillis()));
+        step3.setValue(187.25);
+        Assert.assertTrue(dao.insert(step3));
     }
 
     @Test
@@ -61,18 +61,22 @@ public class StepDaoTest {
         Assert.assertTrue(steps.size() == 1);
         Assert.assertTrue(steps.get(0).getValue().doubleValue() == 125.00);
 
-        // Note that this will only work if the table was created using
-        // CREATE TABLE (person_id, type_id... primary key((person_id, type_id), date));
-        // Otherwise, the second write will overwrite the first one and since we can't control the create table
-        // here, comment out this test
-        //Calendar cal2 = Calendar.getInstance();
-        //cal2.set(2013, Calendar.NOVEMBER, 2, 0, 0, 0);
-        //cal2.set(Calendar.MILLISECOND, 0);
-        //steps = dao.listByKeyAndIndex(new IdLifestyle(1, 3), new Date(cal2.getTimeInMillis()));
-        //Assert.assertTrue(steps.size() == 1);
-        //Assert.assertTrue(steps.get(0).getValue().doubleValue() == 187.25);
+        // Note that this will only work if the table was created using the above pre-requisite requirements
+        // notes in the test class
+        Calendar cal2 = Calendar.getInstance();
+        cal2.set(2013, Calendar.NOVEMBER, 2, 0, 0, 0);
+        cal2.set(Calendar.MILLISECOND, 0);
+        steps = dao.listByKeyAndIndex(new IdLifestyle(1L, 1, 3), new Date(cal2.getTimeInMillis()));
+        Assert.assertTrue(steps.size() == 1);
+        Assert.assertTrue(steps.get(0).getValue().doubleValue() == 187.25);
 
         steps = dao.listByKeyAndIndex(new IdLifestyle(2L, 1, 3), new Date(cal.getTimeInMillis()));
+        Assert.assertTrue(steps.size() == 1);
+        Assert.assertTrue(steps.get(0).getValue().doubleValue() == 175.50);
+
+        // Note that this will only work if the table was created using the above pre-requisite requirements
+        // notes in the test class
+        steps = dao.listByKeyAndIndexRange(new IdLifestyle(2L, 1, 3), 1384156800000L, 1384156800001L, true);
         Assert.assertTrue(steps.size() == 1);
         Assert.assertTrue(steps.get(0).getValue().doubleValue() == 175.50);
     }

@@ -84,9 +84,17 @@ public interface Persistence  {
      * Find by primary key and annotated index
      *
      * @author Nenita Casuga
-     *         Date 10/30/2013
+     * @since 10/30/2013
      */
     <T,I> List<T> findByKeyAndIndex(Object key, I index, Class<T> bean);
+
+    /**
+     * Find by primary key and annotated index range
+     *
+     * @author Nenita Casuga
+     * @since 10/30/2013
+     */
+    <T,I> List<T> findByKeyAndIndexRange(Object id, Object indexStart, Object indexEnd, boolean inclusive, Class<T> bean);
 
     <T> Long count(Class<T> bean);
 

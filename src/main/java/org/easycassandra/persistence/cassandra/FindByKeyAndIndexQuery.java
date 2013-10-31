@@ -26,7 +26,7 @@ import org.easycassandra.util.ReflectionUtil;
  * Query to find by primary key and index combination
  *
  * @author Nenita Casuga
- *         Date 10/28/13
+ * @since 10/28/13
  */
 class FindByKeyAndIndexQuery extends FindByKeyQuery {
 
@@ -42,11 +42,23 @@ class FindByKeyAndIndexQuery extends FindByKeyQuery {
 
     public <T, I> List<T> findByKeyAndIndex(Object key, String indexName, I index, Class<T> bean, Session session, ConsistencyLevel consistency) {
         QueryBean byKeyBean = createQueryBean(bean, consistency);
-        return executeConditions(indexName, index, key, bean, session, byKeyBean);
+        return executeConditions(indexName, index, null, null, key, bean, session, byKeyBean);
     }
 
+    public <T, I> List<T> findByKeyAndIndex(Object key, I indexStart, I indexEnd, boolean inclusive, Class<T> bean, Session session, ConsistencyLevel consistency) {
+        Field field = ColumnUtil.INTANCE.getIndexField(bean);
+        FindByIndexQuery.checkFieldNull(bean, field);
+        return findByKeyAndIndex(key, field.getName(), indexStart, indexEnd, inclusive, bean, session, consistency);
+    }
 
-    private <T> List<T> executeConditions(String indexName, Object index, Object key, Class<T> bean, Session session, QueryBean byKeyBean) {
+    public <T, I> List<T> findByKeyAndIndex(Object key, String indexName, I indexStart, I indexEnd, boolean inclusive,
+                                            Class<T> bean, Session session, ConsistencyLevel consistency) {
+        QueryBean byKeyBean = createQueryBean(bean, consistency);
+        return executeConditions(indexName, indexStart, indexEnd, inclusive, key, bean, session, byKeyBean);
+    }
+
+    private <T> List<T> executeConditions(String indexName, Object indexStart, Object indexEnd, Boolean inclusive, Object key,
+                                          Class<T> bean, Session session, QueryBean byKeyBean) {
 
         // Add primary keys
         super.prepare(byKeyBean, bean);
@@ -63,7 +75,19 @@ class FindByKeyAndIndexQuery extends FindByKeyQuery {
         FindByIndexQuery.checkIndexProblem(bean, byKeyBean);
 
         // Add indexed key
-        byKeyBean.select.where(QueryBuilder.eq(ColumnUtil.INTANCE.getColumnName(byKeyBean.key), index));
+        if (indexEnd != null && inclusive != null) {
+
+            if (inclusive) {
+                byKeyBean.select.where(QueryBuilder.gte(ColumnUtil.INTANCE.getColumnName(byKeyBean.key), indexStart));
+                byKeyBean.select.where(QueryBuilder.lte(ColumnUtil.INTANCE.getColumnName(byKeyBean.key), indexEnd));
+            } else {
+                byKeyBean.select.where(QueryBuilder.gt(ColumnUtil.INTANCE.getColumnName(byKeyBean.key), indexStart));
+                byKeyBean.select.where(QueryBuilder.lt(ColumnUtil.INTANCE.getColumnName(byKeyBean.key), indexEnd));
+            }
+
+        } else {
+            byKeyBean.select.where(QueryBuilder.eq(ColumnUtil.INTANCE.getColumnName(byKeyBean.key), indexStart));
+        }
 
         // Execute
         ResultSet resultSet = session.execute(byKeyBean.select);
