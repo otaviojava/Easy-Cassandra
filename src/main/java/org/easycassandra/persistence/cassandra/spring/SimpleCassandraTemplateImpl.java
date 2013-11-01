@@ -201,7 +201,51 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
 		return command.findByIndex(indexName, index, entity, session, keySpace, consistency);
 	}
 
-	@Override
+    /**
+     * Find by key and annotated index
+     *
+     * @author Nenita Casuga
+     * @since 10/31/2013
+     */
+    @Override
+    public <T,I> List<T> findByKeyAndIndex(String key, I index,Class<T> entity){
+        return command.findByKeyAndIndex(key, index, entity, session, keySpace);
+    }
+
+    /**
+     * Find by key and annotated index
+     *
+     * @author Nenita Casuga
+     * @since 10/31/2013
+     */
+    @Override
+    public <T,I> List<T> findByKeyAndIndex(String key, I index,Class<T> entity, ConsistencyLevel consistency){
+        return command.findByKeyAndIndex(key, index, entity, session, keySpace, consistency);
+    }
+
+    /**
+     * Find by key and annotated index
+     *
+     * @author Nenita Casuga
+     * @since 10/31/2013
+     */
+    @Override
+    public <T,I> List<T> findByKeyAndIndexRange(String key, I indexStart, I indexEnd, boolean exclusive, Class<T> entity){
+        return command.findByKeyAndIndexRange(key, indexStart, indexEnd, exclusive, entity, session, keySpace);
+    }
+
+    /**
+     * Find by key and annotated index
+     *
+     * @author Nenita Casuga
+     * @since 10/31/2013
+     */
+    @Override
+    public <T,I> List<T> findByKeyAndIndexRange(String key, I indexStart, I indexEnd, boolean exclusive, Class<T> entity, ConsistencyLevel consistency){
+        return command.findByKeyAndIndexRange(key, indexStart, indexEnd, exclusive, entity, session, keySpace, consistency);
+    }
+
+    @Override
 	public <K, T> boolean exist(K key, Class<T> entity,	ConsistencyLevel consistency) {
 		return findOne(key, entity, consistency) != null;
 	}
