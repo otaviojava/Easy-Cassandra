@@ -23,29 +23,27 @@ import com.datastax.driver.core.querybuilder.Select;
 
 /**
  * Class to mount and execute a query to return the number of column in a family
- * column
- * 
+ * column.
  * @author otaviojava
  * 
  */
 class CountQuery {
 
 	private String keySpace;
-	
+
 	public CountQuery(String keySpace) {
 		this.keySpace = keySpace;
 	}
     /**
-     * return the number of row in a column family
-     * 
+     * return the number of row in a column family.
      * @param bean
      *            - column family
      * @param session
      * @return number of register in a column family
      */
     public Long count(Class<?> bean, Session session,ConsistencyLevel consistency) {
-    	KeySpaceInformation key=ColumnUtil.INTANCE.getKeySpace(keySpace, bean);
-    	Select select =QueryBuilder.select().countAll().from(key.getKeySpace(), key.getColumnFamily());
+    	KeySpaceInformation key = ColumnUtil.INTANCE.getKeySpace(keySpace, bean);
+    	Select select = QueryBuilder.select().countAll().from(key.getKeySpace(), key.getColumnFamily());
     	select.setConsistencyLevel(consistency);
         ResultSet resultSet = session.execute(select);
         return resultSet.all().get(0).getLong(0);

@@ -19,7 +19,7 @@ import org.easycassandra.persistence.cassandra.EasyCassandraManager;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 /**
- * base of cassandra factory
+ * base of cassandra factory.
  * @author otaviojava
  *
  */
@@ -34,27 +34,26 @@ public abstract class AbstractCassandraFactory extends EasyCassandraManager impl
 
 
 	/**
-     * {@link AbstractCassandraFactory#getTemplate(String, String, ReplicaStrategy, int)}
+     * {@link AbstractCassandraFactory#getTemplate(String, String, ReplicaStrategy, int)}.
      */
     public CassandraTemplate getTemplate(String host, String keySpace, int port) {
     	 Session session = verifyHost(host,port).connect();
          verifyKeySpace(keySpace, session);
          return new SimpleCassandraTemplateImpl(this);
 	}
-    
-    
+
     /**
-     * {@link AbstractCassandraFactory#getTemplate(String, String, ReplicaStrategy, int)}
+     * {@link AbstractCassandraFactory#getTemplate(String, String, ReplicaStrategy, int)}.
      */
     public CassandraTemplate getTemplate(String host, String keySpace) {
         return getTemplate(host, keySpace, getPort());
     }
- 
-    
+
+
     /**
      * Method for create the Cassandra's Client, if the keyspace there is not,if
      * keyspace there isn't, it will created with replacyStrategy and number of
-     * factor
+     * factor.
      * @param host - place where is Cassandra data base
      * @param keySpace - the keyspace's name
      * @param replicaStrategy - replica strategy
@@ -66,17 +65,17 @@ public abstract class AbstractCassandraFactory extends EasyCassandraManager impl
         verifyKeySpace(keySpace, cluter.connect(), replicaStrategy,factor);
         return new SimpleCassandraTemplateImpl(createSession(host, getPort(), keySpace),keySpace);
     }
-    
-    
+
+
 	/**
-	 * {@link AbstractCassandraFactory#verifyHost(String, int)}
+	 * {@link AbstractCassandraFactory#verifyHost(String, int)}.
 	 */
     public CassandraTemplate getTemplate(String host) {
 		return getTemplate(host, getKeySpace());
 	}
 
     /**
-     * {@link AbstractCassandraFactory#verifyHost(String, int)}
+     * {@link AbstractCassandraFactory#verifyHost(String, int)}.
      */
 	public CassandraTemplate getTemplate() {
 		return getTemplate(getHost(),getKeySpace());

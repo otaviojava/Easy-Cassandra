@@ -41,24 +41,22 @@ import org.easycassandra.MapData;
 import org.easycassandra.SetData;
 
 /**
- * Class Util for Column
- * 
+ * Class Util for Column.
  * @author otavio
- * 
  */
 public enum ColumnUtil {
     INTANCE;
 
     /**
-     * The integer class is used to enum how default
+     * The integer class is used to enum how default.
      */
     public static final Class<?> DEFAULT_ENUM_CLASS = Integer.class;
     /**
-     * list contains the annotations to map a bean
+     * list contains the annotations to map a bean.
      */
     private List<String> annotations;
     {
-        annotations=new LinkedList<String>();
+        annotations = new ArrayList<String>();
         annotations.add(Id.class.getName());
         annotations.add(SetData.class.getName());
         annotations.add(ListData.class.getName());
@@ -69,13 +67,12 @@ public enum ColumnUtil {
         annotations.add(Enumerated.class.getName());
         annotations.add(Index.class.getName());
         annotations.add(CustomData.class.getName());
-        Collections.sort(annotations);  
+        Collections.sort(annotations);
     }
-    
-    
+
+
     /**
      * Get The Column name from an Object
-     * 
      * @param object
      *            - Class of the object viewed
      * @return The name of Column name if there are not will be return null
@@ -85,8 +82,8 @@ public enum ColumnUtil {
         return schema.concat(getColumnFamily(object));
     }
 
-	private String getColumnFamily(Class<?> object) {
-		Entity columnFamily = (Entity) object.getAnnotation(Entity.class);
+    private String getColumnFamily(Class<?> object) {
+        Entity columnFamily = (Entity) object.getAnnotation(Entity.class);
         Table columnFamilyTable = (Table) object.getAnnotation(Table.class);
         if (columnFamily != null) {
             return columnFamily.name().equals("") ? object.getSimpleName() : columnFamily.name();
@@ -94,7 +91,7 @@ public enum ColumnUtil {
             return columnFamilyTable.name().equals("") ? object.getSimpleName() : columnFamilyTable.name();
         }
         return object.getSimpleName();
-	}
+    }
 
     private String getSchemaConcat(Class<?> class1) {
         String schema = getSchema(class1);
@@ -114,8 +111,7 @@ public enum ColumnUtil {
 
     /**
      * verifies that the name of the annotation is empty if you take the field
-     * name
-     * 
+     * name.
      * @param field
      *            - field for viewd
      * @return The name inside annotations or the field's name
@@ -130,7 +126,6 @@ public enum ColumnUtil {
     /**
      * verifies that the name of the annotation is empty if you take the field
      * name
-     * 
      * @param field
      * @return The name inside annotations or the field's name
      */
@@ -143,7 +138,6 @@ public enum ColumnUtil {
 
     /**
      * Return the Field with the KeyValue Annotations
-     * 
      * @see KeyValue
      * @param persistenceClass
      *            - Class of the object viewed
@@ -155,7 +149,6 @@ public enum ColumnUtil {
 
     /**
      * Return the Field with the complex key Annotations
-     * 
      * @see KeyValue
      * @param persistenceClass
      *            - Class of the object viewed
@@ -167,7 +160,6 @@ public enum ColumnUtil {
 
     /**
      * Return the Field with the IndexValue Annotations
-     * 
      * @see Index
      * @param persistenceClass
      *            - Class of the object viewed
@@ -186,21 +178,19 @@ public enum ColumnUtil {
      * @return the Fields if there are not will be return empty list
      */
     public List<Field> getIndexFields(Class<?> persistenceClass) {
-    	List<Field> indexFieldList = new ArrayList<Field>();
-    	  for (Field field : persistenceClass.getDeclaredFields()) {
+          List<Field> indexFieldList = new ArrayList<Field>();
+          for (Field field : persistenceClass.getDeclaredFields()) {
               if (field.getAnnotation(Index.class) != null) {
                   indexFieldList.add(field);
               } else if (field.getAnnotation(Embedded.class) != null) {
-            	  indexFieldList.addAll(getIndexFields(field.getType()));
+                 indexFieldList.addAll(getIndexFields(field.getType()));
               }
           }
           return indexFieldList;
     }
-    
     /**
      * Get the Field of the Object from annotation if there are not return will
      * be null
-     * 
      * @param object
      *            - Class of the object viewed
      * @param annotation
@@ -220,7 +210,6 @@ public enum ColumnUtil {
 
     /**
      * list the fields in the class
-     * 
      * @param class1
      * @return list of the fields
      */
@@ -236,29 +225,28 @@ public enum ColumnUtil {
 
     /**
      * feed the list com Fields
-     * 
      * @param class1
      * @param fields
      */
     private void feedFieldList(Class<?> class1, List<Field> fields) {
-        
+
         for (Field field : class1.getDeclaredFields()) {
-            
+
             if(isColumnToPersist(field)){
                 fields.add(field);
             }
-            
+
         }
     }
-    
+
     /**
-     * verify is field has some annotations within 
+     * verify is field has some annotations within
      * {@link #ColumnUtil#annotations}
      * @param field
-     * @return 
+     * @return
      */
     private boolean isColumnToPersist(Field field) {
-        
+
         for(Annotation annotation:field.getAnnotations()){
             int result=Collections.binarySearch(annotations,annotation.annotationType().getName());
             if(result >= 0){
@@ -269,7 +257,6 @@ public enum ColumnUtil {
     }
     /**
      * verify if this is key of the column
-     * 
      * @param field
      * @return
      */
@@ -279,7 +266,6 @@ public enum ColumnUtil {
 
     /**
      * verify if this is index of the column
-     * 
      * @param field
      * @return
      */
@@ -293,8 +279,7 @@ public enum ColumnUtil {
     }
 
     /**
-     * verify if this is secundary index of the column
-     * 
+     * verify if this is secundary index of the column.
      * @param field
      * @return
      */
@@ -303,8 +288,7 @@ public enum ColumnUtil {
     }
 
     /**
-     * verify if this is a normal column
-     * 
+     * verify if this is a normal column.
      * @param field
      * @return
      */
@@ -313,8 +297,7 @@ public enum ColumnUtil {
     }
 
     /**
-     * verify if this is a enum column
-     * 
+     * verify if this is a enum column.
      * @param field
      * @return
      */
@@ -323,8 +306,7 @@ public enum ColumnUtil {
     }
 
     /**
-     * verify if this is a Embedded column
-     * 
+     * verify if this is a Embedded column.
      * @param field
      * @return
      */
@@ -333,8 +315,7 @@ public enum ColumnUtil {
     }
 
     /**
-     * verify if this is a Embedded id column
-     * 
+     * verify if this is a Embedded id column.
      * @param field
      * @return
      */
@@ -343,8 +324,7 @@ public enum ColumnUtil {
     }
 
     /**
-     * verify if this is a Version column
-     * 
+     * verify if this is a Version column.
      * @param field
      * @return
      */
@@ -353,8 +333,7 @@ public enum ColumnUtil {
     }
 
     /**
-     * verify is exist father to persist
-     * 
+     * verify is exist father to persist.
      * @param class1
      * @return
      */
@@ -370,7 +349,7 @@ public enum ColumnUtil {
         return field.getAnnotation(ListData.class) != null;
     }
     /**
-     * verify if the field is a map
+     * verify if the field is a map.
      * @param field
      * @return
      */
@@ -378,7 +357,7 @@ public enum ColumnUtil {
         return field.getAnnotation(MapData.class) != null;
     }
     /**
-     * verify if the field is a set
+     * verify if the field is a set.
      * @param field
      * @return
      */
@@ -387,7 +366,7 @@ public enum ColumnUtil {
     }
 
     /**
-     * verify if the field is custom
+     * verify if the field is custom.
      * @param field
      * @return
      */
@@ -395,9 +374,10 @@ public enum ColumnUtil {
         
         return field.getAnnotation(CustomData.class) != null;
     }
-    
+
    /**
-    * get the Field for parsing <b>columnName</b> in the <b>class1</b>. if there is no such column name or if it denies access  return null.
+    * get the Field for parsing <b>columnName</b> in the <b>class1</b>.
+    * if there is no such column name or if it denies access  return null.
     * @param columnName
     * @param class1
     * @return
@@ -409,27 +389,25 @@ public enum ColumnUtil {
 				return index;
 			}
 		}
-		
-		StringBuilder erro=new StringBuilder();
+
+		StringBuilder erro = new StringBuilder();
 		erro.append("Not found index on ").append(class1.getName());
 		erro.append(" with name ").append(columnName);
-	    throw new IndexProblemException(erro.toString()); 
+	    throw new IndexProblemException(erro.toString());
 	}
-    
-	
+
+
 	public KeySpaceInformation getKeySpace(String keySpace,Class<?> bean){
 		String keySchema=getSchema(bean);
 		KeySpaceInformation key=new KeySpaceInformation();
 		key.keySpace="".equals(keySchema)?keySpace:keySchema;
 		key.columnFamily=getColumnFamily(bean);
-	   return key ;	
+	   return key;
 	}
-	
-	
-	
+
 	public class KeySpaceInformation{
 		private String keySpace;
-		
+
 		private String columnFamily;
 
 		public String getKeySpace() {
@@ -439,9 +417,7 @@ public enum ColumnUtil {
 		public String getColumnFamily() {
 			return columnFamily;
 		}
-		
-		
+
 	}
-    
-   
+
 }

@@ -22,10 +22,8 @@ import com.datastax.driver.core.Session;
 import com.datastax.driver.core.exceptions.InvalidQueryException;
 
 /**
- * This class verifies if keyspace exists and then try to create
- * 
+ * This class verifies if keyspace exists and then try to create.
  * @author otaviojava
- * 
  */
 class FixKeySpace {
 
@@ -36,8 +34,7 @@ class FixKeySpace {
     private static final ReplicaStrategy DEFAULT_REPLICA_STRATEGY = ReplicaStrategy.SIMPLES_TRATEGY;
 
     /**
-     * Verify if keySpace exist
-     * 
+     * Verify if keySpace exist.
      * @param keySpace
      *            - nome of keyspace
      * @param session

@@ -23,22 +23,20 @@ import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.Session;
 
 /**
- * Class to persist information in cassandra database
- * 
+ * Class to persist information in cassandra database.
  * @author otaviojava
- * 
  */
 public class SimpleCassandraTemplateImpl implements CassandraTemplate {
 
-	
+
 	 private Session session;
-	    /**
-	     * when don't define the persistence will use it as keyspace
+         /**
+	     * when don't define the persistence will use it as keyspace.
 	     */
 	    private String keySpace;
-	
+
 	private RunCassandraCommand command = new RunCassandraCommand();
-	
+
 	public SimpleCassandraTemplateImpl(CassandraFactory factory) {
 	    this.session = factory.getSession();
         this.keySpace = factory.getKeySpace();
@@ -53,7 +51,7 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
 
 	@Override
 	public <T> T save(T entity) {
-		
+
 		return command.insert(entity, session,keySpace);
 	}
 
@@ -76,7 +74,7 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
 	@Override
 	public <K> void delete(K key, Class<?> entity) {
 		command.deleteByKey(key, entity, session,keySpace);
-		
+
 	}
 
 	@Override
@@ -135,7 +133,7 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
 		return command.count(entity, session,keySpace);
 	}
 
-	
+
 	 private void setSession(){
 	    	session.execute("use "+keySpace);
 	    }
@@ -213,8 +211,7 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
     }
 
     /**
-     * Find by key and annotated index
-     *
+     * Find by key and annotated index.
      * @author Nenita Casuga
      * @since 10/31/2013
      */
@@ -224,8 +221,7 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
     }
 
     /**
-     * Find by key and annotated index
-     *
+     * Find by key and annotated index.
      * @author Nenita Casuga
      * @since 10/31/2013
      */
@@ -235,8 +231,7 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
     }
 
     /**
-     * Find by key and annotated index
-     *
+     * Find by key and annotated index.
      * @author Nenita Casuga
      * @since 10/31/2013
      */

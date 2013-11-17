@@ -22,20 +22,19 @@ import com.datastax.driver.core.ConsistencyLevel;
 
 /**
  * Base to cassandra databases, the interface has all resources that may use in
- * Cassandra database
- *
+ * Cassandra database.
  * @author otaviojava
  *
  */
 public interface CassandraTemplate{
-		/**
-		 * saves the object
-		 * @param entity
-		 * @return
-		 */
+         /**
+         * saves the object.
+         * @param entity
+         * @return
+         */
 	    <T> T save(T entity);
 	    /**
-	     * saves the objects with consistency level
+	     * saves the objects with consistency level.
 	     * @param entity
 	     * @param consistency
 	     * @return
@@ -43,7 +42,7 @@ public interface CassandraTemplate{
 	    <T> T save(T entity,ConsistencyLevel consistency);
 
 	    /**
-	     * save a list of objects
+	     * save a list of objects.
 	     * @param entities
 	     * @return
 	     */
@@ -58,20 +57,20 @@ public interface CassandraTemplate{
 	    <T> Iterable<T> save(Iterable<T> entities,ConsistencyLevel consistency);
 
 	    /**
-	     * delete an entity
+	     * delete an entity.
 	     * @param entity
 	     */
 	    <T> void delete(T entity);
 
 	    /**
-	     * delete an entity with consistence level
+	     * delete an entity with consistence level.
 	     * @param entity
 	     * @param consistency
 	     */
 	    <T> void delete(T entity,ConsistencyLevel consistency);
 
 	    /**
-	     * delete an interable os entities
+	     * delete an interable os entities.
 	     * @param entities
 	     */
 	    <T> void delete(Iterable<T> entities);
@@ -84,14 +83,14 @@ public interface CassandraTemplate{
 	    <T> void delete(Iterable<T> entities,ConsistencyLevel consistency);
 
 	    /**
-	     * delete an object from a key
+	     * delete an object from a key.
 	     * @param key
 	     * @param entity
 	     */
 	    <K> void delete(K key, Class<?> entity);
 
 	    /**
-	     * delete an object from a key with consistency level
+	     * delete an object from a key with consistency level.
 	     * @param key
 	     * @param entity
 	     * @param consistency
@@ -99,14 +98,14 @@ public interface CassandraTemplate{
 	    <K> void delete(K key, Class<?> entity,ConsistencyLevel consistency);
 
 	    /**
-	     * delete objects from keys
+	     * delete objects from keys.
 	     * @param keys
 	     * @param entity
 	     */
 	    <K,T> void delete(Iterable<K>  keys, Class<T> entity);
 
 	    /**
-	     * delete objects from keys with consistency level
+	     * delete objects from keys with consistency level.
 	     * @param keys
 	     * @param entity
 	     * @param consistency
@@ -114,21 +113,21 @@ public interface CassandraTemplate{
 	    <K,T> void delete(Iterable<K>  keys, Class<T> entity,ConsistencyLevel consistency);
 
 	    /**
-	     * Remove all objects in column family
+	     * Remove all objects in column family.
 	     * @param entity
 	     */
 	    <T> void deleteAll(Class<T> entity);
 
 
 	    /**
-	     * update the object
+	     * update the object.
 	     * @param entity
 	     * @return
 	     */
 	    <T> T update(T entity);
 
 	    /**
-	     * update the object
+	     * update the object.
 	     * @param entity
 	     * @param consistency
 	     * @return
@@ -137,14 +136,14 @@ public interface CassandraTemplate{
 
 
 	    /**
-	     * update these objects
+	     * update these objects.
 	     * @param entities
 	     * @return
 	     */
 	    <T> Iterable<T> update(Iterable<T> entities);
 
 	    /**
-	     * update these objects with consistency level
+	     * update these objects with consistency level.
 	     * @param entities
 	     * @return
 	     */
@@ -152,14 +151,14 @@ public interface CassandraTemplate{
 
 
 	    /**
-	     * find one entity by key
+	     * find one entity by key.
 	     * @param key
 	     * @param entity
 	     * @return
 	     */
 	    <T,K> T findOne(K key, Class<T> entity);
 	    /**
-	     * find one entity by key
+	     * find one entity by key.
 	     * @param key
 	     * @param entity
 	     * @param consistency
@@ -168,7 +167,7 @@ public interface CassandraTemplate{
 	    <T,K> T findOne(K key, Class<T> entity,ConsistencyLevel consistency);
 
 	    /**
-	     * return all objects
+	     * return all objects.
 	     * @param keys
 	     * @param entity
 	     * @return
@@ -178,7 +177,7 @@ public interface CassandraTemplate{
 	    <T,K> List<T> findAll(Iterable<K> keys, Class<T> entity,ConsistencyLevel consistency);
 
 	    /**
-	     * returns all entities
+	     * returns all entities.
 	     * @param entity
 	     * @return
 	     */
@@ -187,7 +186,7 @@ public interface CassandraTemplate{
 	    <T> List<T> findAll(Class<T> entity,ConsistencyLevel consistency);
 
 	    /**
-	     * return by index
+	     * return by index.
 	     * @param index
 	     * @param entity
 	     * @return
@@ -197,8 +196,7 @@ public interface CassandraTemplate{
 	    <T,I> List<T> findByIndex(String columnName,I index,Class<T> entity,ConsistencyLevel consistency);
 
         /**
-        * Find by key and annotated index
-        *
+        * Find by key and annotated index.
         * @author Nenita Casuga
         * @since 10/31/2013
         */
@@ -206,30 +204,27 @@ public interface CassandraTemplate{
 
         /**
         * Find by key and annotated index
-        *
         * @author Nenita Casuga
         * @since 10/30/2013
         */
         <T,I> List<T> findByKeyAndIndex(String key, I index,Class<T> entity,ConsistencyLevel consistency);
 
         /**
-        * Find by key and annotated index
-        *
+        * Find by key and annotated index.
         * @author Nenita Casuga
         * @since 10/31/2013
         */
         <T,I> List<T> findByKeyAndIndexRange(String key, I indexStart, I indexEnd, boolean exclusive,Class<T> entity);
 
         /**
-        * Find by key and annotated index
-        *
+        * Find by key and annotated index.
         * @author Nenita Casuga
         * @since 10/30/2013
         */
         <T,I> List<T> findByKeyAndIndexRange(String key, I indexStart, I indexEnd, boolean exclusive, Class<T> entity,ConsistencyLevel consistency);
 
         /**
-	     * verify if exist
+	     * verify if exist.
 	     * @param key
 	     * @param entity
 	     * @return
@@ -239,7 +234,7 @@ public interface CassandraTemplate{
 	    <K,T>boolean exist(K key, Class<T> entity,ConsistencyLevel consistency);
 
 	    /**
-	     * execute a query
+	     * execute a query.
 	     * @param query
 	     */
 	    void executeUpdate(String query);

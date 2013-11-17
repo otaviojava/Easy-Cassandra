@@ -20,7 +20,7 @@ import java.nio.ByteBuffer;
 import org.easycassandra.util.ReflectionUtil;
 
 /**
- * create a column to cassandra checking the annotation 
+ * create a column to cassandra checking the annotation.
  * @author otaviojava
  */
 enum AddColumnUtil {
@@ -30,22 +30,22 @@ enum AddColumnUtil {
         if (ColumnUtil.INTANCE.isEnumField(field)) {
             return new EnumAdd();
         }
-        if(ColumnUtil.INTANCE.isList(field)){
+       if (ColumnUtil.INTANCE.isList(field)) {
             return new ListAdd();
         }
-        if(ColumnUtil.INTANCE.isSet(field)){
+        if (ColumnUtil.INTANCE.isSet(field)) {
             return new SetAdd();
         }
-        if(ColumnUtil.INTANCE.isMap(field)){
+        if (ColumnUtil.INTANCE.isMap(field)) {
             return new MapAdd();
         }
-        if(ColumnUtil.INTANCE.isCustom(field)){
+        if (ColumnUtil.INTANCE.isCustom(field)) {
             return new CustomAdd();
         }
-        
+
         return new DefaultAdd();
     }
-    
+
 class CustomAdd implements AddColumn{
 
     @Override
@@ -55,9 +55,9 @@ class CustomAdd implements AddColumn{
         row.append(columnName).append(" ").append(javaCassandra.getPreferenceCQLType(ByteBuffer.class.getName())).append(",");
         return row.toString();
     }
-    
+
 }
-    
+
 class MapAdd implements AddColumn{
 
     @Override
@@ -65,15 +65,15 @@ class MapAdd implements AddColumn{
         StringBuilder row=new StringBuilder();
         String columnName = ColumnUtil.INTANCE.getColumnName(field);
         ReflectionUtil.KeyValueClass keyValueClass=ReflectionUtil.INSTANCE.getGenericKeyValue(field);
-        
+
         row.append(columnName).append(" map<").append(javaCassandra.getPreferenceCQLType(keyValueClass.getKeyClass().getName())).append(",");
         row.append(javaCassandra.getPreferenceCQLType(keyValueClass.getValueClass().getName())).append(">,");
         return row.toString();
     }
-    
-}    
-    
-class SetAdd implements AddColumn{
+
+}
+
+class SetAdd implements AddColumn {
 
     @Override
     public String addRow(Field field, RelationShipJavaCassandra javaCassandra) {
@@ -83,7 +83,7 @@ class SetAdd implements AddColumn{
         row.append(columnName).append(" set<").append(javaCassandra.getPreferenceCQLType(clazz.getName())).append(">,");
         return row.toString();
     }
-    
+
 }
 class ListAdd implements AddColumn{
 
@@ -95,9 +95,9 @@ class ListAdd implements AddColumn{
         row.append(columnName).append(" list<").append(javaCassandra.getPreferenceCQLType(clazz.getName())).append(">,");
         return row.toString();
     }
-    
+
 }
-    
+
 class EnumAdd implements AddColumn{
 
     @Override
@@ -107,8 +107,8 @@ class EnumAdd implements AddColumn{
         row.append(columnName).append(" ").append(javaCassandra.getPreferenceCQLType(ColumnUtil.DEFAULT_ENUM_CLASS.getName())).append(",");
         return row.toString();
     }
-    
-}    
+
+}
 
 class DefaultAdd implements AddColumn{
 
@@ -119,16 +119,16 @@ class DefaultAdd implements AddColumn{
         row.append(columnName).append(" ").append(javaCassandra.getPreferenceCQLType(field.getType().getName())).append(",");
         return row.toString();
     }
-    
+
 }
 /**
- * The contract to create a column to cassandra checking the annotation
+ * The contract to create a column to cassandra checking the annotation.
  * @author otaviojava
  *
  */
 interface AddColumn{
     /**
-     * create a column 
+     * create a column.
      * @param field
      * @param javaCassandra
      * @return

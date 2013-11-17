@@ -15,7 +15,7 @@
 package org.easycassandra.persistence.cassandra;
 
 /**
- * Exception to serialize and deseralize the object in 
+ * Exception to serialize and deseralize the object in.
  * DefaultCustmomizable
  * @author osantana
  *

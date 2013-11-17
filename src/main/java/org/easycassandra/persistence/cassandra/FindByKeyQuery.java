@@ -26,10 +26,8 @@ import com.datastax.driver.core.Session;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 
 /**
- * Class to execute query for find by id
- * 
+ * Class to execute query for find by id.
  * @author otaviojava
- * 
  */
 class FindByKeyQuery extends FindAllQuery {
 
@@ -39,11 +37,11 @@ class FindByKeyQuery extends FindAllQuery {
 
 	public <T> T findByKey(Object key, Class<T> bean, Session session,ConsistencyLevel consistency) {
     	QueryBean byKeyBean = createQueryBean(bean,consistency);
-    	
+
         return executeConditions(key, bean, session, byKeyBean);
     }
 
-    private <T> T executeConditions(Object key, Class<T> bean, Session session,QueryBean byKeyBean) {
+    private <T> T executeConditions(Object key, Class<T> bean, Session session, QueryBean byKeyBean) {
         ResultSet resultSet = executeQuery(key, bean, session, byKeyBean);
         List<T> list = RecoveryObject.INTANCE.recoverObjet(bean, resultSet);
         if (!list.isEmpty()) {

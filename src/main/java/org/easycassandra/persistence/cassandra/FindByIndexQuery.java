@@ -23,10 +23,8 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Session;
 
 /**
- * Class to execute a index
- * 
+ * Class to execute a index.
  * @author otaviojava
- * 
  */
 class FindByIndexQuery extends FindByKeyQuery {
 
@@ -41,11 +39,11 @@ class FindByIndexQuery extends FindByKeyQuery {
 	}
 
     /**
-     * Edited by Nenita Casuga to make method static and package protected so it can be reused
+     * Edited by Nenita Casuga to make method static and package protected so it can be reused.
      *
      */
 	static <T> void checkFieldNull(Class<T> bean, Field field) {
-		if(field==null){
+		if (field == null) {
 			StringBuffer erro=new StringBuffer();
 			erro.append("No found some field with @org.easycassandra.Index within ");
 			erro.append(bean.getName()).append(" class.");
@@ -71,8 +69,7 @@ class FindByIndexQuery extends FindByKeyQuery {
     }
 
     /**
-     * Edited by Nenita Casuga to make method static and package protected so it can be reused
-     *
+     * Edited by Nenita Casuga to make method static and package protected so it can be reused.
      */
 	 static <T> void checkIndexProblem(Class<T> bean, QueryBean byKeyBean) {
 		if (byKeyBean.key == null) {

@@ -1,22 +1,24 @@
 package org.easycassandra.persistence.cassandra;
 
 import com.datastax.driver.core.Session;
-
+/**
+ * the base of Cassandra factory.
+ */
 public interface CassandraFactory {
 
+     /**
+     * returns the session of Cassandra Driver.
+     * @param host
+     * @return
+     */
+     Session getSession(String host);
+
 	/**
-	 * returns the session of Cassandra Driver
-	 * @param host
-	 * @return
-	 */
-	Session getSession(String host);
-	
-	/**
-	 * returns the session of Cassandra Driver
+	 * returns the session of Cassandra Driver.
 	 * @return
 	 */
 	Session getSession();
-	
+
 	/**
 	 * returns the session of Cassandra Driver
 	 * @param host

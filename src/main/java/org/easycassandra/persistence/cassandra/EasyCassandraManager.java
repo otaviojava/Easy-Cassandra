@@ -23,13 +23,12 @@ import com.datastax.driver.core.Session;
 
 
 /**
- * Class for manage Connections
- * 
+ * Class for manage Connections.
  * @author otaviojava
  * @version 2.0
  */
 public class EasyCassandraManager extends AbstractCassandraFactory  {
-    
+
 
 	public EasyCassandraManager(String host,String keySpace){
 		super(host, keySpace);
@@ -37,14 +36,11 @@ public class EasyCassandraManager extends AbstractCassandraFactory  {
 	public EasyCassandraManager(String host,String keySpace,int port){
 		super(host, keySpace, port);
 	}
-	
-	
-	
+
 	 /**
      * Method for create the Cassandra's Client, if the keyspace there is not,if
      * keyspace there isn't, it will created with simple strategy replica and
-     * number of fator 3
-     * 
+     * number of fator 3.
      * @param host
      *            - place where is Cassandra data base
      * @param keySpace
@@ -64,8 +60,7 @@ public class EasyCassandraManager extends AbstractCassandraFactory  {
     /**
      * Method for create the Cassandra's Client, if the keyspace there is not,if
      * keyspace there isn't, it will created with replacyStrategy and number of
-     * factor
-     * 
+     * factor.
      * @param host
      *            - place where is Cassandra data base
      * @param keySpace
@@ -82,30 +77,31 @@ public class EasyCassandraManager extends AbstractCassandraFactory  {
         verifyKeySpace(keySpace, cluter.connect(), replicaStrategy,factor);
         return new PersistenceSimpleImpl(session, keySpace);
     }
-    
+
     /**
-     * returns a persistence
+     * returns a persistence.
      * @return
      */
     public Persistence getPersistence(){
     	return getPersistence(getHost(), getKeySpace());
     }
-    
+
     /**
-     * list of classes added by Cassandra
+     * list of classes added by Cassandra.
      */
     private List<Class<?>> classes=new LinkedList<Class<?>>();
-	
+
     /**
-     * add an objetc to Cassandra management 
+     * add an objetc to Cassandra management.
      * @param class1
      * @param keySpace
      * @return
      */
     public boolean addFamilyObject(Class<?> class1, String keySpace) {
-        if(classes.contains(class1)){
+        if (classes.contains(class1)) {
             return true;
         }
+
         String familyColumn = ColumnUtil.INTANCE.getColumnFamilyNameSchema(class1);
         Session session = getCluster().connect(keySpace);
         if (!ColumnUtil.INTANCE.getSchema(class1).equals("")) {
@@ -124,5 +120,5 @@ public class EasyCassandraManager extends AbstractCassandraFactory  {
     public boolean addFamilyObject(Class<?> class1){
     	return addFamilyObject(class1, getKeySpace());
     }
-    
+
 }

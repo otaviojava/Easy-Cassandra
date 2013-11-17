@@ -21,8 +21,7 @@ import org.easycassandra.persistence.cassandra.ColumnUtil;
 import com.datastax.driver.core.Session;
 
 /**
- * Class for manage Connections
- * 
+ * Class for manage Connections.
  * @author otaviojava
  * @version 2.0
  */
@@ -31,13 +30,13 @@ public class CassandraFactoryDynamically extends AbstractCassandraFactory{
     public CassandraFactoryDynamically(String host, String keySpace) {
 		super(host, keySpace);
 	}
-    
+
 	public CassandraFactoryDynamically(String host, String keySpace,int port) {
 		super(host, keySpace,port);
 	}
 
 	/**
-     * list of classes added by Cassandra
+     * list of classes added by Cassandra.
      */
     private List<Class<?>> classes=new LinkedList<Class<?>>();
 
@@ -52,7 +51,7 @@ public class CassandraFactoryDynamically extends AbstractCassandraFactory{
 
         }
         classes.add(class1);
-        return fixColumnFamily(session, familyColumn,class1);
+        return fixColumnFamily(session, familyColumn, class1);
     }
 
 

@@ -26,10 +26,8 @@ import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.core.querybuilder.Select;
 
 /**
- * Mount and run the query to returns all data from column family
- * 
+ * Mount and run the query to returns all data from column family.
  * @author otaviojava
- * 
  */
 public class FindAllQuery {
 
@@ -48,7 +46,7 @@ public class FindAllQuery {
 
 	protected <T> QueryBean createQueryBean(Class<T> bean,ConsistencyLevel consistency) {
 		QueryBean byKeyBean = prepare(new QueryBean(), bean);
-        KeySpaceInformation key=ColumnUtil.INTANCE.getKeySpace(keySpace, bean);
+        KeySpaceInformation key = ColumnUtil.INTANCE.getKeySpace(keySpace, bean);
         byKeyBean.select=QueryBuilder.select(byKeyBean.getArray()).from(key.getKeySpace(), key.getColumnFamily());
         byKeyBean.select.setConsistencyLevel(consistency);
 		return byKeyBean;
@@ -71,7 +69,7 @@ public class FindAllQuery {
                 byKeyBean.key = field;
             }
             byKeyBean.columns.add(ColumnUtil.INTANCE.getColumnName(field));
-            
+
 
         }
         return byKeyBean;
@@ -81,7 +79,7 @@ public class FindAllQuery {
         protected Field key;
         protected List<String> columns = new LinkedList<String>();
         protected Select select;
-        
+
         String[] getArray(){
         	return columns.toArray(new String[0]);
         }

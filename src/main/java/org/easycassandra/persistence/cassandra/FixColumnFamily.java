@@ -40,7 +40,6 @@ class FixColumnFamily {
 
     /**
      * verify if exist column family and try to create
-     * 
      * @param session
      *            - bridge to cassandra data base
      * @param familyColumn
@@ -69,21 +68,19 @@ class FixColumnFamily {
     }
 
     /**
-     * Column family exists verify
-     * 
+     * Column family exists verify.
      * @param resultSet
      */
     private void verifyRowType(ResultSet resultSet, Class<?> class1, Session session) {
         Map<String, String> mapNameType = new HashMap<String, String>();
         for (Definition column : resultSet.getColumnDefinitions()) {
-            mapNameType.put(column.getName(), column.getType().getName().name());
+             mapNameType.put(column.getName(), column.getType().getName().name());
         }
         verifyRow(class1, session, mapNameType);
     }
 
     /**
      * verify relationship beteween Java and CQL type
-     * 
      * @param class1
      * @param session
      * @param mapNameType
@@ -118,7 +115,6 @@ class FixColumnFamily {
 
     /**
      * call the command to alter table adding a field
-     * 
      * @param class1
      *            - bean within column family
      * @param session
@@ -130,7 +126,7 @@ class FixColumnFamily {
         StringBuilder cqlAlterTable = new StringBuilder();
         cqlAlterTable.append("ALTER TABLE ").append( ColumnUtil.INTANCE.getColumnFamilyNameSchema(class1));
         cqlAlterTable.append(" ADD ");
-        AddColumn addColumn=AddColumnUtil.INSTANCE.factory(field);
+        AddColumn addColumn = AddColumnUtil.INSTANCE.factory(field);
         cqlAlterTable.append(addColumn.addRow(field, RelationShipJavaCassandra.INSTANCE));
         cqlAlterTable.deleteCharAt(cqlAlterTable.length()-1);
         cqlAlterTable.append(";");
@@ -138,8 +134,7 @@ class FixColumnFamily {
     }
 
     /**
-     * Field Java isn't equivalents with CQL type create error mensage
-     * 
+     * Field Java isn't equivalents with CQL type create error mensage.
      * @param class1
      * @param field
      * @param cqlTypes
@@ -155,8 +150,7 @@ class FixColumnFamily {
     }
 
     /**
-     * Column family doen'snt exist create with this method
-     * 
+     * Column family doen'snt exist create with this method.
      * @param familyColumn
      *            - name of column family
      * @param class1
@@ -169,7 +163,6 @@ class FixColumnFamily {
         cqlCreateTable.append("create table ");
 
         cqlCreateTable.append(familyColumn).append("( ");
-        
         boolean isComplexID = createQueryCreateTable(class1, cqlCreateTable);
         if (isComplexID) {
             addComlexID(class1, cqlCreateTable);
@@ -181,23 +174,21 @@ class FixColumnFamily {
     }
 
     /**
-     * add in the query a simple id
+     * add in the query a simple id.
      * @param class1
      * @param cqlCreateTable
      */
     private void addSimpleId(Class<?> class1, StringBuilder cqlCreateTable) {
         Field keyField = ColumnUtil.INTANCE.getKeyField(class1);
-        if(keyField == null){
+        if (keyField == null) {
             createErro(class1);
         }
         cqlCreateTable.append(" PRIMARY KEY (").append(ColumnUtil.INTANCE.getColumnName(keyField)).append(") );");
     }
 
-    
-    
-    
+
     /**
-     * add in the query a complex key
+     * add in the query a complex key.
      * @param class1
      * @param cqlCreateTable
      */
@@ -207,7 +198,7 @@ class FixColumnFamily {
          * Added by Nenita Casuga to allow embedded id from the super class
          */
         // Add embedded id from the super class
-        if (keyField == null){
+        if (keyField == null) {
             keyField = ColumnUtil.INTANCE.getKeyComplexField(class1.getSuperclass());
         }
         cqlCreateTable.append(" PRIMARY KEY (");
@@ -224,13 +215,12 @@ class FixColumnFamily {
     }
 
     /**
-     * 
      * @param bean
      */
     private void createErro(Class<?> bean) {
-        
+
         StringBuilder erroMensage=new StringBuilder();
-           
+
         erroMensage.append("the bean ").append(ColumnUtil.INTANCE.getColumnFamilyNameSchema(bean));
         erroMensage.append(" hasn't  a field with id annotation, you may to use either javax.persistence.Id");
         erroMensage.append(" to simple id or javax.persistence.EmbeddedId");
@@ -257,7 +247,7 @@ class FixColumnFamily {
                 }
                 continue;
             }
-            
+
             AddColumn addColumn=AddColumnUtil.INSTANCE.factory(field);
             cqlCreateTable.append(addColumn.addRow(field, RelationShipJavaCassandra.INSTANCE));
         }
@@ -265,7 +255,7 @@ class FixColumnFamily {
     }
 
     /**
-     * Find if exists
+     * Find if exists.
      * REMARK edited by : Dinusha Nandika;
      */
     private void findIndex(Class<?> familyColumn, Session session) {
@@ -279,7 +269,7 @@ class FixColumnFamily {
     }
 
     /**
-     * method to create index
+     * method to create index.
      * @param familyColumn
      * @param session
      * @param index

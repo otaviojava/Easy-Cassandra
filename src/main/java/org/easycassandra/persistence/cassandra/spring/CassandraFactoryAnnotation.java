@@ -22,18 +22,17 @@ import org.springframework.beans.factory.InitializingBean;
 import com.datastax.driver.core.Session;
 
 /**
- * Add the mapped class by spring xml
+ * Add the mapped class by spring xml.
  * @author otaviojava
- *
  */
 public class CassandraFactoryAnnotation extends AbstractCassandraFactory implements InitializingBean{
 
 	private List<Class<?>> annotatedClasses;
-	
+
 	public CassandraFactoryAnnotation(String host, String keySpace) {
 		super(host, keySpace);
 	}
-	
+
 	public CassandraFactoryAnnotation(String host, String keySpace,int port) {
 		super(host, keySpace,port);
 	}
@@ -48,7 +47,7 @@ public class CassandraFactoryAnnotation extends AbstractCassandraFactory impleme
 	}
 
 	/**
-	 * map a specific class
+	 * map a specific class.
 	 * @param entity
 	 * @return
 	 */
@@ -65,7 +64,5 @@ public class CassandraFactoryAnnotation extends AbstractCassandraFactory impleme
 	public void setAnnotatedClasses(List<Class<?>> annotatedClasses) {
 		this.annotatedClasses = annotatedClasses;
 	}
-
-	
 
 }

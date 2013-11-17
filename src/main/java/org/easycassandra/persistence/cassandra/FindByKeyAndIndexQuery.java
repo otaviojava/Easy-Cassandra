@@ -23,8 +23,7 @@ import com.datastax.driver.core.querybuilder.QueryBuilder;
 import org.easycassandra.util.ReflectionUtil;
 
 /**
- * Query to find by primary key and index combination
- *
+ * Query to find by primary key and index combination.
  * @author Nenita Casuga
  * @since 10/28/13
  */
@@ -60,7 +59,6 @@ class FindByKeyAndIndexQuery extends FindByKeyQuery {
     private <T> List<T> executeConditions(String indexName, Object indexStart, Object indexEnd, Boolean inclusive, Object key,
                                           Class<T> bean, Session session, QueryBean byKeyBean) {
 
-        // Add primary keys
         super.prepare(byKeyBean, bean);
         if (ColumnUtil.INTANCE.isEmbeddedIdField(byKeyBean.key)) {
             for (Field complexKey : ColumnUtil.INTANCE.listFields(key.getClass())) {

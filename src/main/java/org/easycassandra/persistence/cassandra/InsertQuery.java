@@ -52,10 +52,10 @@ class InsertQuery {
 
         Batch batch = null;
 
-        for(T bean:beans){
-            if(batch == null){
+        for (T bean:beans) {
+            if (batch == null) {
                 batch=QueryBuilder.batch(createStatment(bean,consistency));
-            }else{
+            } else {
                 batch.add(createStatment(bean,consistency));
             }
         }

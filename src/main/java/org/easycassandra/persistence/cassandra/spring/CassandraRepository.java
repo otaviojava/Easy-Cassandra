@@ -8,9 +8,9 @@ import org.springframework.data.repository.CrudRepository;
 public abstract class CassandraRepository<T,K extends Serializable> implements CrudRepository<T, K> {
 
 	protected abstract CassandraTemplate getCassandraTemplate();
-	
+
 	private Class<T> beanClass;
-	
+
 	@Override
 	public <S extends T> S save(S entity) {
 		return getCassandraTemplate().save(entity);
@@ -28,7 +28,7 @@ public abstract class CassandraRepository<T,K extends Serializable> implements C
 
 	@Override
 	public boolean exists(K id) {
-		
+
 		return findOne(id) != null;
 	}
 
@@ -55,20 +55,20 @@ public abstract class CassandraRepository<T,K extends Serializable> implements C
 	@Override
 	public void delete(T entity) {
 		getCassandraTemplate().delete(entity);
-		
+
 	}
 
 	@Override
 	public void delete(Iterable<? extends T> entities) {
 		getCassandraTemplate().delete(entities);
-		
+
 	}
 
 	@Override
 	public void deleteAll() {
 		getCassandraTemplate().deleteAll(beanClass);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public CassandraRepository(){
 		ParameterizedType genericType=(ParameterizedType)this.getClass().getGenericSuperclass();
