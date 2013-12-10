@@ -1,12 +1,13 @@
 package org.easycassandra.bean.model;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 
 /**
  * @author Nenita A. Casuga
  *         Date 10/28/13
  */
-public class IdLifestyle {
+public class IdLifestyle implements Serializable {
 
     // No support for @Column(name =  "person_id")
     @Column
