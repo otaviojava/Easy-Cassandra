@@ -13,6 +13,8 @@
 	<property name="annotatedClasses">
 		<list>
 			<value>org.easycassandra.persistence.cassandra.spring.entity.Contact</value>
+            <value>org.easycassandra.bean.model.Step</value>
+            <value>org.easycassandra.bean.model.Weight</value>
 		</list>
 	</property>
 </bean>	

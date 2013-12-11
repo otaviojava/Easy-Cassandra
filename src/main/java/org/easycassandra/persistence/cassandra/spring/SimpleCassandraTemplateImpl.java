@@ -206,7 +206,7 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
      * @since 10/31/2013
      */
     @Override
-    public <T,I> List<T> findByKeyAndIndex(String key, I index,Class<T> entity){
+    public <T,I> List<T> findByKeyAndIndex(Object key, I index,Class<T> entity){
         return command.findByKeyAndIndex(key, index, entity, session, keySpace);
     }
 
@@ -216,7 +216,7 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
      * @since 10/31/2013
      */
     @Override
-    public <T,I> List<T> findByKeyAndIndex(String key, I index,Class<T> entity, ConsistencyLevel consistency){
+    public <T,I> List<T> findByKeyAndIndex(Object key, I index,Class<T> entity, ConsistencyLevel consistency){
         return command.findByKeyAndIndex(key, index, entity, session, keySpace, consistency);
     }
 
@@ -226,7 +226,7 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
      * @since 10/31/2013
      */
     @Override
-    public <T,I> List<T> findByKeyAndIndexRange(String key, I indexStart, I indexEnd, boolean exclusive, Class<T> entity){
+    public <T,I> List<T> findByKeyAndIndexRange(Object key, I indexStart, I indexEnd, boolean exclusive, Class<T> entity){
         return command.findByKeyAndIndexRange(key, indexStart, indexEnd, exclusive, entity, session, keySpace);
     }
 
@@ -236,7 +236,7 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
      * @since 10/31/2013
      */
     @Override
-    public <T,I> List<T> findByKeyAndIndexRange(String key, I indexStart, I indexEnd, boolean exclusive, Class<T> entity, ConsistencyLevel consistency){
+    public <T,I> List<T> findByKeyAndIndexRange(Object key, I indexStart, I indexEnd, boolean exclusive, Class<T> entity, ConsistencyLevel consistency){
         return command.findByKeyAndIndexRange(key, indexStart, indexEnd, exclusive, entity, session, keySpace, consistency);
     }
 

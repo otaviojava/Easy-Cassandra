@@ -200,28 +200,28 @@ public interface CassandraTemplate{
         * @author Nenita Casuga
         * @since 10/31/2013
         */
-        <T,I> List<T> findByKeyAndIndex(String key, I index,Class<T> entity);
+        <T,I> List<T> findByKeyAndIndex(Object key, I index,Class<T> entity);
 
         /**
         * Find by key and annotated index
         * @author Nenita Casuga
         * @since 10/30/2013
         */
-        <T,I> List<T> findByKeyAndIndex(String key, I index,Class<T> entity,ConsistencyLevel consistency);
+        <T,I> List<T> findByKeyAndIndex(Object key, I index,Class<T> entity,ConsistencyLevel consistency);
 
         /**
         * Find by key and annotated index.
         * @author Nenita Casuga
         * @since 10/31/2013
         */
-        <T,I> List<T> findByKeyAndIndexRange(String key, I indexStart, I indexEnd, boolean exclusive,Class<T> entity);
+        <T,I> List<T> findByKeyAndIndexRange(Object key, I indexStart, I indexEnd, boolean exclusive,Class<T> entity);
 
         /**
         * Find by key and annotated index.
         * @author Nenita Casuga
         * @since 10/30/2013
         */
-        <T,I> List<T> findByKeyAndIndexRange(String key, I indexStart, I indexEnd, boolean exclusive, Class<T> entity,ConsistencyLevel consistency);
+        <T,I> List<T> findByKeyAndIndexRange(Object key, I indexStart, I indexEnd, boolean exclusive, Class<T> entity,ConsistencyLevel consistency);
 
         /**
 	     * verify if exist.
