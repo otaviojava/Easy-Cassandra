@@ -30,10 +30,8 @@ import com.datastax.driver.core.querybuilder.Insert;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 
 /**
- * Class to mounts and runs the query to insert a row in a column family
- *
+ * Class to mounts and runs the query to insert a row in a column family.
  * @author otaviojava
- *
  */
 class InsertQuery {
 
@@ -45,7 +43,7 @@ class InsertQuery {
 
     public <T> boolean prepare(T bean, Session session,ConsistencyLevel consistency) {
 
-        session.execute(createStatment(bean,consistency));
+        session.execute(createStatment(bean, consistency));
         return true;
     }
     public <T> boolean prepare(Iterable<T> beans, Session session,ConsistencyLevel consistency) {
@@ -54,9 +52,9 @@ class InsertQuery {
 
         for (T bean:beans) {
             if (batch == null) {
-                batch=QueryBuilder.batch(createStatment(bean,consistency));
+                batch = QueryBuilder.batch(createStatment(bean, consistency));
             } else {
-                batch.add(createStatment(bean,consistency));
+                batch.add(createStatment(bean, consistency));
             }
         }
         session.execute(batch);
@@ -66,9 +64,9 @@ class InsertQuery {
 
     private <T> Statement createStatment(T bean, ConsistencyLevel consistency) {
         isKeyNull(bean);
-        KeySpaceInformation key=ColumnUtil.INTANCE.getKeySpace(keySpace, bean.getClass());
-        Insert insert=QueryBuilder.insertInto(key.getKeySpace(), key.getColumnFamily());
-        insert=createInsert(bean, insert);
+        KeySpaceInformation key = ColumnUtil.INTANCE.getKeySpace(keySpace, bean.getClass());
+        Insert insert = QueryBuilder.insertInto(key.getKeySpace(), key.getColumnFamily());
+        insert = createInsert(bean, insert);
         insert.setConsistencyLevel(consistency);
         return insert;
     }
@@ -86,7 +84,7 @@ class InsertQuery {
             }
 
             else if (ReflectionUtil.INSTANCE.getMethod(bean, field) != null) {
-                InsertColumn insertColumn=InsertColumnUtil.INSTANCE.factory(field);
+                InsertColumn insertColumn = InsertColumnUtil.INSTANCE.factory(field);
                 insert.value(ColumnUtil.INTANCE.getColumnName(field), insertColumn.getObject(bean, field));
 
             }
@@ -94,12 +92,7 @@ class InsertQuery {
         return insert;
     }
 
-    /**
-     * Verify if key is nut and make a exception
-     *
-     * @param bean
-     */
-    private void isKeyNull(Object bean) {
+    private void isKeyNull(Object bean){
         Field key = ColumnUtil.INTANCE.getKeyField(bean.getClass());
         if (key == null) {
 
