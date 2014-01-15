@@ -25,7 +25,6 @@ import org.easycassandra.util.ReflectionUtil;
 import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.Statement;
-import com.datastax.driver.core.querybuilder.Batch;
 import com.datastax.driver.core.querybuilder.Insert;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 
@@ -48,16 +47,9 @@ class InsertQuery {
     }
     public <T> boolean prepare(Iterable<T> beans, Session session,ConsistencyLevel consistency) {
 
-        Batch batch = null;
-
         for (T bean:beans) {
-            if (batch == null) {
-                batch = QueryBuilder.batch(createStatment(bean, consistency));
-            } else {
-                batch.add(createStatment(bean, consistency));
-            }
+        	prepare(bean, session, consistency);
         }
-        session.execute(batch);
         return true;
     }
 
