@@ -385,7 +385,7 @@ public enum ColumnUtil {
 	public Field getFieldByColumnName(String columnName, Class<?> class1) {
 		
 		for(Field index:getIndexFields(class1)){
-			if(index.getName().equals(columnName)){
+			if(getColumnName(index).equals(columnName)){
 				return index;
 			}
 		}
