@@ -13,6 +13,7 @@
 		<junit.version>4.10</junit.version>
 		<cassandra.driver.core.version>2.0.0-rc2</cassandra.driver.core.version>
 		<spring.version>3.2.2.RELEASE</spring.version>
+		<jpa.version>2.0.0</jpa.version>
 	</properties>
 
 
@@ -57,7 +58,7 @@
 		<dependency>
 			<groupId>org.ow2.spec.ee</groupId>
 			<artifactId>ow2-jpa-2.0-spec</artifactId>
-			<version>1.0.11</version>
+			<version>${jpa.version}</version>
 		</dependency>
 
 
