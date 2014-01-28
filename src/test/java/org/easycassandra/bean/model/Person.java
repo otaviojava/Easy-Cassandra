@@ -12,7 +12,8 @@ import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.easycassandra.Index;
 
 /**
@@ -23,22 +24,21 @@ import org.easycassandra.Index;
 public class Person implements Serializable {
 
     private static final long serialVersionUID = 3L;
-    
+
     @Id
     private Long id;
-    
+
     @Index
     @Column(name = "name")
     private String name;
-    
+
     @Column(name = "born")
     private Integer year;
-    
-    
+
     @Enumerated
     private Sex sex;
-    
-    
+
+
     @Embedded
     private Address address;
 
@@ -82,29 +82,21 @@ public class Person implements Serializable {
         this.sex = sex;
     }
 
-    
-   
+
+    @Override
 	public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
+        if (obj instanceof Person) {
+            Person other = Person.class.cast(obj);
+            return new EqualsBuilder().append(id, other.id).isEquals();
         }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Person other = (Person) obj;
-        if(!StringUtils.equals(String.valueOf(this.id.intValue()), String.valueOf(other.id.intValue()))){
-        	return false;
-        }
-        return true;
+
+        return false;
     }
 
+    @Override
     public int hashCode() {
-        int hash = 3;
-        return 97 * hash + id.hashCode();
-        
+       return new HashCodeBuilder().append(id).toHashCode();
+
     }
-    
-    
-    
-    
+
 }

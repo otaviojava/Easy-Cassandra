@@ -18,10 +18,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -31,7 +31,6 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Table;
 import javax.persistence.Version;
-import javax.xml.crypto.dsig.keyinfo.KeyValue;
 
 import org.easycassandra.CustomData;
 import org.easycassandra.Index;
@@ -58,6 +57,7 @@ public enum ColumnUtil {
     {
         annotations = new ArrayList<String>();
         annotations.add(Id.class.getName());
+        annotations.add(ElementCollection.class.getName());
         annotations.add(SetData.class.getName());
         annotations.add(ListData.class.getName());
         annotations.add(MapData.class.getName());
@@ -72,7 +72,7 @@ public enum ColumnUtil {
 
 
     /**
-     * Get The Column name from an Object
+     * Get The Column name from an Object.
      * @param object
      *            - Class of the object viewed
      * @return The name of Column name if there are not will be return null
@@ -148,7 +148,7 @@ public enum ColumnUtil {
     }
 
     /**
-     * Return the Field with the complex key Annotations
+     * Return the Field with the complex key Annotations.
      * @see KeyValue
      * @param persistenceClass
      *            - Class of the object viewed

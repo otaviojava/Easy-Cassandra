@@ -11,24 +11,18 @@ import org.easycassandra.Index;
 @Entity
 public class Animal implements Serializable {
 
-	
-	 	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -6438374234472941694L;
 
 
 		@Id
 	    private String name;
-	    
-	  
+
 	    @Column
 	    private String race;
-	    
+
 	    @Index
 	    @Column
 	    private String country;
-
 
 		@Override
 		public int hashCode() {
@@ -85,10 +79,6 @@ public class Animal implements Serializable {
 		public void setCountry(String country) {
 			this.country = country;
 		}
-	    
-	    
-
-
-	    
+    
 	
 }

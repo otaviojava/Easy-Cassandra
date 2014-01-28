@@ -9,11 +9,11 @@ import javax.persistence.Id;
 import org.easycassandra.MapData;
 
 
-@Entity(name="resumebook")
+@Entity(name = "resumebook")
 public class Book {
 
     @Id
-    @Column(name="booksname")
+    @Column(name = "booksname")
     private String name;
     
     @MapData

@@ -25,7 +25,6 @@ import com.datastax.driver.core.querybuilder.Select;
  * Class to mount and execute a query to return the number of column in a family
  * column.
  * @author otaviojava
- * 
  */
 class CountQuery {
 
