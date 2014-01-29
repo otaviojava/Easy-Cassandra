@@ -371,9 +371,16 @@ public enum ColumnUtil {
      * @return
      */
     public boolean isCustom(Field field) {
-        
         return field.getAnnotation(CustomData.class) != null;
     }
+    /**
+     * verify if the field is element Collection.
+     * @param field
+     * @return
+     */
+	public boolean isElementCollection(Field field) {
+		return field.getAnnotation(ElementCollection.class) != null;
+	}
 
    /**
     * get the Field for parsing <b>columnName</b> in the <b>class1</b>.
@@ -419,5 +426,6 @@ public enum ColumnUtil {
 		}
 
 	}
+
 
 }

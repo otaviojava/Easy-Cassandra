@@ -32,14 +32,12 @@ import com.datastax.driver.core.exceptions.InvalidQueryException;
 
 /**
  * Class to fix a column family
- * 
  * @author otaviojava
- * 
  */
 class FixColumnFamily {
 
     /**
-     * verify if exist column family and try to create
+     * verify if exist column family and try to create.
      * @param session
      *            - bridge to cassandra data base
      * @param familyColumn
@@ -80,7 +78,7 @@ class FixColumnFamily {
     }
 
     /**
-     * verify relationship beteween Java and CQL type
+     * verify relationship beteween Java and CQL type.
      * @param class1
      * @param session
      * @param mapNameType
@@ -89,7 +87,7 @@ class FixColumnFamily {
             Map<String, String> mapNameType) {
 
         for (Field field : ColumnUtil.INTANCE.listFields(class1)) {
-            
+
             if (ColumnUtil.INTANCE.isEmbeddedField(field) || ColumnUtil.INTANCE.isEmbeddedIdField(field)) {
                 continue;
             } else if (ColumnUtil.INTANCE.isEmbeddedField(field)) {
@@ -248,7 +246,7 @@ class FixColumnFamily {
                 continue;
             }
 
-            AddColumn addColumn=AddColumnUtil.INSTANCE.factory(field);
+            AddColumn addColumn = AddColumnUtil.INSTANCE.factory(field);
             cqlCreateTable.append(addColumn.addRow(field, RelationShipJavaCassandra.INSTANCE));
         }
         return isComplexID;

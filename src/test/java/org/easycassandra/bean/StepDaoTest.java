@@ -21,7 +21,7 @@ import org.junit.Test;
  * @since 10/30/2013
  */
 public class StepDaoTest {
-    private PersistenceDao<Step, IdLifestyle> dao = new PersistenceDao<Step, IdLifestyle>(Step.class);
+    private PersistenceDao<Step, IdLifestyle> dao = new PersistenceDao<>(Step.class);
 
     @Test
     public void insertTest() {

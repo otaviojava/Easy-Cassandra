@@ -60,7 +60,7 @@ enum RecoveryObject {
                 ReflectionUtil.INSTANCE.setMethod(newObjetc, field, value);
                 continue;
             } 
-            ReturnValue returnValue=ReturnValues.INSTANCE.factory(field);
+            ReturnValue returnValue = ReturnValues.INSTANCE.factory(field);
             Object value = returnValue.getObject(mapDefinition, field, row);
             ReflectionUtil.INSTANCE.setMethod(newObjetc, field, value);
         }

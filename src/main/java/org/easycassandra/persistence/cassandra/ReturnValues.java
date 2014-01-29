@@ -2,9 +2,11 @@ package org.easycassandra.persistence.cassandra;
 
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
+import java.util.EnumMap;
 import java.util.Map;
 
 import org.easycassandra.CustomData;
+import org.easycassandra.FieldType;
 import org.easycassandra.util.ReflectionUtil;
 
 import com.datastax.driver.core.ColumnDefinitions.Definition;
@@ -14,40 +16,35 @@ import com.datastax.driver.core.Row;
 enum ReturnValues {
     INSTANCE;
 
-    public ReturnValue factory(Field field) {
-        if (ColumnUtil.INTANCE.isEnumField(field)) {
-            return new EnumReturnValue();
-        }
-        if (ColumnUtil.INTANCE.isList(field)) {
-            return new ListReturnValue();
-        }
-        if (ColumnUtil.INTANCE.isSet(field)) {
-            return new SetReturnValue();
-        }
-        if (ColumnUtil.INTANCE.isMap(field)) {
-            return new MapReturnValue();
-        }
-        if(ColumnUtil.INTANCE.isCustom(field)){
-            return new CustomReturnValue();
-        }
+    private Map<FieldType, ReturnValue> returnValuesMap;
 
-        return new DefaultGetObject();
+    {
+    	returnValuesMap = new EnumMap<>(FieldType.class);
+    	returnValuesMap.put(FieldType.ENUM, new EnumReturnValue());
+    	returnValuesMap.put(FieldType.LIST, new ListReturnValue());
+    	returnValuesMap.put(FieldType.SET, new SetReturnValue());
+    	returnValuesMap.put(FieldType.MAP, new MapReturnValue());
+    	returnValuesMap.put(FieldType.COLLECTION, new CollectionReturnValue());
+    	returnValuesMap.put(FieldType.CUSTOM, new CustomReturnValue());
+    	returnValuesMap.put(FieldType.DEFAULT, new DefaultReturnValue());
+    }
+    public ReturnValue factory(Field field) {
+    	return returnValuesMap.get(FieldType.getTypeByField(field));
     }
 
-    
+
     class CustomReturnValue implements ReturnValue{
 
         @Override
         public Object getObject(Map<String, Definition> mapDefinition,Field field, Row row) {
             Definition column = mapDefinition.get(ColumnUtil.INTANCE.getColumnName(field).toLowerCase());
-            ByteBuffer buffer= (ByteBuffer)RelationShipJavaCassandra.INSTANCE.getObject(row, column.getType().getName(), column.getName());
-            CustomData customData=field.getAnnotation(CustomData.class);
-            Customizable customizable=Customizable.class.cast(ReflectionUtil.INSTANCE.newInstance(customData.classCustmo()));
-            
+            ByteBuffer buffer = (ByteBuffer)RelationShipJavaCassandra.INSTANCE.getObject(row, column.getType().getName(), column.getName());
+            CustomData customData = field.getAnnotation(CustomData.class);
+            Customizable customizable = Customizable.class.cast(ReflectionUtil.INSTANCE.newInstance(customData.classCustmo()));
+
             return customizable.write(buffer);
         }
-        
-        
+
     }
     class MapReturnValue implements ReturnValue {
 
@@ -79,6 +76,15 @@ enum ReturnValues {
         }
 
     }
+    class CollectionReturnValue implements ReturnValue {
+
+		@Override
+		public Object getObject(Map<String, Definition> mapDefinition, Field field, Row row) {
+			ReturnValue returnValue = returnValuesMap.get(FieldType.findCollectionbyQualifield(field));
+			return returnValue.getObject(mapDefinition, field, row);
+		}
+
+    }
 
     class EnumReturnValue implements ReturnValue {
 
@@ -90,7 +96,7 @@ enum ReturnValues {
 
     }
 
-    class DefaultGetObject implements ReturnValue {
+    class DefaultReturnValue implements ReturnValue {
 
         @Override
         public Object getObject(Map<String, Definition> mapDefinition,Field field, Row row) {

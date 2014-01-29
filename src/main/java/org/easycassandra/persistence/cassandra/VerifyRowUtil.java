@@ -16,7 +16,11 @@ package org.easycassandra.persistence.cassandra;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
+
+import org.easycassandra.FieldType;
 /**
  * class util to verify the relationship between java type and cassandra columns type
  * @author otaviojava
@@ -24,47 +28,38 @@ import java.util.List;
  */
 enum VerifyRowUtil {
 INTANCE;
-    
-    
+	private Map<FieldType, VerifyRow> verifyMap;
+	{
+		verifyMap = new EnumMap<>(FieldType.class);
+		verifyMap.put(FieldType.ENUM, new EnumVerify());
+		verifyMap.put(FieldType.LIST, new ListVerify());
+		verifyMap.put(FieldType.SET, new SetVerify());
+		verifyMap.put(FieldType.MAP, new MapVerify());
+		verifyMap.put(FieldType.CUSTOM, new CustomVerify());
+		verifyMap.put(FieldType.COLLECTION, new CollectionVerify());
+		verifyMap.put(FieldType.DEFAULT, new DefaultVerify());
+	}
    public VerifyRow factory(Field field){
-       if (ColumnUtil.INTANCE.isEnumField(field)) {
-           return new EnumVerify();
-       } 
-       else if(ColumnUtil.INTANCE.isList(field)){
-           return new ListVerify();
-       }
-        else if(ColumnUtil.INTANCE.isSet(field)){
-           return new SetVerify();
-       }
-        else if(ColumnUtil.INTANCE.isMap(field)){
-            return new MapVerify();
-        }else if(ColumnUtil.INTANCE.isCustom(field)){
-            return new CustomVerify();
-        }
-           return new DefaultVerify();
+	   return verifyMap.get(FieldType.getTypeByField(field));
    }
-    
 
-    
-    
     class CustomVerify implements VerifyRow{
 
         @Override
         public List<String> getTypes(Field field) {
-            
+
             return Arrays.asList(new String[]{"blob"});
         }
-        
-        
+
     }
-    
+
     class DefaultVerify implements VerifyRow{
 
         @Override
         public List<String> getTypes(Field field) {
             return RelationShipJavaCassandra.INSTANCE.getCQLType(field.getType().getName());
         }
-        
+
     }
     class MapVerify implements VerifyRow{
 
@@ -72,25 +67,25 @@ INTANCE;
         public List<String> getTypes(Field field) {
             return Arrays.asList(new String[]{"map"});
         }
-         
+
      }
-    
+
     class SetVerify implements VerifyRow{
 
         @Override
         public List<String> getTypes(Field field) {
             return Arrays.asList(new String[]{"set"});
         }
-         
+
      }
-    
+
      class ListVerify implements VerifyRow{
 
         @Override
         public List<String> getTypes(Field field) {
             return Arrays.asList(new String[]{"list"});
         }
-         
+
      }
     class EnumVerify implements VerifyRow{
 
@@ -98,7 +93,16 @@ INTANCE;
         public List<String> getTypes(Field field) {
             return RelationShipJavaCassandra.INSTANCE.getCQLType(ColumnUtil.DEFAULT_ENUM_CLASS.getName());
         }
-        
+
+    }
+    class CollectionVerify implements VerifyRow {
+
+		@Override
+		public List<String> getTypes(Field field) {
+			VerifyRow verifyRow = verifyMap.get(FieldType.findCollectionbyQualifield(field));
+			return verifyRow.getTypes(field);
+		}
+
     }
     /**
      * contract to return the list of cassandra columns a determined which java type is acceptable
@@ -106,7 +110,7 @@ INTANCE;
      */
     public interface VerifyRow{
         /**
-         * 
+         *
          * @param field
          * @return
          */

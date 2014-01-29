@@ -10,7 +10,7 @@ public class PersistenceDao<T,K> {
 
     private Persistence persistence;
     private Class<T> baseClass;
-    private static EasyCassandraManager easyCassandraManager=new EasyCassandraManager(Constants.HOST,Constants.KEY_SPACE);
+    private static EasyCassandraManager easyCassandraManager = new EasyCassandraManager(Constants.HOST,Constants.KEY_SPACE);
 
     public PersistenceDao(Class<T> baseClass) {
         this.baseClass = baseClass;
