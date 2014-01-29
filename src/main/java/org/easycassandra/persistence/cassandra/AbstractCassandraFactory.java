@@ -12,15 +12,15 @@ import com.datastax.driver.core.Session;
 class AbstractCassandraFactory implements CassandraFactory{
 
 	public AbstractCassandraFactory(String host,String keySpace){
-		this.hostDefault=host;
-		this.keySpaceDefault=keySpace;
-		this.port=PORT_DEFAULT;
+		this.hostDefault = host;
+		this.keySpaceDefault = keySpace;
+		this.port = PORT_DEFAULT;
 		initConection();
 	}
 	public AbstractCassandraFactory(String host,String keySpace,int port){
-		this.hostDefault=host;
-		this.keySpaceDefault=keySpace;
-		this.port=port;
+		this.hostDefault = host;
+		this.keySpaceDefault = keySpace;
+		this.port = port;
 		initConection();
 	}
 
@@ -36,42 +36,62 @@ class AbstractCassandraFactory implements CassandraFactory{
 
     private int port;
 
+
     protected Cluster getCluster(){
     	return cluter;
     }
 
+    @Override
     public String getHost(){
     	return hostDefault;
     }
 
+    @Override
     public String getKeySpace() {
 		return keySpaceDefault;
 	}
 
+    @Override
     public int getPort(){
     	return port;
     }
 
-
-    public Session getSession(String host){
-    	return verifyHost(host,port).connect();
+    @Override
+    public Session getSession(String host) {
+    	return verifyHost(host, port).connect();
     }
 
-    public Session getSession(){
-    	return verifyHost(hostDefault,port).connect();
+    @Override
+    public Session getSession() {
+    	return verifyHost(hostDefault, port).connect();
     }
-
-    public Session getSession(String host, int port){
+    @Override
+    public Session getSession(String host, int port) {
     	return createSession(host, port, keySpaceDefault);
     }
 
-    protected Session createSession(String host, int port,String keySpace){
+	@Override
+	public Session getSession(String host, int port, String user,
+			String password) {
+		
+    	return getSession(host, port, keySpaceDefault, user, password);
+	}
+	@Override
+	public Session getSession(String host, int port, String keySpace,
+			String user, String password) {
+		Session session = verifyHost(host, port, user, password).connect();
+		new FixKeySpace().verifyKeySpace(keySpaceDefault, session );
+    	return session;
+	}
+
+    protected Session createSession(String host, int port, String keySpace){
     	new FixKeySpace().verifyKeySpace(keySpace, verifyHost(host,port).connect());
     	return verifyHost(host,port).connect();
     }
 
     /**
-     * verifies if the host is equals host exists, if different will create a other new cluster.
+     * verifies if the host is equals host exists,
+     * if different will create a other new cluster.
      * @param host
      */
 	protected Cluster verifyHost(String host,int port) {
@@ -80,7 +100,13 @@ class AbstractCassandraFactory implements CassandraFactory{
         }
 		return cluter;
 	}
-
+	
+	protected Cluster verifyHost(String host,int port, String user, String password) {
+		if (!this.hostDefault.equals(host)) {
+             return Cluster.builder().withPort(port).addContactPoints(host).withCredentials(user, password).build();
+        }
+		return cluter;
+	}
 	protected boolean fixColumnFamily(Session session,String familyColumn,Class<?> class1){
 		return new FixColumnFamily().verifyColumnFamily(session, familyColumn,class1);
 	}
