@@ -68,6 +68,10 @@ public class PersistenceDao<T,K> {
     public List<T> listByKeyAndIndexRange(Object id, Object indexStart, Object indexEnd, boolean inclusive) {
         return persistence.findByKeyAndIndexRange(id, indexStart, indexEnd, inclusive, baseClass);
     }
+    
+    public boolean executeUpdate(String query) {
+    	return persistence.executeUpdate(query);
+    }
 
     public Long count() {
         return persistence.count(baseClass);
