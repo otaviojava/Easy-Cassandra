@@ -37,6 +37,9 @@ public class EasyCassandraManager extends AbstractCassandraFactory  {
 		super(host, keySpace, port);
 	}
 
+	public EasyCassandraManager(String host,String keySpace,int port, String user, String password){
+		super(host, keySpace, port, user, password);
+	}
 	 /**
      * Method for create the Cassandra's Client, if the keyspace there is not,if
      * keyspace there isn't, it will created with simple strategy replica and

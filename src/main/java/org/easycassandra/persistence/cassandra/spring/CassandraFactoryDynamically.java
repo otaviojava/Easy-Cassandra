@@ -35,6 +35,10 @@ public class CassandraFactoryDynamically extends AbstractCassandraFactory{
 		super(host, keySpace,port);
 	}
 
+	public CassandraFactoryDynamically(String host,String keySpace,int port, String user, String password){
+		super(host, keySpace, port, user, password);
+	}
+
 	/**
      * list of classes added by Cassandra.
      */

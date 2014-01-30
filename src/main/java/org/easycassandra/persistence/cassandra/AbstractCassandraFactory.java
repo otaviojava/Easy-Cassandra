@@ -24,7 +24,12 @@ class AbstractCassandraFactory implements CassandraFactory{
 		initConection();
 	}
 
-
+	public AbstractCassandraFactory(String host,String keySpace,int port, String user, String password){
+		this.hostDefault = host;
+		this.keySpaceDefault = keySpace;
+		this.port = port;
+		initConectionCredentials(user, password);
+	}
 
 	private static final int PORT_DEFAULT=9042;
 
@@ -126,5 +131,10 @@ class AbstractCassandraFactory implements CassandraFactory{
     	 cluter = Cluster.builder().withPort(port).addContactPoints(hostDefault).build();
     	 new FixKeySpace().verifyKeySpace(keySpaceDefault, getSession());
     }
+    
+    private  void initConectionCredentials(String user, String password){
+   	 cluter = Cluster.builder().withPort(port).withCredentials(user, password).addContactPoints(hostDefault).build();
+   	 new FixKeySpace().verifyKeySpace(keySpaceDefault, getSession());
+   }
 
 }

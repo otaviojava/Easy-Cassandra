@@ -36,6 +36,11 @@ public class CassandraFactoryAnnotation extends AbstractCassandraFactory impleme
 	public CassandraFactoryAnnotation(String host, String keySpace,int port) {
 		super(host, keySpace,port);
 	}
+	
+	public CassandraFactoryAnnotation(String host, String keySpace, int port,
+			String user, String password) {
+		super(host, keySpace, port, user, password);
+	}
 
 	public void afterPropertiesSet() throws Exception {
 		if(annotatedClasses==null){

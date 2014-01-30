@@ -32,6 +32,9 @@ public abstract class AbstractCassandraFactory extends EasyCassandraManager impl
 		   super(host,keySpace,port);
 	   }
 
+	   public AbstractCassandraFactory(String host,String keySpace,int port, String user, String password){
+			super(host, keySpace, port, user, password);
+		}
 
 	/**
      * {@link AbstractCassandraFactory#getTemplate(String, String, ReplicaStrategy, int)}.
