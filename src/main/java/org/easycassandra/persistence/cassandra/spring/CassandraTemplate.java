@@ -240,7 +240,7 @@ public interface CassandraTemplate{
 	    void executeUpdate(String query);
 
 	    /**
-	     * counts a number of rows in column family
+	     * counts a number of rows in column family.
 	     * @param bean
 	     * @return
 	     */
