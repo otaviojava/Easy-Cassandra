@@ -14,12 +14,15 @@
  */
 package org.easycassandra;
 /**
- * Exception when an error with indexes happend
+ * Exception when an error with indexes happend.
  * @author otaviojava
- *
  */
-public class IndexProblemException extends EasyCassandraException{
+public class IndexProblemException extends EasyCassandraException {
 
+    /**
+     * Constructor to IndexProblemException.
+     * @param message information to log
+     */
 	public IndexProblemException(String message) {
 		super(message);
 	}

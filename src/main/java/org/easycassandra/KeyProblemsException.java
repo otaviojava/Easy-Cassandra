@@ -15,20 +15,20 @@
 package org.easycassandra;
 
 /**
- * Exception when happen error with the key of a column family
- * 
+ * Exception when happen error with the key of a column family.
  * @author otaviojava
- * 
  */
 public class KeyProblemsException extends EasyCassandraException {
 
- public KeyProblemsException(String message) {
- super(message);
+    /**
+     * Constructor to KeyProblemsException.
+     * @param message
+     *            information to log
+     */
+    public KeyProblemsException(String message) {
+        super(message);
 
- }
+    }
 
- /**
- * 
- */
- private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 }

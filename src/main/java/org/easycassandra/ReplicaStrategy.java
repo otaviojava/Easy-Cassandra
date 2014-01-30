@@ -18,7 +18,6 @@ package org.easycassandra;
  * distributed across the cluster. The replica placement strategy is set when
  * you create a keyspace. You can choose from several strategies based on your
  * goals and the information you have about where nodes are located.
- * 
  * @author otavio
  */
 public enum ReplicaStrategy {

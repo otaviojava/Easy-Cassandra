@@ -20,19 +20,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * The class does getter, setter and util for reflection 
- * 
+ * The class does getter, setter and util for reflection.
  * @author otavio
  */
 public enum ReflectionUtil {
 
 	INSTANCE;
-	
+
     /**
-     * Return The Object from the Field
-     * 
-     * @param object
-     * @param field
+     * Return The Object from the Field.
+     * @param object the object
+     * @param field  the field to return object
      * @return - the field value in Object
      */
     public  Object getMethod(Object object, Field field) {
@@ -55,12 +53,11 @@ public enum ReflectionUtil {
     }
 
     /**
-     * Set the field in the Object
-     * 
-     * @param object
-     * @param field
-     * @param value
-     * @return - if the operation was execute with sucess
+     * Set the field in the Object.
+     * @param object the object
+     * @param field  the field to return object
+     * @param value the value to object
+     * @return - if the operation was execute with success
      */
     public boolean setMethod(Object object, Field field, Object value) {
         try {
@@ -73,31 +70,30 @@ public enum ReflectionUtil {
                 field.setAccessible(isAccessibleCopy);
             }
         } catch (Exception exception) {
-            Logger.getLogger(ReflectionUtil.class.getName()).log(Level.SEVERE,null, exception);
+            Logger.getLogger(ReflectionUtil.class.getName()).log(Level.SEVERE, null, exception);
             return false;
         }
         return true;
     }
 
     /**
-     * Create new instance of this class
-     * 
-     * @param clazz
+     * Create new instance of this class.
+     * @param clazz the class to create object
      * @return the new instance that class
      */
     public Object newInstance(Class<?> clazz) {
         try {
             return clazz.newInstance();
         } catch (Exception exception) {
-            Logger.getLogger(ReflectionUtil.class.getName()).log(Level.SEVERE,null, exception);
+            Logger.getLogger(ReflectionUtil.class.getName()).log(Level.SEVERE, null, exception);
             return null;
         }
     }
 
     /**
-     * find the Field from the name field
-     * 
-     * @param string
+     * Find the Field from the name field.
+     * @param string the name of field
+     * @param clazz the class
      * @return the field from the name
      */
     public Field getField(String string, Class<?> clazz) {
@@ -110,35 +106,34 @@ public enum ReflectionUtil {
     }
 
     /**
-     * returns the generic type of field
-     * @param field
-     * @return
+     * returns the generic type of field.
+     * @param field the field
+     * @return a generic type
      */
-    public Class<?> getGenericType(Field field){
-    	ParameterizedType genericType=(ParameterizedType)field.getGenericType();
+    public Class<?> getGenericType(Field field) {
+    	ParameterizedType genericType = (ParameterizedType) field.getGenericType();
         return (Class<?>) genericType.getActualTypeArguments()[0];
-    	
+
     }
-    
+
     /**
-     * return the key and value of field
-     * @param field
-     * @return
+     * return the key and value of field.
+     * @param field the field
+     * @return the types of the type
      */
-    public KeyValueClass getGenericKeyValue(Field field){
-    	ParameterizedType genericType=(ParameterizedType)field.getGenericType();
-    	KeyValueClass keyValueClass=new KeyValueClass();
-    	keyValueClass.keyClass=(Class<?>) genericType.getActualTypeArguments()[0];
-    	keyValueClass.valueClass=(Class<?>) genericType.getActualTypeArguments()[1];
+    public KeyValueClass getGenericKeyValue(Field field) {
+    	ParameterizedType genericType = (ParameterizedType) field.getGenericType();
+    	KeyValueClass keyValueClass = new KeyValueClass();
+    	keyValueClass.keyClass = (Class<?>) genericType.getActualTypeArguments()[0];
+    	keyValueClass.valueClass = (Class<?>) genericType.getActualTypeArguments()[1];
     	return keyValueClass;
     }
-    
-    
+
     /**
-     * data struteded to store key and value class to map collection 
+     * data struteded to store key and value class to map collection.
      * @author otaviojava
      */
-    public class KeyValueClass{
+    public class KeyValueClass {
     	private Class<?> keyClass;
     	private Class<?> valueClass;
 		public Class<?> getKeyClass() {
@@ -147,6 +142,6 @@ public enum ReflectionUtil {
 		public Class<?> getValueClass() {
 			return valueClass;
 		}
-    	
+
     }
 }

@@ -15,8 +15,7 @@
 package org.easycassandra;
 
 /**
- * the Exception for operation Easy-Cassandra Framework
- *
+ * the Exception for operation Easy-Cassandra Framework.
  * @author otavio
  *
  */
@@ -28,9 +27,8 @@ public class EasyCassandraException extends RuntimeException {
     private static final long serialVersionUID = -5116386811420121860L;
 
     /**
-     * The Constructor for Exception
-     *
-     * @param message
+     * The Constructor for Exception.
+     * @param message information to log
      */
     public EasyCassandraException(String message) {
         super(message);

@@ -20,11 +20,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation defines a data type is a list
+ * Annotation defines a data type is a Set.
  * @author otaviojava
  *
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SetData{
+public @interface SetData {
 }

@@ -22,8 +22,7 @@ import java.lang.annotation.Target;
 /**
  * The field with this annotation is an index Can search and retrieve
  * information from the row like KeyValue, need also use the ColumnValue
- * together with this annotatio
- *
+ * together with this annotation.
  * @see ColumnValue
  * @author otavio
  */

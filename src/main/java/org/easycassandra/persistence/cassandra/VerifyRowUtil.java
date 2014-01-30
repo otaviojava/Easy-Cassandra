@@ -22,7 +22,7 @@ import java.util.Map;
 
 import org.easycassandra.FieldType;
 /**
- * class util to verify the relationship between java type and cassandra columns type
+ * class util to verify the relationship between java type and cassandra columns type.
  * @author otaviojava
  *
  */
@@ -39,76 +39,98 @@ INTANCE;
 		verifyMap.put(FieldType.COLLECTION, new CollectionVerify());
 		verifyMap.put(FieldType.DEFAULT, new DefaultVerify());
 	}
-   public VerifyRow factory(Field field){
-	   return verifyMap.get(FieldType.getTypeByField(field));
-   }
 
-    class CustomVerify implements VerifyRow{
-
-        @Override
-        public List<String> getTypes(Field field) {
-
-            return Arrays.asList(new String[]{"blob"});
-        }
-
+    /**
+     * the interface based on the kind of field.
+     * @param field
+     *            the field to verify
+     * @return VerifyRow interface
+     */
+    public VerifyRow factory(Field field) {
+        return verifyMap.get(FieldType.getTypeByField(field));
     }
 
-    class DefaultVerify implements VerifyRow{
+    /**
+     * {@link VerifyRow} to custom fields.
+     * @author otaviojava
+     */
+    class CustomVerify implements VerifyRow {
+        @Override
+        public List<String> getTypes(Field field) {
+            return Arrays.asList(new String[]{"blob"});
+        }
+    }
 
+    /**
+     * {@link VerifyRow} to default fields.
+     * @author otaviojava
+     */
+    class DefaultVerify implements VerifyRow {
         @Override
         public List<String> getTypes(Field field) {
             return RelationShipJavaCassandra.INSTANCE.getCQLType(field.getType().getName());
         }
-
     }
-    class MapVerify implements VerifyRow{
-
+    /**
+     * {@link VerifyRow} to Map feids.
+     * @author otaviojava
+     */
+    class MapVerify implements VerifyRow {
         @Override
         public List<String> getTypes(Field field) {
-            return Arrays.asList(new String[]{"map"});
+            return Arrays.asList(new String[] { "map" });
         }
-
-     }
-
-    class SetVerify implements VerifyRow{
-
-        @Override
-        public List<String> getTypes(Field field) {
-            return Arrays.asList(new String[]{"set"});
-        }
-
-     }
-
-     class ListVerify implements VerifyRow{
-
-        @Override
-        public List<String> getTypes(Field field) {
-            return Arrays.asList(new String[]{"list"});
-        }
-
-     }
-    class EnumVerify implements VerifyRow{
-
-        @Override
-        public List<String> getTypes(Field field) {
-            return RelationShipJavaCassandra.INSTANCE.getCQLType(ColumnUtil.DEFAULT_ENUM_CLASS.getName());
-        }
-
     }
+
+    /**
+     * {@link VerifyRow} to Set fields.
+     * @author otaviojava
+     */
+    class SetVerify implements VerifyRow {
+        @Override
+        public List<String> getTypes(Field field) {
+            return Arrays.asList(new String[] { "set" });
+        }
+    }
+
+    /**
+     * {@link VerifyRow} to List fields.
+     * @author otaviojava
+     */
+    class ListVerify implements VerifyRow {
+        @Override
+        public List<String> getTypes(Field field) {
+            return Arrays.asList(new String[] { "list" });
+        }
+    }
+    /**
+     * {@link VerifyRow} to enum fields.
+     * @author otaviojava
+     */
+    class EnumVerify implements VerifyRow {
+        @Override
+        public List<String> getTypes(Field field) {
+            return RelationShipJavaCassandra.INSTANCE.getCQLType(
+                    ColumnUtil.DEFAULT_ENUM_CLASS.getName());
+        }
+    }
+    /**
+     * {@link VerifyRow} to Collection fields.
+     * @author otaviojava
+     */
     class CollectionVerify implements VerifyRow {
-
 		@Override
 		public List<String> getTypes(Field field) {
 			VerifyRow verifyRow = verifyMap.get(FieldType.findCollectionbyQualifield(field));
 			return verifyRow.getTypes(field);
 		}
-
     }
     /**
-     * contract to return the list of cassandra columns a determined which java type is acceptable
+     * contract to return the list of cassandra columns a determined which java
+     *  type is acceptable.
      * @author otaviojava
      */
-    public interface VerifyRow{
+    public interface VerifyRow {
         /**
          *
          * @param field

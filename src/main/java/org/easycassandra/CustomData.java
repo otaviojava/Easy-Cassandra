@@ -21,18 +21,19 @@ import java.lang.annotation.Target;
 
 import org.easycassandra.persistence.cassandra.Customizable.DefaultCustmomizable;
 /**
- * This notation indicates which the field has a storage's way custom
+ * This notation indicates which the field has a storage's way custom.
  * @author osantana
- *
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CustomData {
 
-	/**
-	 * The class to custom a storage, the class should implements the Customizable and has default constructor
-	 * @return
-	 */
+    /**
+     * The class to custom a storage, the class should implements the
+     * Customizable and has default constructor. the default is
+     * {@link DefaultCustmomizable}
+     * the class whose implements Customizable interface
+     */
 	 Class<?>  classCustmo() default DefaultCustmomizable.class;
 }
 
