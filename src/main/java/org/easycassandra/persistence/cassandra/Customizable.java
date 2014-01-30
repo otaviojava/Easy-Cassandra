@@ -32,15 +32,15 @@ public interface Customizable {
 
 	/**
 	 * Read the Object and then return the bytebuffer what represents an objects.
-	 * @param object
+	 * @param object the object
 	 * @return a stream of object
 	 */
 	ByteBuffer read(Object object);
 
 	/**
 	 * with the bytebuffer write a Object.
-	 * @param byteBuffer
-	 * @return
+	 * @param byteBuffer the byteBuffer
+	 * @return the objet
 	 */
 	Object write(ByteBuffer byteBuffer);
 
@@ -50,51 +50,58 @@ public interface Customizable {
 	 * The EasyCassandra gonna to use it.
 	 * A custom way to serialize and desserialize a object
 	 * @author osantana
-	 *
 	 */
-	 class DefaultCustmomizable implements Customizable{
+    class DefaultCustmomizable implements Customizable {
 
-		public ByteBuffer read(Object object) {
+        public ByteBuffer read(Object object) {
 
-	    try {
-	    		isSerializable(object);
-	    	    ByteArrayOutputStream stream=new ByteArrayOutputStream();
-				ObjectOutputStream storeObject = new ObjectOutputStream(stream);
-				storeObject.writeObject(object);
-				storeObject.flush();
-				storeObject.close();
+            try {
+                isSerializable(object);
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                ObjectOutputStream storeObject = new ObjectOutputStream(stream);
+                storeObject.writeObject(object);
+                storeObject.flush();
+                storeObject.close();
 
-				return ByteBuffer.wrap(stream.toByteArray());
-			} catch (IOException exception) {
-				Logger.getLogger(DefaultCustmomizable.class.getName()).severe("An error heppend when DefaultCustmomizable try read or serialize the object "+object.getClass().getName()+" "+exception.getMessage());
-			}
+                return ByteBuffer.wrap(stream.toByteArray());
+            } catch (IOException exception) {
+                Logger.getLogger(DefaultCustmomizable.class.getName()).severe(
+                        "An error heppend when DefaultCustmomizable try read or "
+                        + "serialize the object "
+                                + object.getClass().getName() + " "
+                                + exception.getMessage());
+            }
 
+            return null;
+        }
 
-			return null;
-		}
+        private void isSerializable(Object object) {
+            if (!(object instanceof Serializable)) {
+                StringBuilder mensageErro = new StringBuilder();
+                mensageErro.append("the class ").append(
+                        object.getClass().getName());
+                mensageErro.append(" should implements java.io.Serializable");
+                throw new DefaultCustmomizableException(mensageErro.toString());
+            }
 
-		private void isSerializable(Object object) {
-		if (!(object instanceof Serializable)) {
-			StringBuilder mensageErro=new StringBuilder();
-			mensageErro.append("the class ").append(object.getClass().getName());
-			mensageErro.append(" should implements java.io.Serializable");
-			throw new DefaultCustmomizableException(mensageErro.toString());
-		}
+        }
 
-		}
+        public Object write(ByteBuffer byteBuffer) {
 
-		public Object write(ByteBuffer byteBuffer) {
-
-			try {
-			    byte[] result = new byte[byteBuffer.remaining()];
-			    byteBuffer.get(result);
-				InputStream inputStream = new ByteArrayInputStream(result);
-				ObjectInputStream objLeitura = new ObjectInputStream(inputStream);
-				return objLeitura.readObject();
-			} catch (Exception exception) {
-				Logger.getLogger(DefaultCustmomizable.class.getName()).severe("An error heppend when DefaultCustmomizable try write and deserialize an object "+exception.getMessage());
-			}
-			return null;
-		}
-		}
+            try {
+                byte[] result = new byte[byteBuffer.remaining()];
+                byteBuffer.get(result);
+                InputStream inputStream = new ByteArrayInputStream(result);
+                ObjectInputStream objLeitura = new ObjectInputStream(
+                        inputStream);
+                return objLeitura.readObject();
+            } catch (Exception exception) {
+                Logger.getLogger(DefaultCustmomizable.class.getName())
+                        .severe("An error heppend when DefaultCustmomizable "
+                                + "try write and deserialize an object "
+                                + exception.getMessage());
+            }
+            return null;
+        }
+    }
 }

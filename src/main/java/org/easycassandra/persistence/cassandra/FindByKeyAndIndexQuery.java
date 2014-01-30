@@ -33,58 +33,85 @@ class FindByKeyAndIndexQuery extends FindByKeyQuery {
         super(keySpace);
     }
 
-    public <T, I> List<T> findByKeyAndIndex(Object key, I index, Class<T> bean, Session session, ConsistencyLevel consistency) {
+    public <T, I> List<T> findByKeyAndIndex(Object key, I index, Class<T> bean,
+            Session session, ConsistencyLevel consistency) {
         Field field = ColumnUtil.INTANCE.getIndexField(bean);
         FindByIndexQuery.checkFieldNull(bean, field);
-        return findByKeyAndIndex(key, field.getName(), index, bean, session, consistency);
+        return findByKeyAndIndex(key, field.getName(), index, bean, session,
+                consistency);
     }
 
-    public <T, I> List<T> findByKeyAndIndex(Object key, String indexName, I index, Class<T> bean, Session session, ConsistencyLevel consistency) {
+    public <T, I> List<T> findByKeyAndIndex(Object key, String indexName,
+            I index, Class<T> bean, Session session,
+            ConsistencyLevel consistency) {
         QueryBean byKeyBean = createQueryBean(bean, consistency);
-        return executeConditions(indexName, index, null, null, key, bean, session, byKeyBean);
+        return executeConditions(indexName, index, null, null, key, bean,
+                session, byKeyBean);
     }
 
-    public <T, I> List<T> findByKeyAndIndex(Object key, I indexStart, I indexEnd, boolean inclusive, Class<T> bean, Session session, ConsistencyLevel consistency) {
+    public <T, I> List<T> findByKeyAndIndex(Object key, I indexStart,
+            I indexEnd, boolean inclusive, Class<T> bean, Session session,
+            ConsistencyLevel consistency) {
         Field field = ColumnUtil.INTANCE.getIndexField(bean);
         FindByIndexQuery.checkFieldNull(bean, field);
-        return findByKeyAndIndex(key, field.getName(), indexStart, indexEnd, inclusive, bean, session, consistency);
+        return findByKeyAndIndex(key, field.getName(), indexStart, indexEnd,
+                inclusive, bean, session, consistency);
     }
 
-    public <T, I> List<T> findByKeyAndIndex(Object key, String indexName, I indexStart, I indexEnd, boolean inclusive,
-                                            Class<T> bean, Session session, ConsistencyLevel consistency) {
+    public <T, I> List<T> findByKeyAndIndex(Object key, String indexName,
+            I indexStart, I indexEnd, boolean inclusive, Class<T> bean,
+            Session session, ConsistencyLevel consistency) {
         QueryBean byKeyBean = createQueryBean(bean, consistency);
-        return executeConditions(indexName, indexStart, indexEnd, inclusive, key, bean, session, byKeyBean);
+        return executeConditions(indexName, indexStart, indexEnd, inclusive,
+                key, bean, session, byKeyBean);
     }
 
-    private <T> List<T> executeConditions(String indexName, Object indexStart, Object indexEnd, Boolean inclusive, Object key,
-                                          Class<T> bean, Session session, QueryBean byKeyBean) {
+    private <T> List<T> executeConditions(String indexName, Object indexStart,
+            Object indexEnd, Boolean inclusive, Object key, Class<T> bean,
+            Session session, QueryBean byKeyBean) {
 
         super.prepare(byKeyBean, bean);
         if (ColumnUtil.INTANCE.isEmbeddedIdField(byKeyBean.key)) {
-            for (Field complexKey : ColumnUtil.INTANCE.listFields(key.getClass())) {
-                byKeyBean.select.where(QueryBuilder.eq(ColumnUtil.INTANCE.getColumnName(complexKey), ReflectionUtil.INSTANCE.getMethod(key, complexKey)));
+            for (Field complexKey : ColumnUtil.INTANCE.listFields(key
+                    .getClass())) {
+                byKeyBean.select.where(QueryBuilder.eq(
+                        ColumnUtil.INTANCE.getColumnName(complexKey),
+                        ReflectionUtil.INSTANCE.getMethod(key, complexKey)));
             }
         } else {
-            byKeyBean.select.where(QueryBuilder.eq(ColumnUtil.INTANCE.getColumnName(byKeyBean.key), key));
+            byKeyBean.select.where(QueryBuilder.eq(
+                    ColumnUtil.INTANCE.getColumnName(byKeyBean.key), key));
         }
 
         // Add index criteria
-        byKeyBean.key = ColumnUtil.INTANCE.getFieldByColumnName(indexName, bean);
+        byKeyBean.key = ColumnUtil.INTANCE
+                .getFieldByColumnName(indexName, bean);
         FindByIndexQuery.checkIndexProblem(bean, byKeyBean);
 
         // Add indexed key
         if (indexEnd != null && inclusive != null) {
 
             if (inclusive) {
-                byKeyBean.select.where(QueryBuilder.gte(ColumnUtil.INTANCE.getColumnName(byKeyBean.key), indexStart));
-                byKeyBean.select.where(QueryBuilder.lte(ColumnUtil.INTANCE.getColumnName(byKeyBean.key), indexEnd));
+                byKeyBean.select.where(QueryBuilder.gte(
+                        ColumnUtil.INTANCE.getColumnName(byKeyBean.key),
+                        indexStart));
+                byKeyBean.select.where(QueryBuilder.lte(
+                        ColumnUtil.INTANCE.getColumnName(byKeyBean.key),
+                        indexEnd));
             } else {
-                byKeyBean.select.where(QueryBuilder.gt(ColumnUtil.INTANCE.getColumnName(byKeyBean.key), indexStart));
-                byKeyBean.select.where(QueryBuilder.lt(ColumnUtil.INTANCE.getColumnName(byKeyBean.key), indexEnd));
+                byKeyBean.select.where(QueryBuilder.gt(
+                        ColumnUtil.INTANCE.getColumnName(byKeyBean.key),
+                        indexStart));
+                byKeyBean.select.where(QueryBuilder.lt(
+                        ColumnUtil.INTANCE.getColumnName(byKeyBean.key),
+                        indexEnd));
             }
 
         } else {
-            byKeyBean.select.where(QueryBuilder.eq(ColumnUtil.INTANCE.getColumnName(byKeyBean.key), indexStart));
+            byKeyBean.select
+                    .where(QueryBuilder.eq(
+                            ColumnUtil.INTANCE.getColumnName(byKeyBean.key),
+                            indexStart));
         }
 
         // Execute

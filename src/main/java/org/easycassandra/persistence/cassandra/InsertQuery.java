@@ -36,16 +36,16 @@ class InsertQuery {
 
     private String keySpace;
 
-    InsertQuery(String keySpace){
+    InsertQuery(String keySpace) {
         this.keySpace = keySpace;
     }
 
-    public <T> boolean prepare(T bean, Session session,ConsistencyLevel consistency) {
+    public <T> boolean prepare(T bean, Session session, ConsistencyLevel consistency) {
 
         session.execute(createStatment(bean, consistency));
         return true;
     }
-    public <T> boolean prepare(Iterable<T> beans, Session session,ConsistencyLevel consistency) {
+    public <T> boolean prepare(Iterable<T> beans, Session session, ConsistencyLevel consistency) {
 
         for (T bean:beans) {
         	prepare(bean, session, consistency);
@@ -64,27 +64,29 @@ class InsertQuery {
     }
 
 
-    private <T> Insert createInsert(T bean, Insert insert){
+    private <T> Insert createInsert(T bean, Insert insert) {
 
         for (Field field : ColumnUtil.INTANCE.listFields(bean.getClass())) {
 
-            if (ColumnUtil.INTANCE.isEmbeddedField(field) || ColumnUtil.INTANCE.isEmbeddedIdField(field)) {
+            if (ColumnUtil.INTANCE.isEmbeddedField(field)
+                    || ColumnUtil.INTANCE.isEmbeddedIdField(field)) {
                 if (ReflectionUtil.INSTANCE.getMethod(bean, field) != null) {
-                    insert = createInsert(ReflectionUtil.INSTANCE.getMethod(bean, field), insert);
+                    insert = createInsert(
+                            ReflectionUtil.INSTANCE.getMethod(bean, field),
+                            insert);
                 }
                 continue;
-            }
-
-            else if (ReflectionUtil.INSTANCE.getMethod(bean, field) != null) {
+            } else if (ReflectionUtil.INSTANCE.getMethod(bean, field) != null) {
                 InsertColumn insertColumn = InsertColumnUtil.INSTANCE.factory(field);
-                insert.value(ColumnUtil.INTANCE.getColumnName(field), insertColumn.getObject(bean, field));
+                insert.value(ColumnUtil.INTANCE.getColumnName(field),
+                        insertColumn.getObject(bean, field));
 
             }
         }
         return insert;
     }
 
-    private void isKeyNull(Object bean){
+    private void isKeyNull(Object bean) {
         Field key = ColumnUtil.INTANCE.getKeyField(bean.getClass());
         if (key == null) {
 
@@ -92,10 +94,12 @@ class InsertQuery {
             /*
              * Added by Nenita Casuga to allow embedded id from mapped superclass
              */
-            if (key == null){
-                key = ColumnUtil.INTANCE.getField(bean.getClass().getSuperclass(), EmbeddedId.class);
+            if (key == null) {
+                key = ColumnUtil.INTANCE.getField(bean.getClass()
+                        .getSuperclass(), EmbeddedId.class);
             }
-            isKeyNull(ReflectionUtil.INSTANCE.getMethod(bean, key), key.getType().getDeclaredFields());
+            isKeyNull(ReflectionUtil.INSTANCE.getMethod(bean, key), key
+                    .getType().getDeclaredFields());
         } else {
             isKeyNull(bean, key);
         }

@@ -30,14 +30,34 @@ import com.datastax.driver.core.Session;
 public class EasyCassandraManager extends AbstractCassandraFactory  {
 
 
-	public EasyCassandraManager(String host,String keySpace){
+    /**
+     * the constructor using default port.
+     * @param host the host
+     * @param keySpace the keySpace
+     */
+	public EasyCassandraManager(String host, String keySpace) {
 		super(host, keySpace);
 	}
-	public EasyCassandraManager(String host,String keySpace,int port){
+	/**
+	 * the constructor.
+	 * @param host the host
+	 * @param keySpace the keyspace
+	 * @param port the port
+	 */
+	public EasyCassandraManager(String host, String keySpace, int port) {
 		super(host, keySpace, port);
 	}
 
-	public EasyCassandraManager(String host,String keySpace,int port, String user, String password){
+	/**
+	 * The constructor using credentials.
+	 * @param host the host
+	 * @param keySpace the keySpace
+	 * @param port the port
+	 * @param user the user
+	 * @param password the password
+	 */
+    public EasyCassandraManager(String host, String keySpace, int port,
+            String user, String password) {
 		super(host, keySpace, port, user, password);
 	}
 	 /**
@@ -51,12 +71,12 @@ public class EasyCassandraManager extends AbstractCassandraFactory  {
      * @return the client bridge for the Cassandra data base
      */
     public Persistence getPersistence(String host, String keySpace) {
-    	   Cluster cluter=getCluster();
+        Cluster cluter = getCluster();
         if (!this.getHost().equals(host)) {
             cluter = Cluster.builder().addContactPoints(host).build();
         }
-        	Session session = cluter.connect();
-        	verifyKeySpace(keySpace, cluter.connect());
+        Session session = cluter.connect();
+        verifyKeySpace(keySpace, cluter.connect());
         return new PersistenceSimpleImpl(session, keySpace);
     }
 
@@ -74,31 +94,32 @@ public class EasyCassandraManager extends AbstractCassandraFactory  {
      *            - number of the factor
      * @return the client bridge for the Cassandra data base
      */
-    public Persistence getPersistence(String host, String keySpace,ReplicaStrategy replicaStrategy, int factor) {
+    public Persistence getPersistence(String host, String keySpace,
+            ReplicaStrategy replicaStrategy, int factor) {
         Cluster cluter = Cluster.builder().addContactPoints(host).build();
         Session session = cluter.connect();
-        verifyKeySpace(keySpace, cluter.connect(), replicaStrategy,factor);
+        verifyKeySpace(keySpace, cluter.connect(), replicaStrategy, factor);
         return new PersistenceSimpleImpl(session, keySpace);
     }
 
     /**
      * returns a persistence.
-     * @return
+     * @return the persistence
      */
-    public Persistence getPersistence(){
+    public Persistence getPersistence() {
     	return getPersistence(getHost(), getKeySpace());
     }
 
     /**
      * list of classes added by Cassandra.
      */
-    private List<Class<?>> classes=new LinkedList<Class<?>>();
+    private List<Class<?>> classes = new LinkedList<Class<?>>();
 
     /**
      * add an objetc to Cassandra management.
-     * @param class1
-     * @param keySpace
-     * @return
+     * @param class1 the class
+     * @param keySpace the keyspace
+     * @return if executed with sucesses
      */
     public boolean addFamilyObject(Class<?> class1, String keySpace) {
         if (classes.contains(class1)) {
@@ -112,16 +133,17 @@ public class EasyCassandraManager extends AbstractCassandraFactory  {
 
         }
         classes.add(class1);
-        return new FixColumnFamily().verifyColumnFamily(session, familyColumn,class1);
+        return new FixColumnFamily().verifyColumnFamily(session, familyColumn, class1);
     }
-    
+
     /**
-     * add an objetc to Cassandra management and use the default keyspace
+     * add an objetc to Cassandra management and use the default keyspace.
      * {@link EasyCassandraManager#addFamilyObject(Class, String)}
-     * @return
+     * @param class1 the class
+     * @return if executed with sucesses
      */
-    public boolean addFamilyObject(Class<?> class1){
-    	return addFamilyObject(class1, getKeySpace());
+    public boolean addFamilyObject(Class<?> class1) {
+        return addFamilyObject(class1, getKeySpace());
     }
 
 }

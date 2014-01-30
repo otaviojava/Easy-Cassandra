@@ -31,57 +31,88 @@ import com.datastax.driver.core.querybuilder.Select;
  */
 public class FindAllQuery {
 
-	
-	private String keySpace;
-	
-	public FindAllQuery(String keySpace){
-		this.keySpace = keySpace;
-	}
-	
-    public <T> List<T> listAll(Class<T> bean, Session session,ConsistencyLevel consistency) {
-    	
-        QueryBean byKeyBean = createQueryBean(bean,consistency);
-    	return RecoveryObject.INTANCE.recoverObjet(bean, session.execute(byKeyBean.select));
+
+    private String keySpace;
+
+    /**
+     * constructor.
+     * @param keySpace
+     *            the keyspace
+     */
+    public FindAllQuery(String keySpace) {
+        this.keySpace = keySpace;
+    }
+    /**
+     * list using select * from object.
+     * @param bean the bean
+     * @param session the sesion
+     * @param consistency the consistency
+     * @param <T> kind of class
+     * @return the entities executing select * from
+     */
+    public <T> List<T> listAll(Class<T> bean, Session session,
+            ConsistencyLevel consistency) {
+
+        QueryBean byKeyBean = createQueryBean(bean, consistency);
+        return RecoveryObject.INTANCE.recoverObjet(bean,
+                session.execute(byKeyBean.select));
+    }
+    /**
+     * create the {@link QueryBean}.
+     * @param bean the bean
+     * @param consistency the consistency
+     * @param <T> kind of class
+     * @return {@link QueryBean}
+     */
+    protected <T> QueryBean createQueryBean(Class<T> bean,
+            ConsistencyLevel consistency) {
+        QueryBean byKeyBean = prepare(new QueryBean(), bean);
+        KeySpaceInformation key = ColumnUtil.INTANCE
+                .getKeySpace(keySpace, bean);
+        byKeyBean.select = QueryBuilder.select(byKeyBean.getArray()).from(
+                key.getKeySpace(), key.getColumnFamily());
+        byKeyBean.select.setConsistencyLevel(consistency);
+        return byKeyBean;
     }
 
-	protected <T> QueryBean createQueryBean(Class<T> bean,ConsistencyLevel consistency) {
-		QueryBean byKeyBean = prepare(new QueryBean(), bean);
-        KeySpaceInformation key = ColumnUtil.INTANCE.getKeySpace(keySpace, bean);
-        byKeyBean.select=QueryBuilder.select(byKeyBean.getArray()).from(key.getKeySpace(), key.getColumnFamily());
-        byKeyBean.select.setConsistencyLevel(consistency);
-		return byKeyBean;
-	}
-
+    /**
+     * prepare {@link QueryBean}.
+     * @param byKeyBean the byKeyBean
+     * @param class1 the class
+     * @return {@link QueryBean} prepared
+     */
     protected QueryBean prepare(QueryBean byKeyBean, Class<?> class1) {
         List<Field> fields = ColumnUtil.INTANCE.listFields(class1);
 
         for (Field field : fields) {
-            
-            if (ColumnUtil.INTANCE.isEmbeddedField(field)  || ColumnUtil.INTANCE.isEmbeddedIdField(field)) {
+
+            if (ColumnUtil.INTANCE.isEmbeddedField(field)
+                    || ColumnUtil.INTANCE.isEmbeddedIdField(field)) {
                 if (ColumnUtil.INTANCE.isEmbeddedIdField(field)) {
                     byKeyBean.key = field;
                 }
                 byKeyBean = prepare(byKeyBean, field.getType());
                 continue;
-            }
-
-            else if (ColumnUtil.INTANCE.isIdField(field)) {
+            } else if (ColumnUtil.INTANCE.isIdField(field)) {
                 byKeyBean.key = field;
             }
             byKeyBean.columns.add(ColumnUtil.INTANCE.getColumnName(field));
-
 
         }
         return byKeyBean;
     }
 
+    /**
+     * Dto to QueryBean.
+     * @author otaviojava
+     */
     protected class QueryBean {
         protected Field key;
         protected List<String> columns = new LinkedList<String>();
         protected Select select;
 
-        String[] getArray(){
-        	return columns.toArray(new String[0]);
+        String[] getArray() {
+            return columns.toArray(new String[0]);
         }
     }
 }

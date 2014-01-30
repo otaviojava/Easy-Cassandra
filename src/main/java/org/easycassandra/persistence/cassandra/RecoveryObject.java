@@ -28,10 +28,8 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 
 /**
- * class until to convert a row in cassandra to a especific object
- * 
+ * class until to convert a row in cassandra to a especific object.
  * @author otaviojava
- * 
  */
 enum RecoveryObject {
 
@@ -51,15 +49,17 @@ enum RecoveryObject {
         return listObjList;
     }
 
-    private <T> Object createObject(Class<T> bean, Row row,Map<String, Definition> mapDefinition) {
+    private <T> Object createObject(Class<T> bean, Row row,
+            Map<String, Definition> mapDefinition) {
         Object newObjetc = ReflectionUtil.INSTANCE.newInstance(bean);
 
         for (Field field : ColumnUtil.INTANCE.listFields(bean)) {
-            if (ColumnUtil.INTANCE.isEmbeddedField(field) || ColumnUtil.INTANCE.isEmbeddedIdField(field)) {
+            if (ColumnUtil.INTANCE.isEmbeddedField(field)
+                    || ColumnUtil.INTANCE.isEmbeddedIdField(field)) {
                 Object value = createObject(field.getType(), row, mapDefinition);
                 ReflectionUtil.INSTANCE.setMethod(newObjetc, field, value);
                 continue;
-            } 
+            }
             ReturnValue returnValue = ReturnValues.INSTANCE.factory(field);
             Object value = returnValue.getObject(mapDefinition, field, row);
             ReflectionUtil.INSTANCE.setMethod(newObjetc, field, value);

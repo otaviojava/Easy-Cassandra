@@ -86,9 +86,11 @@ public enum ColumnUtil {
         Entity columnFamily = (Entity) object.getAnnotation(Entity.class);
         Table columnFamilyTable = (Table) object.getAnnotation(Table.class);
         if (columnFamily != null) {
-            return columnFamily.name().equals("") ? object.getSimpleName() : columnFamily.name();
+            return columnFamily.name().equals("") ? object.getSimpleName()
+                    : columnFamily.name();
         } else if (columnFamilyTable != null) {
-            return columnFamilyTable.name().equals("") ? object.getSimpleName() : columnFamilyTable.name();
+            return columnFamilyTable.name().equals("") ? object.getSimpleName()
+                    : columnFamilyTable.name();
         }
         return object.getSimpleName();
     }
@@ -101,10 +103,16 @@ public enum ColumnUtil {
         return "";
     }
 
+    /**
+     * return the chema looking to  class.
+     * @param class1 the class
+     * @return the schema
+     */
     public String getSchema(Class<?> class1) {
         Table columnFamily = (Table) class1.getAnnotation(Table.class);
         if (columnFamily != null) {
-            return columnFamily.schema().equals("") ? null : columnFamily.schema();
+            return columnFamily.schema().equals("") ? null : columnFamily
+                    .schema();
         }
         return "";
     }
@@ -120,13 +128,15 @@ public enum ColumnUtil {
         if (field.getAnnotation(javax.persistence.Column.class) == null) {
             return field.getName();
         }
-        return field.getAnnotation(javax.persistence.Column.class).name().equals("") ? field.getName() : field.getAnnotation(javax.persistence.Column.class).name();
+        return field.getAnnotation(javax.persistence.Column.class).name()
+                .equals("") ? field.getName() : field.getAnnotation(
+                javax.persistence.Column.class).name();
     }
 
     /**
-     * verifies that the name of the annotation is empty if you take the field
+     * verifies that the name of the annotation is empty if you take the field.
      * name
-     * @param field
+     * @param field the field
      * @return The name inside annotations or the field's name
      */
     public String getEnumeratedName(Field field) {
@@ -137,7 +147,7 @@ public enum ColumnUtil {
     }
 
     /**
-     * Return the Field with the KeyValue Annotations
+     * Return the Field with the KeyValue Annotations.
      * @see KeyValue
      * @param persistenceClass
      *            - Class of the object viewed
@@ -159,7 +169,7 @@ public enum ColumnUtil {
     }
 
     /**
-     * Return the Field with the IndexValue Annotations
+     * Return the Field with the IndexValue Annotations.
      * @see Index
      * @param persistenceClass
      *            - Class of the object viewed
@@ -170,7 +180,7 @@ public enum ColumnUtil {
     }
 
     /**
-     * Return the Fields with the IndexValue Annotations
+     * Return the Fields with the IndexValue Annotations.
      * @author Dinusha Nandika
      * @see Index
      * @param persistenceClass
@@ -178,23 +188,23 @@ public enum ColumnUtil {
      * @return the Fields if there are not will be return empty list
      */
     public List<Field> getIndexFields(Class<?> persistenceClass) {
-          List<Field> indexFieldList = new ArrayList<Field>();
-          for (Field field : persistenceClass.getDeclaredFields()) {
-              if (field.getAnnotation(Index.class) != null) {
-                  indexFieldList.add(field);
-              } else if (field.getAnnotation(Embedded.class) != null) {
-                 indexFieldList.addAll(getIndexFields(field.getType()));
-              }
-          }
-          return indexFieldList;
+        List<Field> indexFieldList = new ArrayList<Field>();
+        for (Field field : persistenceClass.getDeclaredFields()) {
+            if (field.getAnnotation(Index.class) != null) {
+                indexFieldList.add(field);
+            } else if (field.getAnnotation(Embedded.class) != null) {
+                indexFieldList.addAll(getIndexFields(field.getType()));
+            }
+        }
+        return indexFieldList;
     }
     /**
-     * Get the Field of the Object from annotation if there are not return will
+     * Get the Field of the Object from annotation if there are not return will.
      * be null
      * @param object
      *            - Class of the object viewed
-     * @param annotation
-     * @return
+     * @param annotation the annotation
+     * @return the field with annotation and null if does not exist
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public Field getField(Class object, Class annotation) {
@@ -209,8 +219,8 @@ public enum ColumnUtil {
     }
 
     /**
-     * list the fields in the class
-     * @param class1
+     * list the fields in the class.
+     * @param class1 the class
      * @return list of the fields
      */
     public List<Field> listFields(Class<?> class1) {
@@ -224,7 +234,7 @@ public enum ColumnUtil {
     }
 
     /**
-     * feed the list com Fields
+     * feed the list com Fields.
      * @param class1
      * @param fields
      */
@@ -232,7 +242,7 @@ public enum ColumnUtil {
 
         for (Field field : class1.getDeclaredFields()) {
 
-            if(isColumnToPersist(field)){
+            if (isColumnToPersist(field)) {
                 fields.add(field);
             }
 
@@ -240,39 +250,45 @@ public enum ColumnUtil {
     }
 
     /**
-     * verify is field has some annotations within
+     * verify is field has some annotations within.
      * {@link #ColumnUtil#annotations}
      * @param field
      * @return
      */
     private boolean isColumnToPersist(Field field) {
 
-        for(Annotation annotation:field.getAnnotations()){
-            int result=Collections.binarySearch(annotations,annotation.annotationType().getName());
-            if(result >= 0){
+        for (Annotation annotation : field.getAnnotations()) {
+            int result = Collections.binarySearch(annotations, annotation
+                    .annotationType().getName());
+            if (result >= 0) {
                 return true;
             }
         }
         return false;
     }
     /**
-     * verify if this is key of the column
-     * @param field
-     * @return
+     * verify if this is key of the column.
+     * @param field the field
+     * @return is id
      */
     public boolean isIdField(Field field) {
         return field.getAnnotation(Id.class) != null;
     }
 
     /**
-     * verify if this is index of the column
-     * @param field
-     * @return
+     * verify if this is index of the column.
+     * @param field the feiold
+     * @return if index
      */
     public boolean isIndexField(Field field) {
         return field.getAnnotation(Index.class) != null;
     }
 
+    /**
+     * verify if this is GeneratedValue of the column.
+     * @param field the field
+     * @return if GeneratedValue
+     */
     @GeneratedValue
     public boolean isGeneratedValue(Field field) {
         return field.getAnnotation(GeneratedValue.class) != null;
@@ -280,8 +296,8 @@ public enum ColumnUtil {
 
     /**
      * verify if this is secundary index of the column.
-     * @param field
-     * @return
+     * @param field the field
+     * @return the exist
      */
     public boolean isSecundaryIndexField(Field field) {
         return field.getAnnotation(Index.class) != null;
@@ -289,8 +305,8 @@ public enum ColumnUtil {
 
     /**
      * verify if this is a normal column.
-     * @param field
-     * @return
+     * @param field the field
+     * @return if has column annotation
      */
     public boolean isNormalField(Field field) {
         return field.getAnnotation(javax.persistence.Column.class) != null;
@@ -298,8 +314,8 @@ public enum ColumnUtil {
 
     /**
      * verify if this is a enum column.
-     * @param field
-     * @return
+     * @param field the field
+     * @return if has Enumerated annotation
      */
     public boolean isEnumField(Field field) {
         return field.getAnnotation(Enumerated.class) != null;
@@ -307,8 +323,8 @@ public enum ColumnUtil {
 
     /**
      * verify if this is a Embedded column.
-     * @param field
-     * @return
+     * @param field the field
+     * @return if has Embedded annotation
      */
     public boolean isEmbeddedField(Field field) {
         return field.getAnnotation(Embedded.class) != null;
@@ -316,8 +332,8 @@ public enum ColumnUtil {
 
     /**
      * verify if this is a Embedded id column.
-     * @param field
-     * @return
+     * @param field the field
+     * @return if has EmbeddedId annotation
      */
     public boolean isEmbeddedIdField(Field field) {
         return field.getAnnotation(EmbeddedId.class) != null;
@@ -325,8 +341,8 @@ public enum ColumnUtil {
 
     /**
      * verify if this is a Version column.
-     * @param field
-     * @return
+     * @param field the field
+     * @return if has Version annotation
      */
     public boolean isVersionField(Field field) {
         return field.getAnnotation(Version.class) != null;
@@ -334,32 +350,32 @@ public enum ColumnUtil {
 
     /**
      * verify is exist father to persist.
-     * @param class1
-     * @return
+     * @param class1 the class
+     * @return is has MappedSuperclass annotation
      */
     public boolean isMappedSuperclass(Class<?> class1) {
         return class1.getSuperclass().getAnnotation(MappedSuperclass.class) != null;
     }
     /**
-     * verify if the field is a list
-     * @param field
-     * @return
+     * verify if the field is a list.
+     * @param field the field
+     * @return if has ListData annotation
      */
-    public boolean isList(Field field){
+    public boolean isList(Field field) {
         return field.getAnnotation(ListData.class) != null;
     }
     /**
      * verify if the field is a map.
-     * @param field
-     * @return
+     * @param field the field
+     * @return if has MapData annotation
      */
     public boolean isMap(Field field){
         return field.getAnnotation(MapData.class) != null;
     }
     /**
      * verify if the field is a set.
-     * @param field
-     * @return
+     * @param field the field
+     * @return if has SetData annotation
      */
     public boolean isSet(Field field){
         return field.getAnnotation(SetData.class) != null;
@@ -367,16 +383,16 @@ public enum ColumnUtil {
 
     /**
      * verify if the field is custom.
-     * @param field
-     * @return
+     * @param field the field
+     * @return if has CustomData annotation
      */
     public boolean isCustom(Field field) {
         return field.getAnnotation(CustomData.class) != null;
     }
     /**
      * verify if the field is element Collection.
-     * @param field
-     * @return
+     * @param field the field
+     * @return if has ElementCollection annotation
      */
 	public boolean isElementCollection(Field field) {
 		return field.getAnnotation(ElementCollection.class) != null;
@@ -385,17 +401,17 @@ public enum ColumnUtil {
    /**
     * get the Field for parsing <b>columnName</b> in the <b>class1</b>.
     * if there is no such column name or if it denies access  return null.
-    * @param columnName
-    * @param class1
-    * @return
+    * @param columnName the columnName
+    * @param class1 the class
+    * @return the field with the name
     */
 	public Field getFieldByColumnName(String columnName, Class<?> class1) {
-		
-		for(Field index:getIndexFields(class1)){
-			if(getColumnName(index).equals(columnName)){
-				return index;
-			}
-		}
+
+        for (Field index : getIndexFields(class1)) {
+            if (getColumnName(index).equals(columnName)) {
+                return index;
+            }
+        }
 
 		StringBuilder erro = new StringBuilder();
 		erro.append("Not found index on ").append(class1.getName());
@@ -404,15 +420,25 @@ public enum ColumnUtil {
 	}
 
 
-	public KeySpaceInformation getKeySpace(String keySpace,Class<?> bean){
-		String keySchema=getSchema(bean);
-		KeySpaceInformation key=new KeySpaceInformation();
-		key.keySpace="".equals(keySchema)?keySpace:keySchema;
-		key.columnFamily=getColumnFamily(bean);
-	   return key;
+	/**
+	 * returns the keySpace information.
+	 * @param keySpace the keySpace
+	 * @param bean the kind of class
+	 * @return {@link KeySpaceInformation}
+	 */
+	public KeySpaceInformation getKeySpace(String keySpace, Class<?> bean) {
+        String keySchema = getSchema(bean);
+        KeySpaceInformation key = new KeySpaceInformation();
+        key.keySpace = "".equals(keySchema) ? keySpace : keySchema;
+        key.columnFamily = getColumnFamily(bean);
+        return key;
 	}
 
-	public class KeySpaceInformation{
+	/**
+	 * The dto to information.
+	 * @author otaviojava
+	 */
+	public class KeySpaceInformation {
 		private String keySpace;
 
 		private String columnFamily;

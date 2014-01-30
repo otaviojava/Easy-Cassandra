@@ -27,7 +27,9 @@ import com.datastax.driver.core.exceptions.InvalidQueryException;
  */
 class FixKeySpace {
 
-    private static final String CREATE_KEY_SPACE_CQL = "CREATE KEYSPACE :keySpace WITH replication = {'class': :replication , 'replication_factor': :factor};";
+    private static final String CREATE_KEY_SPACE_CQL = "CREATE KEYSPACE "
+            + ":keySpace WITH replication = {'class': :replication , 'replication_factor': "
+            + ":factor};";
 
     private static final int DEFAULT_REPLICATION_FACTOR = 3;
 
@@ -44,19 +46,24 @@ class FixKeySpace {
         verifyKeySpace(keySpace, session, DEFAULT_REPLICA_STRATEGY, DEFAULT_REPLICATION_FACTOR);
     }
 
-    public void verifyKeySpace(String keySpace, Session session,ReplicaStrategy replicaStrategy, int factor) {
+    public void verifyKeySpace(String keySpace, Session session,
+            ReplicaStrategy replicaStrategy, int factor) {
         try {
             session.execute("use " + keySpace);
         } catch (InvalidQueryException exception) {
-            Logger.getLogger(FixKeySpace.class.getName()).info( "KeySpace does not exist, create a keySpace: " + keySpace);
+            Logger.getLogger(FixKeySpace.class.getName()).info(
+                    "KeySpace does not exist, create a keySpace: " + keySpace);
             createKeySpace(session, keySpace, replicaStrategy, factor);
             verifyKeySpace(keySpace, session);
         }
 
     }
 
-    public void createKeySpace(Session session, String keySpace, ReplicaStrategy replicaStrategy, int factor) {
-        String query = CREATE_KEY_SPACE_CQL.replace(":keySpace", keySpace).replace(":replication", replicaStrategy.getValue()).replace(":factor", String.valueOf(factor));
+    public void createKeySpace(Session session, String keySpace,
+            ReplicaStrategy replicaStrategy, int factor) {
+        String query = CREATE_KEY_SPACE_CQL.replace(":keySpace", keySpace)
+                .replace(":replication", replicaStrategy.getValue())
+                .replace(":factor", String.valueOf(factor));
         session.execute(query);
 
     }

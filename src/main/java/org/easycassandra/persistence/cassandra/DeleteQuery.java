@@ -31,90 +31,104 @@ import com.datastax.driver.core.querybuilder.QueryBuilder;
 /**
  * Class to create a query to delete beans.
  * @author otaviojava
- * 
  */
-class DeleteQuery{
+class DeleteQuery {
 
 	private String keySpace;
 
-	public DeleteQuery(String keySpace){
-        this.keySpace = keySpace;	
-	}
+    public DeleteQuery(String keySpace) {
+        this.keySpace = keySpace;
+    }
 
-    public <T> boolean deleteByKey(T bean, Session session,ConsistencyLevel consistency) {
+    public <T> boolean deleteByKey(T bean, Session session,
+            ConsistencyLevel consistency) {
 
         Field key = getKeyField(bean);
 
-        return deleteByKey(ReflectionUtil.INSTANCE.getMethod(bean, key),bean.getClass(), session,consistency);
-    }
-    
-    public <T> boolean deleteByKey(Iterable<T> beans, Session session,ConsistencyLevel consistency) {
-
-    	List<Object> keys=new LinkedList<Object>();
-    	Class<?> beanClass=null;
-    	for (T bean:beans) {
-
-    		if (beanClass == null) {
-    			beanClass = bean.getClass();
-    		}
-
-    	}
-    	deleteByKey(keys, beanClass, session, consistency);
-    	return true;
+        return deleteByKey(ReflectionUtil.INSTANCE.getMethod(bean, key),
+                bean.getClass(), session, consistency);
     }
 
-    public <K> boolean deleteByKey(K key, Class<?> bean, Session session,ConsistencyLevel consistency) {
-        Delete delete = runDelete(key, bean,consistency);
+    public <T> boolean deleteByKey(Iterable<T> beans, Session session,
+            ConsistencyLevel consistency) {
+
+        List<Object> keys = new LinkedList<Object>();
+        Class<?> beanClass = null;
+        for (T bean : beans) {
+
+            if (beanClass == null) {
+                beanClass = bean.getClass();
+            }
+
+        }
+        deleteByKey(keys, beanClass, session, consistency);
+        return true;
+    }
+
+    public <K> boolean deleteByKey(K key, Class<?> bean, Session session,
+            ConsistencyLevel consistency) {
+        Delete delete = runDelete(key, bean, consistency);
         session.execute(delete);
         return true;
     }
 
-    public <K> boolean deleteByKey(Iterable<K> keys, Class<?> bean, Session session,ConsistencyLevel consistency) {
+    public <K> boolean deleteByKey(Iterable<K> keys, Class<?> bean,
+            Session session, ConsistencyLevel consistency) {
 
-    	Batch batch= null;
-    	for (K key:keys) {
-    		if(batch ==null){
-    			QueryBuilder.batch(runDelete(key, bean,consistency));
-    		}else{
-    			batch.add(batch);
-    		}
-    	}
+        Batch batch = null;
+        for (K key : keys) {
+            if (batch == null) {
+                QueryBuilder.batch(runDelete(key, bean, consistency));
+            } else {
+                batch.add(batch);
+            }
+        }
         session.execute(batch);
         return true;
     }
 
-	private Delete runDelete(Object key, Class<?> bean,ConsistencyLevel consistency) {
-		if (key == null) {
-            throw new KeyProblemsException("The parameter key to column family should be passed");
+    private Delete runDelete(Object key, Class<?> bean,
+            ConsistencyLevel consistency) {
+        if (key == null) {
+            throw new KeyProblemsException(
+                    "The parameter key to column family should be passed");
         }
 
-        KeySpaceInformation keyInformation=ColumnUtil.INTANCE.getKeySpace(keySpace, bean);
-    	Delete delete=QueryBuilder.delete().all().from(keyInformation.getKeySpace(), keyInformation.getColumnFamily());
+        KeySpaceInformation keyInformation = ColumnUtil.INTANCE.getKeySpace(
+                keySpace, bean);
+        Delete delete = QueryBuilder
+                .delete()
+                .all()
+                .from(keyInformation.getKeySpace(),
+                        keyInformation.getColumnFamily());
 
         Field keyField = ColumnUtil.INTANCE.getKeyField(bean);
         if (keyField != null) {
 
-           delete.where(QueryBuilder.eq(ColumnUtil.INTANCE.getColumnName(keyField), key));  
+            delete.where(QueryBuilder.eq(
+                    ColumnUtil.INTANCE.getColumnName(keyField), key));
         } else {
-        	runComplexKey(delete, key);
+            runComplexKey(delete, key);
         }
         delete.setConsistencyLevel(consistency);
         return delete;
-	}
+    }
 
-	private void runComplexKey( Delete delete, Object key) {
+    private void runComplexKey(Delete delete, Object key) {
 
-		for (Field subKey:ColumnUtil.INTANCE.listFields(key.getClass())) {
-             delete.where(QueryBuilder.eq(ColumnUtil.INTANCE.getColumnName(subKey), ReflectionUtil.INSTANCE.getMethod(key, subKey)));
-		}
-	}
+        for (Field subKey : ColumnUtil.INTANCE.listFields(key.getClass())) {
+            delete.where(QueryBuilder.eq(
+                    ColumnUtil.INTANCE.getColumnName(subKey),
+                    ReflectionUtil.INSTANCE.getMethod(key, subKey)));
+        }
+    }
 
-	private <T> Field getKeyField(T bean) {
-		Field key = ColumnUtil.INTANCE.getKeyField(bean.getClass());
+    private <T> Field getKeyField(T bean) {
+        Field key = ColumnUtil.INTANCE.getKeyField(bean.getClass());
         if (key == null) {
             key = ColumnUtil.INTANCE.getKeyComplexField(bean.getClass());
         }
-		return key;
-	}
+        return key;
+    }
 
 }

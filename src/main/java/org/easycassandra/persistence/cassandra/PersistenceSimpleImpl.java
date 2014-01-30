@@ -20,16 +20,14 @@ import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.Session;
 
 /**
- * Class to persist information in cassandra database
- *
+ * Class to persist information in cassandra database.
  * @author otaviojava
- *
  */
 public class PersistenceSimpleImpl implements Persistence {
 
     private Session session;
     /**
-     * when don't define the persistence will use it as keyspace
+     * when don't define the persistence will use it as keyspace.
      */
     private String keySpace;
 
@@ -41,23 +39,31 @@ public class PersistenceSimpleImpl implements Persistence {
         setSession();
     }
 
-    public PersistenceSimpleImpl(CassandraFactory cassandraFactory){
+    /**
+     * Constructor.
+     * @param cassandraFactory the factory to cassandra
+     */
+    public PersistenceSimpleImpl(CassandraFactory cassandraFactory) {
         this(cassandraFactory.getSession(), cassandraFactory.getKeySpace());
     }
+    /**
+     * run Cassandra native query.
+     * @param string the query
+     */
     public void execute(String string) {
         session.execute(string);
     }
 
     @Override
     public <T> boolean insert(T bean) {
-        return command.insert(bean, session,keySpace)!=null;
+        return command.insert(bean, session, keySpace) != null;
 
     }
 
     @Override
     public <T> boolean delete(T bean) {
 
-        return command.delete(bean, session,keySpace);
+        return command.delete(bean, session, keySpace);
     }
 
     @Override
@@ -67,17 +73,17 @@ public class PersistenceSimpleImpl implements Persistence {
 
     @Override
     public <T> List<T> findAll(Class<T> bean) {
-        return command.findAll(bean, session,keySpace);
+        return command.findAll(bean, session, keySpace);
     }
 
     @Override
-    public <K,T> T findByKey(K key, Class<T> bean) {
-        return command.findByKey(key, bean, session,keySpace);
+    public <K, T> T findByKey(K key, Class<T> bean) {
+        return command.findByKey(key, bean, session, keySpace);
     }
 
     @Override
-    public <K,T> boolean deleteByKey(K key, Class<T> bean) {
-        return command.deleteByKey(key, bean, session,keySpace);
+    public <K, T> boolean deleteByKey(K key, Class<T> bean) {
+        return command.deleteByKey(key, bean, session, keySpace);
     }
 
     @Override
@@ -86,35 +92,31 @@ public class PersistenceSimpleImpl implements Persistence {
         return true;
     }
 
-    /**
-     * Edited by Dinusha Nandika
-     * Add indexName parameter 
-     */
     @Override
-    public <T,I> List<T> findByIndex(String indexName, I index, Class<T> bean) {
+    public <T, I> List<T> findByIndex(String indexName, I index, Class<T> bean) {
 
-        return command.findByIndex(indexName,index, bean, session,keySpace);
+        return command.findByIndex(indexName, index, bean, session, keySpace);
     }
 
     @Override
     public <T, I> List<T> findByIndex(I index, Class<T> bean) {
 
-        return command.findByIndex(index, bean, session,keySpace);
+        return command.findByIndex(index, bean, session, keySpace);
     }
 
     @Override
     public <T> Long count(Class<T> bean) {
-        return command.count(bean, session,keySpace);
+        return command.count(bean, session, keySpace);
     }
 
     @Override
     public <T> boolean insert(Iterable<T> beans) {
-        return command.insert(beans, session,keySpace);
+        return command.insert(beans, session, keySpace);
     }
 
     @Override
     public <T> boolean delete(Iterable<T> beans) {
-        return command.delete(beans, session,keySpace);
+        return command.delete(beans, session, keySpace);
     }
 
     @Override
@@ -125,7 +127,7 @@ public class PersistenceSimpleImpl implements Persistence {
 
     @Override
     public <K, T> List<T> findByKeys(Iterable<K> keys, Class<T> bean) {
-        return command.findAll(bean, session,keySpace);
+        return command.findAll(bean, session, keySpace);
     }
 
     @Override
@@ -134,31 +136,31 @@ public class PersistenceSimpleImpl implements Persistence {
     }
 
 
-    private void setSession(){
-        session.execute("use "+keySpace);
+    private void setSession() {
+        session.execute("use " + keySpace);
     }
 
     @Override
     public <T> boolean insert(T bean, ConsistencyLevel consistency) {
-        command.insert(bean, session, keySpace,consistency);
+        command.insert(bean, session, keySpace, consistency);
         return true;
     }
 
     @Override
     public <T> boolean insert(Iterable<T> beans, ConsistencyLevel consistency) {
-        command.insert(beans, session, keySpace,consistency);
+        command.insert(beans, session, keySpace, consistency);
         return true;
     }
 
     @Override
     public <T> boolean delete(T bean, ConsistencyLevel consistency) {
-        command.delete(bean, session, keySpace,consistency);
+        command.delete(bean, session, keySpace, consistency);
         return false;
     }
 
     @Override
     public <T> boolean delete(Iterable<T> beans, ConsistencyLevel consistency) {
-        command.delete(beans, session, keySpace,consistency);
+        command.delete(beans, session, keySpace, consistency);
         return false;
     }
 
@@ -175,11 +177,12 @@ public class PersistenceSimpleImpl implements Persistence {
 
     @Override
     public <T> List<T> findAll(Class<T> bean, ConsistencyLevel consistency) {
-        return command.findAll(bean, session, keySpace,consistency);
+        return command.findAll(bean, session, keySpace, consistency);
     }
 
     @Override
-    public <K, T> List<T> findByKeys(Iterable<K> keys, Class<T> bean,ConsistencyLevel consistency) {
+    public <K, T> List<T> findByKeys(Iterable<K> keys, Class<T> bean,
+            ConsistencyLevel consistency) {
         return command.findByKeys(keys, bean, session, keySpace, consistency);
     }
 
@@ -190,40 +193,32 @@ public class PersistenceSimpleImpl implements Persistence {
 
     @Override
     public <K, T> boolean deleteByKey(K key, Class<T> bean,	ConsistencyLevel consistency) {
-        return command.deleteByKey(key, bean, session, keySpace,consistency);
+        return command.deleteByKey(key, bean, session, keySpace, consistency);
     }
 
     @Override
-    public <T, I> List<T> findByIndex(String indexName, I index, Class<T> bean,ConsistencyLevel consistency) {
-        return command.findByIndex(index, bean, session, indexName, consistency);
+    public <T, I> List<T> findByIndex(String indexName, I index, Class<T> bean,
+            ConsistencyLevel consistency) {
+        return command
+                .findByIndex(index, bean, session, indexName, consistency);
     }
 
     @Override
-    public <T, I> List<T> findByIndex(I index, Class<T> bean,ConsistencyLevel consistency) {
+    public <T, I> List<T> findByIndex(I index, Class<T> bean, ConsistencyLevel consistency) {
 
         return command.findByIndex(index, bean, session, keySpace, consistency);
     }
 
-    /**
-     * Find by primary key and index
-     *
-     * @author Nenita Casuga
-     * @since 10/30/2013
-     */
     @Override
-    public <T,I> List<T> findByKeyAndIndex(Object key, I index, Class<T> bean){
+    public <T, I> List<T> findByKeyAndIndex(Object key, I index, Class<T> bean) {
         return command.findByKeyAndIndex(key, index, bean, session, keySpace);
     }
 
-    /**
-     * Find by primary key and index range
-     *
-     * @author Nenita Casuga
-     * @since 10/30/2013
-     */
     @Override
-    public <T,I> List<T> findByKeyAndIndexRange(Object key, Object indexStart, Object indexEnd, boolean inclusive, Class<T> bean){
-         return command.findByKeyAndIndexRange(key, indexStart, indexEnd, inclusive, bean, session,keySpace);
+    public <T, I> List<T> findByKeyAndIndexRange(Object key, Object indexStart,
+            Object indexEnd, boolean inclusive, Class<T> bean) {
+        return command.findByKeyAndIndexRange(key, indexStart, indexEnd,
+                inclusive, bean, session, keySpace);
     }
 
     @Override

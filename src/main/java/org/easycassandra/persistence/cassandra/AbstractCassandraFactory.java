@@ -9,29 +9,49 @@ import com.datastax.driver.core.Session;
  * @author otaviojava
  *
  */
-class AbstractCassandraFactory implements CassandraFactory{
+class AbstractCassandraFactory implements CassandraFactory {
 
-	public AbstractCassandraFactory(String host,String keySpace){
+    /**
+     * Constructor to Factory.
+     * @param host the host
+     * @param keySpace the keySpace
+     */
+    public AbstractCassandraFactory(String host, String keySpace) {
 		this.hostDefault = host;
 		this.keySpaceDefault = keySpace;
 		this.port = PORT_DEFAULT;
 		initConection();
 	}
-	public AbstractCassandraFactory(String host,String keySpace,int port){
-		this.hostDefault = host;
-		this.keySpaceDefault = keySpace;
-		this.port = port;
-		initConection();
-	}
+    /**
+     * the Constructor to factory with port.
+     * @param host the host
+     * @param keySpace the keySpace
+     * @param port the port
+     */
+    public AbstractCassandraFactory(String host, String keySpace, int port) {
+        this.hostDefault = host;
+        this.keySpaceDefault = keySpace;
+        this.port = port;
+        initConection();
+    }
 
-	public AbstractCassandraFactory(String host,String keySpace,int port, String user, String password){
+    /**
+     * the Constructor to factory with port.
+     * @param host the host
+     * @param keySpace the keySpace
+     * @param port the port
+     * @param user the user
+     * @param password the password
+     */
+    public AbstractCassandraFactory(String host, String keySpace, int port,
+            String user, String password) {
 		this.hostDefault = host;
 		this.keySpaceDefault = keySpace;
 		this.port = port;
 		initConectionCredentials(user, password);
 	}
 
-	private static final int PORT_DEFAULT=9042;
+	private static final int PORT_DEFAULT = 9042;
 
     private Cluster cluter;
 
@@ -42,12 +62,12 @@ class AbstractCassandraFactory implements CassandraFactory{
     private int port;
 
 
-    protected Cluster getCluster(){
+    protected Cluster getCluster() {
     	return cluter;
     }
 
     @Override
-    public String getHost(){
+    public String getHost() {
     	return hostDefault;
     }
 
@@ -57,7 +77,7 @@ class AbstractCassandraFactory implements CassandraFactory{
 	}
 
     @Override
-    public int getPort(){
+    public int getPort() {
     	return port;
     }
 
@@ -78,20 +98,20 @@ class AbstractCassandraFactory implements CassandraFactory{
 	@Override
 	public Session getSession(String host, int port, String user,
 			String password) {
-		
+
     	return getSession(host, port, keySpaceDefault, user, password);
 	}
 	@Override
 	public Session getSession(String host, int port, String keySpace,
 			String user, String password) {
 		Session session = verifyHost(host, port, user, password).connect();
-		new FixKeySpace().verifyKeySpace(keySpaceDefault, session );
+		new FixKeySpace().verifyKeySpace(keySpaceDefault, session);
     	return session;
 	}
 
-    protected Session createSession(String host, int port, String keySpace){
-    	new FixKeySpace().verifyKeySpace(keySpace, verifyHost(host,port).connect());
-    	return verifyHost(host,port).connect();
+    protected Session createSession(String host, int port, String keySpace) {
+    	new FixKeySpace().verifyKeySpace(keySpace, verifyHost(host, port).connect());
+    	return verifyHost(host, port).connect();
     }
 
     /**
@@ -99,42 +119,50 @@ class AbstractCassandraFactory implements CassandraFactory{
      * if different will create a other new cluster.
      * @param host
      */
-	protected Cluster verifyHost(String host,int port) {
+	protected Cluster verifyHost(String host, int port) {
 		if (!this.hostDefault.equals(host)) {
-             return Cluster.builder().withPort(port).addContactPoints(host).build();
+            return Cluster.builder().withPort(port).addContactPoints(host)
+                    .build();
         }
 		return cluter;
 	}
-	
-	protected Cluster verifyHost(String host,int port, String user, String password) {
+
+	protected Cluster verifyHost(String host, int port, String user, String password) {
 		if (!this.hostDefault.equals(host)) {
-             return Cluster.builder().withPort(port).addContactPoints(host).withCredentials(user, password).build();
+            return Cluster.builder().withPort(port).addContactPoints(host)
+                    .withCredentials(user, password).build();
         }
 		return cluter;
 	}
-	protected boolean fixColumnFamily(Session session,String familyColumn,Class<?> class1){
-		return new FixColumnFamily().verifyColumnFamily(session, familyColumn,class1);
+
+    protected boolean fixColumnFamily(Session session, String familyColumn,
+            Class<?> class1) {
+		return new FixColumnFamily().verifyColumnFamily(session, familyColumn, class1);
 	}
 
 
-	protected void verifyKeySpace(String keySpace,Session session,ReplicaStrategy replicaStrategy, int factor) {
-		new FixKeySpace().verifyKeySpace(keySpace, session, replicaStrategy,factor);
+    protected void verifyKeySpace(String keySpace, Session session,
+            ReplicaStrategy replicaStrategy, int factor) {
+		new FixKeySpace().verifyKeySpace(keySpace, session, replicaStrategy, factor);
 	}
-	protected void verifyKeySpace(String keySpace,Session session) {
+	protected void verifyKeySpace(String keySpace, Session session) {
 		new FixKeySpace().verifyKeySpace(keySpace, session);
 	}
 
 	/**
 	 * init the default connection.
 	 */
-    private  void initConection(){
-    	 cluter = Cluster.builder().withPort(port).addContactPoints(hostDefault).build();
-    	 new FixKeySpace().verifyKeySpace(keySpaceDefault, getSession());
+    private  void initConection() {
+        cluter = Cluster.builder().withPort(port).addContactPoints(hostDefault)
+                .build();
+        new FixKeySpace().verifyKeySpace(keySpaceDefault, getSession());
     }
-    
-    private  void initConectionCredentials(String user, String password){
-   	 cluter = Cluster.builder().withPort(port).withCredentials(user, password).addContactPoints(hostDefault).build();
-   	 new FixKeySpace().verifyKeySpace(keySpaceDefault, getSession());
-   }
+
+    private void initConectionCredentials(String user, String password) {
+        cluter = Cluster.builder().withPort(port)
+                .withCredentials(user, password).addContactPoints(hostDefault)
+                .build();
+        new FixKeySpace().verifyKeySpace(keySpaceDefault, getSession());
+    }
 
 }

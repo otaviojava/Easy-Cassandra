@@ -20,10 +20,8 @@ import com.datastax.driver.core.ConsistencyLevel;
 
 /**
  * Base to cassandra databases, the interface has all resources that may use in
- * Cassandra database
- *
+ * Cassandra database.
  * @author otaviojava
- *
  */
 public interface Persistence  {
 

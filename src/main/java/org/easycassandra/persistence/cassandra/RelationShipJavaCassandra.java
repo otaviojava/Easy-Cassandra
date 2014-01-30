@@ -10,8 +10,7 @@ import com.datastax.driver.core.DataType.Name;
 import com.datastax.driver.core.Row;
 
 /**
- * this enum contains the relationship between CQL's type rows and type Java
- * 
+ * this enum contains the relationship between CQL's type rows and type Java.
  * @author otaviojava
  * @version 1.0
  */
@@ -19,11 +18,11 @@ enum RelationShipJavaCassandra {
     INSTANCE;
 
     /**
-     * key is cql and value is Java
+     * key is cql and value is Java.
      */
     private Map<String, String> mapCQL;
     /**
-     * key is Java and value is CQL
+     * key is Java and value is CQL.
      */
     private Map<String, List<String>> mapJava;
 
@@ -47,8 +46,7 @@ enum RelationShipJavaCassandra {
     }
 
     /**
-     * methods returns the equivalent type in Java from CQL type
-     * 
+     * methods returns the equivalent type in Java from CQL type.
      * @param cqlType
      *            - cqlTypeKey
      * @return the java type
@@ -58,8 +56,7 @@ enum RelationShipJavaCassandra {
     }
 
     /**
-     * methods returns the equivalent type in CQL from Java type
-     * 
+     * methods returns the equivalent type in CQL from Java type.
      * @param cqlType
      *            - javaTypeKey
      * @return the java type
@@ -72,16 +69,24 @@ enum RelationShipJavaCassandra {
 
         if (String.class.getName().equals(javaTypeKey)) {
             return DataType.Name.TEXT.name().toLowerCase();
-        }
-
-        else if (Long.class.getName().endsWith(javaTypeKey)) {
+        } else if (Long.class.getName().endsWith(javaTypeKey)) {
             return DataType.Name.BIGINT.name().toLowerCase();
         }
 
         return getCQLType(javaTypeKey).get(0);
     }
 
-    public Object getObject(Row row, Name cqlType, String name,Class<?>... classes) {
+    /**
+     * return the object using relationship Java.
+     * @param row the row
+     * @param cqlType the cqltype
+     * @param name the name
+     * @param classes the Classes
+     * @param <T> kind of object
+     * @return the object
+     */
+    public Object getObject(Row row, Name cqlType, String name,
+            Class<?>... classes) {
         switch (cqlType) {
         case ASCII:
         case TEXT:

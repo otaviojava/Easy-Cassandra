@@ -32,11 +32,12 @@ class FindByIndexQuery extends FindByKeyQuery {
 		super(keySpace);
 	}
 
-	public <T,I> List<T> findByIndex(I index, Class<T> bean, Session session,ConsistencyLevel consistency) {
-		Field field=ColumnUtil.INTANCE.getIndexField(bean);
-		checkFieldNull(bean, field);
-		return findByIndex(field.getName(),index, bean, session,consistency);
-	}
+    public <T, I> List<T> findByIndex(I index, Class<T> bean, Session session,
+            ConsistencyLevel consistency) {
+        Field field = ColumnUtil.INTANCE.getIndexField(bean);
+        checkFieldNull(bean, field);
+        return findByIndex(field.getName(), index, bean, session, consistency);
+    }
 
     /**
      * Edited by Nenita Casuga to make method static and package protected so it can be reused.
@@ -44,39 +45,41 @@ class FindByIndexQuery extends FindByKeyQuery {
      */
 	static <T> void checkFieldNull(Class<T> bean, Field field) {
 		if (field == null) {
-			StringBuffer erro=new StringBuffer();
+			StringBuffer erro = new StringBuffer();
 			erro.append("No found some field with @org.easycassandra.Index within ");
 			erro.append(bean.getName()).append(" class.");
 			throw new IndexProblemException(erro.toString());
 		}
 	}
-	
-    public <T,I> List<T> findByIndex(String indexName, I key, Class<T> bean, Session session,ConsistencyLevel consistency) {
-    	QueryBean byKeyBean = createQueryBean(bean,consistency);
-        return executeConditions(indexName,key, bean, session, byKeyBean);
+
+    public <T, I> List<T> findByIndex(String indexName, I key, Class<T> bean,
+            Session session, ConsistencyLevel consistency) {
+        QueryBean byKeyBean = createQueryBean(bean, consistency);
+        return executeConditions(indexName, key, bean, session, byKeyBean);
     }
 
- 
-    private <T> List<T> executeConditions(String indexName, Object key, Class<T> bean,Session session, QueryBean byKeyBean) {
-    	  /**
-         * Edited by Dinusha Nandika
-         * Add indexName parameter 
+    private <T> List<T> executeConditions(String indexName, Object key,
+            Class<T> bean, Session session, QueryBean byKeyBean) {
+        /**
+         * Edited by Dinusha Nandika Add indexName parameter
          */
-    	byKeyBean.key = ColumnUtil.INTANCE.getFieldByColumnName(indexName,bean);
+        byKeyBean.key = ColumnUtil.INTANCE
+                .getFieldByColumnName(indexName, bean);
         checkIndexProblem(bean, byKeyBean);
         ResultSet resultSet = executeQuery(key, bean, session, byKeyBean);
         return RecoveryObject.INTANCE.recoverObjet(bean, resultSet);
     }
 
     /**
-     * Edited by Nenita Casuga to make method static and package protected so it can be reused.
+     * Edited by Nenita Casuga to make method static and package protected so it
+     * can be reused.
      */
-	 static <T> void checkIndexProblem(Class<T> bean, QueryBean byKeyBean) {
-		if (byKeyBean.key == null) {
+    static <T> void checkIndexProblem(Class<T> bean, QueryBean byKeyBean) {
+        if (byKeyBean.key == null) {
             StringBuilder erro = new StringBuilder();
             erro.append("Some field in a class ").append(bean.getName());
             erro.append(" should be a annotation: @org.easycassandra.annotations.Index ");
             throw new IndexProblemException(erro.toString());
         }
-	}
+    }
 }

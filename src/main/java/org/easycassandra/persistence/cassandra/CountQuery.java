@@ -28,11 +28,12 @@ import com.datastax.driver.core.querybuilder.Select;
  */
 class CountQuery {
 
-	private String keySpace;
+    private String keySpace;
 
-	public CountQuery(String keySpace) {
-		this.keySpace = keySpace;
-	}
+    public CountQuery(String keySpace) {
+        this.keySpace = keySpace;
+    }
+
     /**
      * return the number of row in a column family.
      * @param bean
@@ -40,10 +41,13 @@ class CountQuery {
      * @param session
      * @return number of register in a column family
      */
-    public Long count(Class<?> bean, Session session,ConsistencyLevel consistency) {
-    	KeySpaceInformation key = ColumnUtil.INTANCE.getKeySpace(keySpace, bean);
-    	Select select = QueryBuilder.select().countAll().from(key.getKeySpace(), key.getColumnFamily());
-    	select.setConsistencyLevel(consistency);
+    public Long count(Class<?> bean, Session session,
+            ConsistencyLevel consistency) {
+        KeySpaceInformation key = ColumnUtil.INTANCE
+                .getKeySpace(keySpace, bean);
+        Select select = QueryBuilder.select().countAll()
+                .from(key.getKeySpace(), key.getColumnFamily());
+        select.setConsistencyLevel(consistency);
         ResultSet resultSet = session.execute(select);
         return resultSet.all().get(0).getLong(0);
     }

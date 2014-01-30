@@ -18,13 +18,16 @@ package org.easycassandra.persistence.cassandra;
  * Exception to serialize and deseralize the object in.
  * DefaultCustmomizable
  * @author osantana
- *
  */
 public class DefaultCustmomizableException extends RuntimeException {
 
-	private static final long serialVersionUID = 2129093870754309945L;
+    private static final long serialVersionUID = 2129093870754309945L;
 
-	   public DefaultCustmomizableException(String message) {
-	        super(message);
-	    }
+    /**
+     * the constructor.
+     * @param message information to log
+     */
+    public DefaultCustmomizableException(String message) {
+        super(message);
+    }
 }
