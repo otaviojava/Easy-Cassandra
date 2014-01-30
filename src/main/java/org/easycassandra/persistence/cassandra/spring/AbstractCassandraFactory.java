@@ -21,66 +21,113 @@ import com.datastax.driver.core.Session;
 /**
  * base of cassandra factory.
  * @author otaviojava
- *
  */
-public abstract class AbstractCassandraFactory extends EasyCassandraManager implements CassandraFactorySpring{
-	
-	   public AbstractCassandraFactory(String host, String keySpace) {
-		super(host, keySpace);
-	}
-	   public AbstractCassandraFactory(String host,String keySpace,int port){
-		   super(host,keySpace,port);
-	   }
-
-	   public AbstractCassandraFactory(String host,String keySpace,int port, String user, String password){
-			super(host, keySpace, port, user, password);
-		}
-
-	/**
-     * {@link AbstractCassandraFactory#getTemplate(String, String, ReplicaStrategy, int)}.
+public abstract class AbstractCassandraFactory extends EasyCassandraManager
+        implements CassandraFactorySpring {
+    /**
+     * the Constructor.
+     * @param host
+     *            the host
+     * @param keySpace
+     *            the keyspace
      */
-    public CassandraTemplate getTemplate(String host, String keySpace, int port) {
-    	 Session session = verifyHost(host,port).connect();
-         verifyKeySpace(keySpace, session);
-         return new SimpleCassandraTemplateImpl(this);
-	}
+    public AbstractCassandraFactory(String host, String keySpace) {
+        super(host, keySpace);
+    }
+/**
+ * construcotr.
+ * @param host the host
+ * @param keySpace the keySpace
+ * @param port the port
+ */
+    public AbstractCassandraFactory(String host, String keySpace, int port) {
+        super(host, keySpace, port);
+    }
 
     /**
-     * {@link AbstractCassandraFactory#getTemplate(String, String, ReplicaStrategy, int)}.
+     * the constructor.
+     * @param host
+     *            the host
+     * @param keySpace
+     *            the keySpace
+     * @param port
+     *            the port
+     * @param user
+     *            the user
+     * @param password
+     *            the password
+     */
+    public AbstractCassandraFactory(String host, String keySpace, int port,
+            String user, String password) {
+        super(host, keySpace, port, user, password);
+    }
+
+    /**
+     * {@link AbstractCassandraFactory#getTemplate(String, String, ReplicaStrategy, int)}
+     * the constructor.
+     * @param host
+     *            the host
+     * @param keySpace
+     *            the keySpace
+     * @param port
+     *            the port
+     * @return Cassandra template
+     */
+    public CassandraTemplate getTemplate(String host, String keySpace, int port) {
+        Session session = verifyHost(host, port).connect();
+        verifyKeySpace(keySpace, session);
+        return new SimpleCassandraTemplateImpl(this);
+    }
+
+    /**
+     * {@link AbstractCassandraFactory#getTemplate(String, String, ReplicaStrategy, int)}
+     * the constructor.
+     * @param host
+     *            the host
+     * @param keySpace
+     *            the keySpace
+     * @return Cassandra template
      */
     public CassandraTemplate getTemplate(String host, String keySpace) {
         return getTemplate(host, keySpace, getPort());
     }
 
-
     /**
      * Method for create the Cassandra's Client, if the keyspace there is not,if
      * keyspace there isn't, it will created with replacyStrategy and number of
      * factor.
-     * @param host - place where is Cassandra data base
-     * @param keySpace - the keyspace's name
-     * @param replicaStrategy - replica strategy
-     * @param factor - number of the factor
+     * @param host
+     *            - place where is Cassandra data base
+     * @param keySpace
+     *            - the keyspace's name
+     * @param replicaStrategy
+     *            - replica strategy
+     * @param factor
+     *            - number of the factor
      * @return the client bridge for the Cassandra data base
      */
-    public CassandraTemplate getTemplate(String host, String keySpace,ReplicaStrategy replicaStrategy, int factor) {
+    public CassandraTemplate getTemplate(String host, String keySpace,
+            ReplicaStrategy replicaStrategy, int factor) {
         Cluster cluter = verifyHost(host, getPort());
-        verifyKeySpace(keySpace, cluter.connect(), replicaStrategy,factor);
-        return new SimpleCassandraTemplateImpl(createSession(host, getPort(), keySpace),keySpace);
+        verifyKeySpace(keySpace, cluter.connect(), replicaStrategy, factor);
+        return new SimpleCassandraTemplateImpl(createSession(host, getPort(),
+                keySpace), keySpace);
     }
-
-
-	/**
-	 * {@link AbstractCassandraFactory#verifyHost(String, int)}.
-	 */
-    public CassandraTemplate getTemplate(String host) {
-		return getTemplate(host, getKeySpace());
-	}
 
     /**
      * {@link AbstractCassandraFactory#verifyHost(String, int)}.
+     * @param host the host
+     * @return cassandra tempalte
      */
-	public CassandraTemplate getTemplate() {
-		return getTemplate(getHost(),getKeySpace());
-	}
+    public CassandraTemplate getTemplate(String host) {
+        return getTemplate(host, getKeySpace());
+    }
+
+    /**
+     * {@link AbstractCassandraFactory#verifyHost(String, int)}.
+     * @return the cassandra template
+     */
+    public CassandraTemplate getTemplate() {
+        return getTemplate(getHost(), getKeySpace());
+    }
 }

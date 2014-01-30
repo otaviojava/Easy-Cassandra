@@ -4,9 +4,18 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 
 import org.springframework.data.repository.CrudRepository;
+/**
+ * abstract template to Spring repository.
+ * @author otaviojava
+ * @param <T> the entity
+ * @param <K> the key
+ */
+public abstract class CassandraRepository<T, K extends Serializable> implements
+        CrudRepository<T, K> {
 
-public abstract class CassandraRepository<T,K extends Serializable> implements CrudRepository<T, K> {
-
+    /**
+     * @return the cassandra tempalte
+     */
 	protected abstract CassandraTemplate getCassandraTemplate();
 
 	private Class<T> beanClass;
@@ -69,10 +78,14 @@ public abstract class CassandraRepository<T,K extends Serializable> implements C
 		getCassandraTemplate().deleteAll(beanClass);
 	}
 
+	/**
+	 * constructor.
+	 */
 	@SuppressWarnings("unchecked")
-	public CassandraRepository(){
-		ParameterizedType genericType=(ParameterizedType)this.getClass().getGenericSuperclass();
-		this.beanClass=(Class<T>) genericType.getActualTypeArguments()[0];
+	public CassandraRepository() {
+        ParameterizedType genericType = (ParameterizedType) this.getClass()
+                .getGenericSuperclass();
+        this.beanClass = (Class<T>) genericType.getActualTypeArguments()[0];
 	}
 
 }

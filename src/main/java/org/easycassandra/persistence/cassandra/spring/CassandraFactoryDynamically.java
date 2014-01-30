@@ -25,27 +25,53 @@ import com.datastax.driver.core.Session;
  * @author otaviojava
  * @version 2.0
  */
-public class CassandraFactoryDynamically extends AbstractCassandraFactory{
-	
+public class CassandraFactoryDynamically extends AbstractCassandraFactory {
+
+    /**
+     * Constructor.
+     * @param host the host
+     * @param keySpace the keyspace
+     */
     public CassandraFactoryDynamically(String host, String keySpace) {
 		super(host, keySpace);
 	}
 
-	public CassandraFactoryDynamically(String host, String keySpace,int port) {
-		super(host, keySpace,port);
+    /**
+     * Constructor.
+     * @param host the host
+     * @param keySpace the key space
+     * @param port the port
+     */
+	public CassandraFactoryDynamically(String host, String keySpace, int port) {
+		super(host, keySpace, port);
 	}
 
-	public CassandraFactoryDynamically(String host,String keySpace,int port, String user, String password){
+	/**
+	 * the constructor.
+	 * @param host the host
+	 * @param keySpace the keyspace
+	 * @param port the port
+	 * @param user the user
+	 * @param password the password
+	 */
+    public CassandraFactoryDynamically(String host, String keySpace, int port,
+            String user, String password) {
 		super(host, keySpace, port, user, password);
 	}
 
 	/**
      * list of classes added by Cassandra.
      */
-    private List<Class<?>> classes=new LinkedList<Class<?>>();
+    private List<Class<?>> classes = new LinkedList<Class<?>>();
 
+    /**
+     * add class on factory.
+     * @param class1 the class
+     * @param keySpace the keyspace
+     * @return if the process was sucess
+     */
     public boolean addFamilyObject(Class<?> class1, String keySpace) {
-        if(classes.contains(class1)){
+        if (classes.contains(class1)) {
             return true;
         }
         String familyColumn = ColumnUtil.INTANCE.getColumnFamilyNameSchema(class1);

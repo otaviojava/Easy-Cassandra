@@ -25,45 +25,68 @@ import com.datastax.driver.core.Session;
  * Add the mapped class by spring xml.
  * @author otaviojava
  */
-public class CassandraFactoryAnnotation extends AbstractCassandraFactory implements InitializingBean{
+public class CassandraFactoryAnnotation extends AbstractCassandraFactory
+        implements InitializingBean {
 
 	private List<Class<?>> annotatedClasses;
 
+	/**
+	 * constructor.
+	 * @param host the host
+	 * @param keySpace the keyspace
+	 */
 	public CassandraFactoryAnnotation(String host, String keySpace) {
 		super(host, keySpace);
 	}
 
-	public CassandraFactoryAnnotation(String host, String keySpace,int port) {
-		super(host, keySpace,port);
+	/**
+	 * the constructor.
+	 * @param host the host
+	 * @param keySpace the keyspace
+	 * @param port the port
+	 */
+	public CassandraFactoryAnnotation(String host, String keySpace, int port) {
+		super(host, keySpace, port);
 	}
-	
+	/**
+	 * the constructor.
+	 * @param host the host
+	 * @param keySpace the keyspace
+	 * @param port the port
+	 * @param user the user
+	 * @param password the password
+	 */
 	public CassandraFactoryAnnotation(String host, String keySpace, int port,
 			String user, String password) {
 		super(host, keySpace, port, user, password);
 	}
-
+	/**
+	 * to run all classes on memory.
+	 * @throws Exception wrong
+	 */
 	public void afterPropertiesSet() throws Exception {
-		if(annotatedClasses==null){
-			return;
-		}
-		for(Class<?> clazz:annotatedClasses){
-			mappedBean(clazz);
-		}
+        if (annotatedClasses == null) {
+            return;
+        }
+        for (Class<?> clazz : annotatedClasses) {
+            mappedBean(clazz);
+        }
 	}
 
 	/**
 	 * map a specific class.
-	 * @param entity
-	 * @return
+	 * @param entity the entity
+	 * @return the process with success or not
 	 */
-	public boolean mappedBean(Class<?> entity){
-		   String familyColumn = ColumnUtil.INTANCE.getColumnFamilyNameSchema(entity);
-	        Session session = getCluster().connect(getKeySpace());
-	        if (!ColumnUtil.INTANCE.getSchema(entity).equals("")) {
-	            getTemplate(getHost(), ColumnUtil.INTANCE.getSchema(entity));
+	public boolean mappedBean(Class<?> entity) {
+        String familyColumn = ColumnUtil.INTANCE
+                .getColumnFamilyNameSchema(entity);
+        Session session = getCluster().connect(getKeySpace());
+        if (!ColumnUtil.INTANCE.getSchema(entity).equals("")) {
+            getTemplate(getHost(), ColumnUtil.INTANCE.getSchema(entity));
 
-	        }
-	        return fixColumnFamily(session, familyColumn,entity);
+        }
+        return fixColumnFamily(session, familyColumn, entity);
 	}
 
 	public void setAnnotatedClasses(List<Class<?>> annotatedClasses) {

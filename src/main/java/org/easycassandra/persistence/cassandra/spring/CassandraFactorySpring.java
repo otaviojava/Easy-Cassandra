@@ -19,32 +19,32 @@ import org.easycassandra.persistence.cassandra.CassandraFactory;
  * base create Connection of Cassandra Template.
  * @author otaviojava
  */
-public interface CassandraFactorySpring extends CassandraFactory{
+public interface CassandraFactorySpring extends CassandraFactory {
 
 
 	/**
 	 * returns template using host in the parameter and default keyspace.
-	 * @param host
+	 * @param host the host
 	 * @return the Cassandra Template {@link CassandraTemplate}
 	 */
 	CassandraTemplate getTemplate(String host);
 
 	/**
 	 * returns the template of cassandra using host and keyspace in the parameters.
-	 * @param host
-	 * @param keySpace
+	 * @param host the host
+	 * @param keySpace the keyspace
 	 * @return the Cassandra Template {@link CassandraTemplate}
 	 */
 	CassandraTemplate getTemplate(String host, String keySpace);
 
 	/**
 	 * returns the template of cassandra using host and keyspace in the parameters.
-	 * @param host
-	 * @param keySpace
-	 * @param port
-	 * @return
+	 * @param host the host
+	 * @param keySpace the keyspace
+	 * @param port the port
+	 * @return the cassandra template {@link CassandraTemplate}
 	 */
-	CassandraTemplate getTemplate(String host, String keySpace,int port);
+	CassandraTemplate getTemplate(String host, String keySpace, int port);
 
 	/**
 	 * returns template using values default.
