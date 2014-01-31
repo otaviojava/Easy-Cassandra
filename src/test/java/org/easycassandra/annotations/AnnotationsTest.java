@@ -21,13 +21,18 @@ import org.junit.Test;
  */
 public class AnnotationsTest {
 
+    /**
+     * run the test.
+     */
     @Test
     public void readColumnFamilyTest() {
         String value = "person";
         Assert.assertEquals(value, Person.class.getAnnotation(Entity.class).name());
 
     }
-
+    /**
+     * run the test.
+     */
     @Test
     public void existKeyValueTest() {
         boolean existKeyValue = false;
@@ -42,7 +47,9 @@ public class AnnotationsTest {
 
         Assert.assertTrue(existKeyValue);
     }
-
+    /**
+     * run the test.
+     */
     @Test
     public void retrieveKeyValueTest() {
         for (Field field : Person.class.getDeclaredFields()) {
@@ -50,14 +57,16 @@ public class AnnotationsTest {
             if (field.getAnnotation(Id.class) != null) {
 
                 Assert.assertTrue(true);
-                
+
             }
         }
 
         Assert.assertFalse(false);
 
     }
-
+    /**
+     * run the test.
+     */
     @Test
     public void countColumnValueTest() {
         int objective = 2;
@@ -70,9 +79,6 @@ public class AnnotationsTest {
             }
         }
         Assert.assertEquals(counter, objective);
-
-    
     }
-    
-   
+
 }
