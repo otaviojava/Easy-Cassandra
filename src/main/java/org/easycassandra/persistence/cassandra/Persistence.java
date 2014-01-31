@@ -25,77 +25,271 @@ import com.datastax.driver.core.ConsistencyLevel;
  */
 public interface Persistence  {
 
-
+    /**
+     * insert a object.
+     * @param bean the bean
+     * @param <T> kind of object
+     * @return the object persisted
+     */
     <T> boolean insert(T bean);
-
-    <T> boolean insert(T bean,ConsistencyLevel consistency);
-
+    /**
+     * insert a object.
+     * @param bean the bean
+     * @param <T> kind of object
+     * @param consistency the consistency
+     * @return the object persisted
+     */
+    <T> boolean insert(T bean, ConsistencyLevel consistency);
+    /**
+     * insert a list of objects.
+     * @param beans the entities
+     * @param <T> kind of object
+     * @return the entities persisted
+     */
     <T> boolean insert(Iterable<T> beans);
+    /**
+     * insert a list of objects.
+     * @param beans the entities
+     * @param consistency the consistency
+     * @param <T> kind of object
+     * @return the entities persisted
+     */
+    <T> boolean insert(Iterable<T> beans, ConsistencyLevel consistency);
 
-    <T> boolean insert(Iterable<T> beans,ConsistencyLevel consistency);
-
+    /**
+     * remove an object.
+     * @param bean the bean
+     * @param <T> kind of object
+     * @return if process was success
+     */
     <T> boolean delete(T bean);
-
-    <T> boolean delete(T bean,ConsistencyLevel consistency);
-
+    /**
+     * remove an object.
+     * @param bean the bean
+     * @param <T> kind of object
+     * @param consistency the consistency
+     * @return if process was success
+     */
+    <T> boolean delete(T bean, ConsistencyLevel consistency);
+    /**
+     * remove a list object.
+     * @param beans the beans
+     * @param <T> kind of object
+     * @return if process was success
+     */
     <T> boolean delete(Iterable<T> beans);
-
-    <T> boolean delete(Iterable<T> beans,ConsistencyLevel consistency);
-
+    /**
+     * remove a list object.
+     * @param beans the beans
+     * @param <T> kind of object
+     * @param consistency the consistency
+     * @return if process was success
+     */
+    <T> boolean delete(Iterable<T> beans, ConsistencyLevel consistency);
+     /**
+      * update the object on cassandra.
+      * @param bean the bean
+      * @param <T> kind of object
+      * @return the object updated.
+      */
     <T> boolean update(T bean);
-
-    <T> boolean update(T bean,ConsistencyLevel consistency);
-
+    /**
+     * update the object on cassandra.
+     * @param bean the bean
+     * @param <T> kind of object
+     * @param consistency the consistency
+     * @return the object updated.
+     */
+    <T> boolean update(T bean, ConsistencyLevel consistency);
+    /**
+     * update the list of objects.
+     * @param beans the beans
+     * @param <T> kind of object
+     * @return the list updated
+     */
     <T> boolean update(Iterable<T> beans);
+    /**
+     * update the list of objects.
+     * @param beans the beans
+     * @param consistency the consistency
+     * @param <T> kind of object
+     * @return the list updated
+     */
+    <T> boolean update(Iterable<T> beans, ConsistencyLevel consistency);
 
-    <T> boolean update(Iterable<T> beans,ConsistencyLevel consistency);
-
+    /**
+     * execute select * from column family.
+     * @param bean the bean
+     * @param <T> kind of object
+     * @return the result of the select
+     */
     <T> List<T> findAll(Class<T> bean);
+    /**
+     * execute select * from column family.
+     * @param bean the bean
+     * @param <T> kind of object
+     * @param consistency the consistency
+     * @return the result of the select
+     */
+    <T> List<T> findAll(Class<T> bean, ConsistencyLevel consistency);
+    /**
+     * find objects by keys.
+     * @param keys the keys
+     * @param bean the bean
+     * @param <T> kind of object
+     * @param <K> kind of key
+     * @return object by keys
+     */
+    <K, T> List<T> findByKeys(Iterable<K> keys, Class<T> bean);
+    /**
+     * find objects by keys.
+     * @param keys the keys
+     * @param bean the bean
+     * @param <T> kind of object
+     * @param <K> kind of key
+     * @param consistency the consistency
+     * @return object by keys
+     */
+    <K, T> List<T> findByKeys(Iterable<K> keys, Class<T> bean,
+            ConsistencyLevel consistency);
 
-    <T> List<T> findAll(Class<T> bean,ConsistencyLevel consistency);
+    /**
+     * find object by key.
+     * @param key the key
+     * @param bean the bean
+     * @param <T> kind of object
+     * @param <K> kind of key
+     * @return object by keys
+     */
+    <K, T> T findByKey(K key, Class<T> bean);
+    /**
+     * find object by key.
+     * @param key the key
+     * @param bean the bean
+     * @param <T> kind of object
+     * @param <K> kind of key
+     * @param consistency the consistency
+     * @return object by keys
+     */
+    <K, T> T findByKey(K key, Class<T> bean, ConsistencyLevel consistency);
 
-    <K,T> List<T> findByKeys(Iterable<K> keys, Class<T> bean);
-
-    <K,T> List<T> findByKeys(Iterable<K> keys, Class<T> bean,ConsistencyLevel consistency);
-
-    <K,T> T findByKey(K key, Class<T> bean);
-
-    <K,T> T findByKey(K key, Class<T> bean,ConsistencyLevel consistency);
-
-    <K,T> boolean deleteByKey(K key, Class<T> bean);
-
-    <K,T> boolean deleteByKey(K key, Class<T> bean,ConsistencyLevel consistency);
-
+    /**
+     * delete by key.
+     * @param key  the key
+     * @param bean the bean
+     * @param <T> kind of object
+     * @param <K> kind of key
+     * @return if was with success the process
+     */
+    <K, T> boolean deleteByKey(K key, Class<T> bean);
+    /**
+     * delete by key.
+     * @param key  the key
+     * @param bean the bean
+     * @param consistency the consistency
+     * @param <T> kind of object
+     * @param <K> kind of key
+     * @return if was with success the process
+     */
+    <K, T> boolean deleteByKey(K key, Class<T> bean,
+            ConsistencyLevel consistency);
+    /**
+     * execute a query.
+     * @param query the query
+     * @return if was with success
+     */
     boolean executeUpdate(String query);
-
+    /**
+     * remove all entities on column families.
+     * @param bean the bean
+     * @param <T> kind of object
+     */
     <T> void removeAll(Class<T> bean);
-
-    <T,I> List<T> findByIndex(String indexName,I index, Class<T> bean);
-
-    <T,I> List<T> findByIndex(String indexName,I index, Class<T> bean,ConsistencyLevel consistency);
-
-    <T,I> List<T> findByIndex(I index, Class<T> bean);
-
-    <T,I> List<T> findByIndex(I index, Class<T> bean,ConsistencyLevel consistency);
+    /**
+     * return by index.
+     * @param indexName the indexName
+     * @param <T> kind of object
+     * @param <I> kind of index
+     * @param index the index
+     * @param bean the bean
+     * @return entities by index
+     */
+    <T, I> List<T> findByIndex(String indexName, I index, Class<T> bean);
+    /**
+     * return by index.
+     * @param <T> kind of object
+     * @param <I> kind of index
+     * @param index the index
+     * @param bean the bean
+     * @param indexName the indexName
+     * @param consistency the consistency
+     * @return entities by index
+     */
+    <T, I> List<T> findByIndex(String indexName, I index, Class<T> bean,
+            ConsistencyLevel consistency);
+    /**
+     * return by index.
+     * @param <T> kind of object
+     * @param <I> kind of index
+     * @param index the index
+     * @param bean the bean
+     * @return entities by index
+     */
+    <T, I> List<T> findByIndex(I index, Class<T> bean);
+    /**
+     * return by index.
+     * @param <T> kind of object
+     * @param <I> kind of index
+     * @param index the index
+     * @param bean the bean
+     * @param consistency the consistency
+     * @return entities by index
+     */
+    <T, I> List<T> findByIndex(I index, Class<T> bean,
+            ConsistencyLevel consistency);
 
     /**
-     * Find by primary key and annotated index
-     *
+     * Find by key and annotated index.
+     * @param key the key
      * @author Nenita Casuga
-     * @since 10/30/2013
+     * @param <T> kind of object
+     * @param index the index
+     * @param bean the bean
+     * @param <I> kind of index
+     * @since 10/31/2013
+     * @return entities by index
      */
-    <T,I> List<T> findByKeyAndIndex(Object key, I index, Class<T> bean);
+    <T, I> List<T> findByKeyAndIndex(Object key, I index, Class<T> bean);
 
     /**
-     * Find by primary key and annotated index range
-     *
+     * Find by key and annotated index.
      * @author Nenita Casuga
-     * @since 10/30/2013
+     * @param <T> kind of object
+     * @param <I> kind of index
+     * @param indexStart the indexStart
+     * @param indexEnd the indexEnd
+     * @param id the id
+     * @param bean the bean
+     * @param inclusive the inclusive
+     * @since 10/31/2013
+     * @return entities by index
      */
-    <T,I> List<T> findByKeyAndIndexRange(Object id, Object indexStart, Object indexEnd, boolean inclusive, Class<T> bean);
-
+    <T, I> List<T> findByKeyAndIndexRange(Object id, Object indexStart,
+            Object indexEnd, boolean inclusive, Class<T> bean);
+    /**
+     * counts a number of rows in column family.
+     * @param bean the bean
+     * @param <T> kind of entity
+     * @return the value of entities on column family
+     */
     <T> Long count(Class<T> bean);
-
-    <T> Long count(Class<T> bean,ConsistencyLevel consistency);
+    /**
+     * counts a number of rows in column family.
+     * @param bean the bean
+     * @param <T> kind of entity
+     * @param consistency the consistency
+     * @return the value of entities on column family
+     */
+    <T> Long count(Class<T> bean, ConsistencyLevel consistency);
 }
 
