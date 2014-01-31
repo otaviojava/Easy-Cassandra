@@ -10,7 +10,9 @@ import org.easycassandra.persistence.cassandra.spring.CassandraRepository;
 import org.easycassandra.persistence.cassandra.spring.CassandraTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
+/**
+ * repository to Lifestyle.
+ */
 @Repository("stepRepository")
 public class StepRepository extends CassandraRepository<Lifestyle, IdLifestyle> {
 
@@ -22,6 +24,12 @@ public class StepRepository extends CassandraRepository<Lifestyle, IdLifestyle> 
         return cassandraTemplate;
     }
 
+    /**
+     * find by key and index.
+     * @param key the key
+     * @param date the date
+     * @return the entities by keys
+     */
     public List<Step> findByKeyAndIndex(final IdLifestyle key, final Date date) {
         return cassandraTemplate.findByKeyAndIndex(key, date, Step.class);
     }

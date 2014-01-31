@@ -9,35 +9,48 @@ import org.easycassandra.persistence.cassandra.spring.repository.ContactReporito
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
+/**
+ *  test to ContactRepository.
+ */
 public class ContactRepositoryTest {
-	
-	
-	private ContactReporitory contactReporitory;
-	
+
+	private static final int TWENTY = 20;
+    private ContactReporitory contactReporitory;
+	/**
+     * run the test.
+     */
 	@Test
-	public void insertTest(){
-		Contact contact=new Contact();
+	public void insertTest() {
+        Contact contact = new Contact();
 		contact.setId(UUID.randomUUID());
 		contact.setName("Poliana");
-		contact.setYear(20);
+		contact.setYear(TWENTY);
 		Assert.assertNotNull(contactReporitory.save(contact));
-		
+
 	}
-	
+	/**
+	 * run the test.
+	 */
 	@Test
-	public void getFacotryTest(){
-		CassandraFactorySpring cassandraFactorySpring=SpringUtil.INSTANCE.getBean(CassandraFactorySpring.class);
+	public void getFacotryTest() {
+        CassandraFactorySpring cassandraFactorySpring = SpringUtil.INSTANCE
+                .getBean(CassandraFactorySpring.class);
 		Assert.assertNotNull(cassandraFactorySpring);
 	}
-	
+	/**
+     * before the test.
+     */
 	@Before
-	public void initMethod(){
-		contactReporitory=SpringUtil.INSTANCE.getBean(ContactReporitory.class);
+	public void initMethod() {
+        contactReporitory = SpringUtil.INSTANCE
+                .getBean(ContactReporitory.class);
 	}
+	/**
+     * run the all test.
+     */
 	@BeforeClass
-	public static void init(){
-		SpringUtil spring=SpringUtil.INSTANCE;
+	public static void init() {
+        SpringUtil spring = SpringUtil.INSTANCE;
 	}
 
 }

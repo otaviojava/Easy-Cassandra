@@ -12,6 +12,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+/**
+ * StepRepositoryTest.
+ */
 public class StepRepositoryTest {
 
     private StepRepository stepRepository;
@@ -25,7 +28,9 @@ public class StepRepositoryTest {
     public static void init() {
         SpringUtil spring = SpringUtil.INSTANCE;
     }
-
+    /**
+     * run the test.
+     */
     @Test
     public void insertTest() {
 
@@ -38,7 +43,9 @@ public class StepRepositoryTest {
         Assert.assertNotNull(stepRepository.save(step));
 
     }
-
+    /**
+     * run the test.
+     */
     @Test
     public void retrieveByKeyAndIndexTest() {
         // Find by key and index
@@ -46,7 +53,8 @@ public class StepRepositoryTest {
         cal.set(Calendar.MILLISECOND, 0);
         cal.set(2013, Calendar.DECEMBER, 11, 0, 0, 0);
 
-        List<Step> steps = stepRepository.findByKeyAndIndex(new IdLifestyle(100L, 21, 3), new Date(cal.getTimeInMillis()));
+        List<Step> steps = stepRepository.findByKeyAndIndex(new IdLifestyle(
+                100L, 21, 3), new Date(cal.getTimeInMillis()));
         Assert.assertTrue(steps.size() == 1);
         Assert.assertTrue(steps.get(0).getValue().doubleValue() == 99.9);
 

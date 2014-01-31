@@ -11,21 +11,32 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
+/**
+ * tests.
+ */
 public class WeightRepositoryTest {
 
     private WeightRepository weightRepository;
 
+    /**
+     * before the test.
+     */
     @Before
     public void initMethod() {
         weightRepository = SpringUtil.INSTANCE.getBean(WeightRepository.class);
     }
 
+    /**
+     * before all test.
+     */
     @BeforeClass
     public static void init() {
         SpringUtil spring = SpringUtil.INSTANCE;
     }
 
+    /**
+     * run the test.
+     */
     @Test
     public void insertTest() {
 
@@ -38,7 +49,9 @@ public class WeightRepositoryTest {
         Assert.assertNotNull(weightRepository.save(weight));
 
     }
-
+    /**
+     * run the test.
+     */
     @Test
     public void retrieveByKeyAndIndexTest() {
         // Find by key and index
@@ -46,8 +59,9 @@ public class WeightRepositoryTest {
         cal.set(Calendar.MILLISECOND, 0);
         cal.set(2013, Calendar.DECEMBER, 11, 0, 0, 0);
 
-        List<Weight> weights = weightRepository.findByKeyAndIndex(new IdLifestyle(99L, 22, 2), new Date(cal.getTimeInMillis()));
-        System.out.println("BUBU " + weights.size());
+        List<Weight> weights = weightRepository.findByKeyAndIndex(
+                new IdLifestyle(99L, 22, 2), new Date(cal.getTimeInMillis()));
+
         Assert.assertTrue(weights.size() == 1);
         Assert.assertTrue(weights.get(0).getValue().doubleValue() == 98.75);
     }
