@@ -7,35 +7,36 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 import org.easycassandra.Index;
-
+/**
+ * log class.
+ * @author otaviojava
+ */
 @Entity
 public class Log implements Serializable {
-	
-private static final long serialVersionUID = 3L;
 
-@Id
-private String uuid;
+    private static final long serialVersionUID = 3L;
 
-@Index
-@Column(name = "user_uuid")
-private String user_uuid;
+    @Id
+    private String uuid;
 
-public String getUuid() {
-	return uuid;
-}
+    @Index
+    @Column(name = "user_uuid")
+    private String userUUid;
 
-public void setUuid(String uuid) {
-	this.uuid = uuid;
-}
+    public String getUuid() {
+        return uuid;
+    }
 
-public String getUser_uuid() {
-	return user_uuid;
-}
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 
-public void setUser_uuid(String user_uuid) {
-	this.user_uuid = user_uuid;
-}
+    public String getUserUUid() {
+        return userUUid;
+    }
 
-
+    public void setUserUUid(String userUUid) {
+        this.userUUid = userUUid;
+    }
 
 }

@@ -9,22 +9,24 @@ import javax.persistence.Id;
 
 import org.easycassandra.SetData;
 
-
-@Entity(name="contact")
+/**
+ * the Contact class.
+ * @author otaviojava
+ */
+@Entity(name = "contact")
 public class Contact implements Serializable {
 
 	private static final long serialVersionUID = 8651158874397737993L;
 
 
 	@Id
-    @Column(name="id")
+    @Column(name = "id")
     private String name;
-    
-    
-    @Column(name="emails")
+
+    @Column(name = "emails")
     @SetData
     private Set<String> emails;
-    
+
     @Column
     private String cyte;
 
@@ -52,7 +54,4 @@ public class Contact implements Serializable {
         this.cyte = cyte;
     }
 
-        
-    
-    
 }

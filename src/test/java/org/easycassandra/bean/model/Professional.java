@@ -4,17 +4,20 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Transient;
-
-@Entity(name="professional")
+/**
+ * the professional class.
+ * @author otaviojava
+ */
+@Entity(name = "professional")
 public class Professional {
 
-    
+
     @Id
     private String name;
-    
+
     @Column
     private Double salary;
-    
+
     @Transient
     private Double salaryYear;
 
@@ -41,7 +44,4 @@ public class Professional {
     public void setSalaryYear(Double salaryYear) {
         this.salaryYear = salaryYear;
     }
-    
-    
-    
 }

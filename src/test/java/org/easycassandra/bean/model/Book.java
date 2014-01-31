@@ -8,14 +8,17 @@ import javax.persistence.Id;
 
 import org.easycassandra.MapData;
 
-
+/**
+ * the Book class.
+ * @author otaviojava
+ */
 @Entity(name = "resumebook")
 public class Book {
 
     @Id
     @Column(name = "booksname")
     private String name;
-    
+
     @MapData
     private Map<Long, String> chapterResume;
 
@@ -34,5 +37,5 @@ public class Book {
     public void setName(String name) {
         this.name = name;
     }
-    
+
 }

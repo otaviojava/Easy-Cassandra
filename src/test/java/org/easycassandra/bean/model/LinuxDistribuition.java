@@ -6,19 +6,23 @@ import javax.persistence.Entity;
 
 import org.easycassandra.bean.model.createtable.IdLinux;
 
-@Entity(name="linux")
+/**
+ * the linux class.
+ * @author otaviojava
+ */
+@Entity(name = "linux")
 public class LinuxDistribuition {
 
     @EmbeddedId
     private IdLinux id;
-    
+
     @Column
     private String guy;
-    
+
     @Column
     private String version;
-    
-    @Column(name="descriptions")
+
+    @Column(name = "descriptions")
     private String descriptions;
 
     public IdLinux getId() {
@@ -54,5 +58,5 @@ public class LinuxDistribuition {
         this.descriptions = descriptions;
     }
 
-    
+
 }

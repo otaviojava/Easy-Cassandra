@@ -18,11 +18,18 @@ public class IdLifestyle implements Serializable {
 
     @Column
     private Integer type;
-
+    /**
+     * the constructor.
+     */
     public IdLifestyle() {
 
     }
-
+    /**
+     * the constructor.
+     * @param personId the personId
+     * @param companyId the companyId
+     * @param type the type
+     */
     public IdLifestyle(final Long personId, final Integer companyId, final Integer type) {
         this.personId = personId;
         this.companyId = companyId;

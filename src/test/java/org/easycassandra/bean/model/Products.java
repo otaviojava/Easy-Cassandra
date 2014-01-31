@@ -2,14 +2,18 @@ package org.easycassandra.bean.model;
 
 import java.io.Serializable;
 
+/**
+ * producst object.
+ * @author otaviojava
+ */
 public class Products implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	private String nome;
-	
+
 	private Double value;
-	
+
 	private String country;
 
 	public String getNome() {
@@ -35,7 +39,5 @@ public class Products implements Serializable {
 	public void setCountry(String country) {
 		this.country = country;
 	}
-	
-	
-	
+
 }

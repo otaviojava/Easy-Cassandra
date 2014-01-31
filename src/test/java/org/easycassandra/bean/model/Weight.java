@@ -18,12 +18,17 @@ public class Weight extends Lifestyle {
     private Date date;
 
     /**
-     * Only needed by reflection
+     * Only needed by reflection.
      */
     public Weight() {
 
     }
 
+    /**
+     * constructor.
+     * @param personId the personId
+     * @param companyId the companyId
+     */
     public Weight(Long personId, Integer companyId) {
         setId(new IdLifestyle(personId, companyId, 2));
     }

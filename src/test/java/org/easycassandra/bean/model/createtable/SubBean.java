@@ -1,31 +1,32 @@
 package org.easycassandra.bean.model.createtable;
 
 import javax.persistence.Column;
-
+/**
+ * the SubBean class.
+ * @author otaviojava
+ */
 public class SubBean {
 
-	 @Column(name = "simpleNameA")
-	 private String simpleNameA;
-	 
-	 @Column(name = "simpleNameB")
-	 private String simpleNameB;
+    @Column(name = "simpleNameA")
+    private String simpleNameA;
 
-	public String getSimpleNameA() {
-		return simpleNameA;
-	}
+    @Column(name = "simpleNameB")
+    private String simpleNameB;
 
-	public void setSimpleNameA(String simpleNameA) {
-		this.simpleNameA = simpleNameA;
-	}
+    public String getSimpleNameA() {
+        return simpleNameA;
+    }
 
-	public String getSimpleNameB() {
-		return simpleNameB;
-	}
+    public void setSimpleNameA(String simpleNameA) {
+        this.simpleNameA = simpleNameA;
+    }
 
-	public void setSimpleNameB(String simpleNameB) {
-		this.simpleNameB = simpleNameB;
-	}
-	 
-	 
-	 
+    public String getSimpleNameB() {
+        return simpleNameB;
+    }
+
+    public void setSimpleNameB(String simpleNameB) {
+        this.simpleNameB = simpleNameB;
+    }
+
 }

@@ -13,20 +13,25 @@ import org.easycassandra.Index;
 @Entity(name = "lifestyle")
 public class Step extends Lifestyle {
 
+    private static final int DEFAULT_VALUE = 3;
     @Index
     @Column
     private Date date;
 
     /**
-     * Only needed by reflection
+     * Only needed by reflection.
      */
     public Step() {
 
     }
 
-
+    /**
+     * constructor.
+     * @param personId the personId
+     * @param companyId the companyId
+     */
     public Step(Long personId, Integer companyId) {
-        setId(new IdLifestyle(personId, companyId, 3));
+        setId(new IdLifestyle(personId, companyId, DEFAULT_VALUE));
     }
 
     public Date getDate() {

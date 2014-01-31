@@ -9,7 +9,10 @@ import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-
+/**
+ * the CollectionBean class.
+ * @author otaviojava
+ */
 @Entity(name = "collection")
 public class CollectionBean {
 
@@ -59,7 +62,4 @@ public class CollectionBean {
 	public void setList(List<String> list) {
 		this.list = list;
 	}
-	
-	
-	
 }

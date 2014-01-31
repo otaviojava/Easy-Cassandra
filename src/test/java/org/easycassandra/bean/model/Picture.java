@@ -8,18 +8,20 @@ import javax.persistence.Id;
 
 import org.easycassandra.CustomData;
 
-@Entity(name="picture")
+/**
+ * Picture object.
+ * @author otaviojava
+ */
+@Entity(name = "picture")
 public class Picture {
 
     @Id
     private String name;
-    
-    @Column(name="details")
+
+    @Column(name = "details")
     @CustomData
     private Details detail;
 
-    
-    
     public String getName() {
         return name;
     }
@@ -43,11 +45,16 @@ public class Picture {
     }
 
 
+    /**
+     * details dto.
+     * @author otaviojava
+     */
+    public static class Details implements Serializable {
 
-    public static class Details implements Serializable{
-        
+        private static final long serialVersionUID = 1L;
+
         private String fileName;
-        
+
         private byte[] contents;
 
         public String getFileName() {
@@ -65,8 +72,6 @@ public class Picture {
         public void setContents(byte[] contents) {
             this.contents = contents;
         }
-        
-        
-        
+
     }
 }

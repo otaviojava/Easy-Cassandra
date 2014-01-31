@@ -1,13 +1,15 @@
 package org.easycassandra.bean.model.createtable;
 
 import javax.persistence.Column;
-
+/**
+ * the IdLinux class.
+ * @author otaviojava
+ */
 public class IdLinux {
-    
-    
+
     @Column
     private String name;
-    
+
     @Column
     private String kernelVersion;
 
@@ -26,8 +28,5 @@ public class IdLinux {
     public void setKernelVersion(String kernelVersion) {
         this.kernelVersion = kernelVersion;
     }
-    
-    
-    
 
 }

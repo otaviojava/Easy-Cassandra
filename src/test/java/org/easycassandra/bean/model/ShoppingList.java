@@ -8,21 +8,24 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 import org.easycassandra.ListData;
-
-@Entity(name="shopping")
+/**
+ * shopping object.
+ * @author otaviojava
+ */
+@Entity(name = "shopping")
 public class ShoppingList {
 
     @Id
     private String name;
-    
-    @Column(name="day")
+
+    @Column(name = "day")
     private Date day;
-    
+
     @ListData
-    @Column(name="frutis")
+    @Column(name = "frutis")
     private List<String> fruits;
-    
-    @Column(name="storeName")
+
+    @Column(name = "storeName")
     private String storeName;
 
     public String getName() {
@@ -56,10 +59,4 @@ public class ShoppingList {
     public void setStoreName(String storeName) {
         this.storeName = storeName;
     }
-    
-    
-    
-    
-    
-    
 }

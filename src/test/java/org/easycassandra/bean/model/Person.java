@@ -17,7 +17,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.easycassandra.Index;
 
 /**
- *
+ * the person class.
  * @author otavio
  */
 @Entity(name = "person")
@@ -95,7 +95,7 @@ public class Person implements Serializable {
 
     @Override
     public int hashCode() {
-       return new HashCodeBuilder().append(id).toHashCode();
+        return new HashCodeBuilder().append(id).toHashCode();
 
     }
 

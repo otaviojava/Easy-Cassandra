@@ -6,7 +6,10 @@ import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
 
-
+/**
+ *  worker class.
+ * @author otaviojava
+ */
 @MappedSuperclass
 public class Worker implements Serializable {
 
@@ -14,7 +17,7 @@ public class Worker implements Serializable {
 
 	@Column
 	private String name;
-	
+
 	@Column
 	private Double salary;
 
@@ -32,9 +35,6 @@ public class Worker implements Serializable {
 
 	public void setSalary(Double salary) {
 		this.salary = salary;
-	} 
-	
-	
-	
-	
+	}
+
 }

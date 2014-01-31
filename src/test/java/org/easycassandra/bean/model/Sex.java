@@ -5,9 +5,9 @@
 package org.easycassandra.bean.model;
 
 /**
- *
+ * enum to sex.
  * @author otavio
  */
 public enum Sex {
-   MALE,FEMALE 
+    MALE, FEMALE
 }

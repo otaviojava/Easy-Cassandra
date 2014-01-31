@@ -4,20 +4,21 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+/**
+ * the Engineer class.
+ * @author otaviojava
+ */
 @Entity
 public class Engineer extends Worker {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 6643883283637783076L;
 
 	@Id
 	private String nickName;
-	
+
 	@Column
 	private String type;
-	
+
 	@Column
 	private String especialization;
 
@@ -44,8 +45,4 @@ public class Engineer extends Worker {
 	public void setNickName(String nickName) {
 		this.nickName = nickName;
 	}
-	
-	
-	
-	
 }

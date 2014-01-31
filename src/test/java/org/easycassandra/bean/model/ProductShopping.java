@@ -5,13 +5,17 @@ import javax.persistence.Id;
 
 import org.easycassandra.CustomData;
 
-@Entity(name="product")
+/**
+ * the products object.
+ * @author otaviojava
+ */
+@Entity(name = "product")
 public class ProductShopping {
 
     @Id
     private String name;
-    
-    @CustomData(classCustmo=ProductsCustomData.class)
+
+    @CustomData(classCustmo = ProductsCustomData.class)
     private Products products;
 
     public String getName() {
@@ -29,6 +33,5 @@ public class ProductShopping {
     public void setProducts(Products products) {
         this.products = products;
     }
-    
-    
+
 }
