@@ -7,17 +7,21 @@ import junit.framework.Assert;
 import org.easycassandra.bean.dao.PersistenceDao;
 import org.easycassandra.bean.model.Contact;
 import org.junit.Test;
-
+/**
+ * ContactsDAOTest test.
+ * @author otaviojava
+ */
 public class ContactsDAOTest {
- private PersistenceDao<Contact,String> persistence=new PersistenceDao<Contact,String>(Contact.class);
-    
-    
+    private PersistenceDao<Contact, String> persistence = new PersistenceDao<Contact, String>(
+            Contact.class);
+    /**
+     * run the test.
+     */
     @Test
-        public void insertTest() {
+    public void insertTest() {
         Contact contacts = getContact();
         Assert.assertTrue(persistence.insert(contacts));
     }
-
 
     private Contact getContact() {
         Contact contacts = new Contact();
@@ -28,19 +32,22 @@ public class ContactsDAOTest {
         contacts.getEmails().add("shreck@farfaraway.far");
         return contacts;
     }
-    
-    
+    /**
+     * run the test.
+     */
     @Test
     public void retrieveTest() {
-     Contact contact=persistence.retrieve(getContact().getName());
-     Assert.assertNotNull(contact);
-     
+        Contact contact = persistence.retrieve(getContact().getName());
+        Assert.assertNotNull(contact);
+
     }
+    /**
+     * run the test.
+     */
     @Test
     public void removeTest() {
         persistence.remove(getContact());
-        Assert.assertNull(persistence.retrieve(getContact().getName()));   
+        Assert.assertNull(persistence.retrieve(getContact().getName()));
     }
-    
-    
+
 }
