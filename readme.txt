@@ -10,6 +10,9 @@ Version: 2.0.0
 * Objects may use a different keyspace using schema.	
 * Custom storage way with CustomData annotation.
 * supports multiple index
+* New annotation @ElementCollection to java.util.List, java.util.Set and java.util.Map.
+* Factory with credentials
+
 
 Version: 1.1.2
 * use different keyspace with schema
