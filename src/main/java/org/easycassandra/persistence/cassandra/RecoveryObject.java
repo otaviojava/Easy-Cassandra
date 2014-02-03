@@ -13,12 +13,14 @@
  */
 package org.easycassandra.persistence.cassandra;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.easycassandra.ClassInformation;
+import org.easycassandra.ClassInformations;
+import org.easycassandra.FieldInformation;
 import org.easycassandra.persistence.cassandra.ReturnValues.ReturnValue;
 import org.easycassandra.util.ReflectionUtil;
 
@@ -52,17 +54,16 @@ enum RecoveryObject {
     private <T> Object createObject(Class<T> bean, Row row,
             Map<String, Definition> mapDefinition) {
         Object newObjetc = ReflectionUtil.INSTANCE.newInstance(bean);
-
-        for (Field field : ColumnUtil.INTANCE.listFields(bean)) {
-            if (ColumnUtil.INTANCE.isEmbeddedField(field)
-                    || ColumnUtil.INTANCE.isEmbeddedIdField(field)) {
-                Object value = createObject(field.getType(), row, mapDefinition);
-                ReflectionUtil.INSTANCE.setMethod(newObjetc, field, value);
+        ClassInformation classInformation = ClassInformations.INSTACE.getClass(bean);
+        for (FieldInformation field : classInformation.getFields()) {
+            if (field.isEmbedded()) {
+                Object value = createObject(field.getField().getType(), row, mapDefinition);
+                ReflectionUtil.INSTANCE.setMethod(newObjetc, field.getField(), value);
                 continue;
             }
             ReturnValue returnValue = ReturnValues.INSTANCE.factory(field);
             Object value = returnValue.getObject(mapDefinition, field, row);
-            ReflectionUtil.INSTANCE.setMethod(newObjetc, field, value);
+            ReflectionUtil.INSTANCE.setMethod(newObjetc, field.getField(), value);
         }
         return newObjetc;
     }

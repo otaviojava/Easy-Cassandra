@@ -13,14 +13,17 @@
  */
 package org.easycassandra.persistence.cassandra;
 
-import java.lang.reflect.Field;
 import java.util.List;
+
+import org.easycassandra.ClassInformation;
+import org.easycassandra.ClassInformations;
+import org.easycassandra.FieldInformation;
+import org.easycassandra.util.ReflectionUtil;
 
 import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
-import org.easycassandra.util.ReflectionUtil;
 
 /**
  * Query to find by primary key and index combination.
@@ -35,9 +38,12 @@ class FindByKeyAndIndexQuery extends FindByKeyQuery {
 
     public <T, I> List<T> findByKeyAndIndex(Object key, I index, Class<T> bean,
             Session session, ConsistencyLevel consistency) {
-        Field field = ColumnUtil.INTANCE.getIndexField(bean);
-        FindByIndexQuery.checkFieldNull(bean, field);
-        return findByKeyAndIndex(key, field.getName(), index, bean, session,
+        ClassInformation classInformation = ClassInformations.INSTACE.getClass(bean);
+
+        FindByIndexQuery.checkFieldNull(bean, classInformation.getFields());
+        FieldInformation indexField = classInformation.getIndexFields().get(0);
+
+        return findByKeyAndIndex(key, indexField.getName(), index, bean, session,
                 consistency);
     }
 
@@ -52,9 +58,10 @@ class FindByKeyAndIndexQuery extends FindByKeyQuery {
     public <T, I> List<T> findByKeyAndIndex(Object key, I indexStart,
             I indexEnd, boolean inclusive, Class<T> bean, Session session,
             ConsistencyLevel consistency) {
-        Field field = ColumnUtil.INTANCE.getIndexField(bean);
-        FindByIndexQuery.checkFieldNull(bean, field);
-        return findByKeyAndIndex(key, field.getName(), indexStart, indexEnd,
+        ClassInformation classInformation = ClassInformations.INSTACE.getClass(bean);
+        FindByIndexQuery.checkFieldNull(bean, classInformation.getIndexFields());
+        FieldInformation indexField = classInformation.getIndexFields().get(0);
+        return findByKeyAndIndex(key, indexField.getName(), indexStart, indexEnd,
                 inclusive, bean, session, consistency);
     }
 
@@ -70,52 +77,51 @@ class FindByKeyAndIndexQuery extends FindByKeyQuery {
             Object indexEnd, Boolean inclusive, Object key, Class<T> bean,
             Session session, QueryBean byKeyBean) {
 
-        super.prepare(byKeyBean, bean);
-        if (ColumnUtil.INTANCE.isEmbeddedIdField(byKeyBean.key)) {
-            for (Field complexKey : ColumnUtil.INTANCE.listFields(key
-                    .getClass())) {
-                byKeyBean.select.where(QueryBuilder.eq(
-                        ColumnUtil.INTANCE.getColumnName(complexKey),
-                        ReflectionUtil.INSTANCE.getMethod(key, complexKey)));
+        ClassInformation classInformation = ClassInformations.INSTACE.getClass(bean);
+        super.prepare(byKeyBean, classInformation);
+        if (classInformation.isComplexKey()) {
+            for (FieldInformation complexKey : classInformation
+                    .getKeyInformation().getSubFields().getFields()) {
+
+                byKeyBean.getSelect().where(QueryBuilder.eq(complexKey.getName(),
+                        ReflectionUtil.INSTANCE.getMethod(key, complexKey.getField())));
             }
         } else {
-            byKeyBean.select.where(QueryBuilder.eq(
-                    ColumnUtil.INTANCE.getColumnName(byKeyBean.key), key));
+            byKeyBean.getSelect().where(QueryBuilder.eq(
+                    classInformation.getKeyInformation().getName(), key));
         }
 
         // Add index criteria
-        byKeyBean.key = ColumnUtil.INTANCE
-                .getFieldByColumnName(indexName, bean);
+        byKeyBean.setSearchField(classInformation.findIndexByName(indexName));
         FindByIndexQuery.checkIndexProblem(bean, byKeyBean);
 
         // Add indexed key
         if (indexEnd != null && inclusive != null) {
 
             if (inclusive) {
-                byKeyBean.select.where(QueryBuilder.gte(
-                        ColumnUtil.INTANCE.getColumnName(byKeyBean.key),
+                byKeyBean.getSelect().where(QueryBuilder.gte(
+                        byKeyBean.getSearchField().getName(),
                         indexStart));
-                byKeyBean.select.where(QueryBuilder.lte(
-                        ColumnUtil.INTANCE.getColumnName(byKeyBean.key),
+                byKeyBean.getSelect().where(QueryBuilder.lte(
+                        byKeyBean.getSearchField().getName(),
                         indexEnd));
             } else {
-                byKeyBean.select.where(QueryBuilder.gt(
-                        ColumnUtil.INTANCE.getColumnName(byKeyBean.key),
+                byKeyBean.getSelect().where(QueryBuilder.gt(
+                        byKeyBean.getSearchField().getName(),
                         indexStart));
-                byKeyBean.select.where(QueryBuilder.lt(
-                        ColumnUtil.INTANCE.getColumnName(byKeyBean.key),
+                byKeyBean.getSelect().where(QueryBuilder.lt(
+                        byKeyBean.getSearchField().getName(),
                         indexEnd));
             }
 
         } else {
-            byKeyBean.select
-                    .where(QueryBuilder.eq(
-                            ColumnUtil.INTANCE.getColumnName(byKeyBean.key),
+            byKeyBean.getSelect()
+                    .where(QueryBuilder.eq(byKeyBean.getSearchField().getName(),
                             indexStart));
         }
 
         // Execute
-        ResultSet resultSet = session.execute(byKeyBean.select);
+        ResultSet resultSet = session.execute(byKeyBean.getSelect());
         return RecoveryObject.INTANCE.recoverObjet(bean, resultSet);
     }
 }

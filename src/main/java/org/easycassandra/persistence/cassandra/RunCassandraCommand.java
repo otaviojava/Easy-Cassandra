@@ -157,7 +157,9 @@ public class RunCassandraCommand {
      * delete on object from cassandra by Key.
      * @param session the Session
      * @param keySpace the KeySpace
-     * @param <K> the keys
+     * @param <K> the kind of key
+     * @param keys the keys
+     * @param entity the entity
      * @param <T> the kind of object
      * @return if execute the command
      */
@@ -399,7 +401,7 @@ public class RunCassandraCommand {
      * @param <T> kind of class
      * @return the number of entities on column families
      */
-    public <T> Long count(Class<T> bean, Session session, String keySpace){
+    public <T> Long count(Class<T> bean, Session session, String keySpace) {
         return count(bean, session, keySpace, DEFAULT_CASSANDRA_CL);
     }
 
@@ -462,7 +464,7 @@ public class RunCassandraCommand {
      * @param session the session
      * @param <T> kind of object
      */
-    public <T> void removeAll(Class<T> bean,Session session){
+    public <T> void removeAll(Class<T> bean, Session session) {
         new RemoveAll().truncate(bean, session);
     }
 }

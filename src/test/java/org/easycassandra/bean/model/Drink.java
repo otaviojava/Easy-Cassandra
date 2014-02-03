@@ -12,7 +12,7 @@ import org.easycassandra.Index;
  * the Drink class.
  * @author otaviojava
  */
-@Table(name = " drink", schema = "schemaA")
+@Table(name = "drink", schema = "schemaA")
 public class Drink implements Serializable {
 
 

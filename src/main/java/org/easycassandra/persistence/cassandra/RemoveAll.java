@@ -1,5 +1,8 @@
 package org.easycassandra.persistence.cassandra;
 
+import org.easycassandra.ClassInformation;
+import org.easycassandra.ClassInformations;
+
 import com.datastax.driver.core.Session;
 /**
  * Command to remove all information on Cassandra.
@@ -13,9 +16,10 @@ class RemoveAll {
      * @param <T> the kind of object
      */
     public <T> void truncate(Class<T> bean, Session session) {
+        ClassInformation classInformation = ClassInformations.INSTACE.getClass(bean);
         StringBuilder query = new StringBuilder();
         query.append("TRUNCATE ")
-                .append(ColumnUtil.INTANCE.getColumnFamilyNameSchema(bean))
+                .append(classInformation.getNameSchema())
                 .append(";");
         session.execute(query.toString());
     }

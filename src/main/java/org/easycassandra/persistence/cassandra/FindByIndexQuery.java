@@ -13,9 +13,11 @@
  */
 package org.easycassandra.persistence.cassandra;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
+import org.easycassandra.ClassInformation;
+import org.easycassandra.ClassInformations;
+import org.easycassandra.FieldInformation;
 import org.easycassandra.IndexProblemException;
 
 import com.datastax.driver.core.ConsistencyLevel;
@@ -34,17 +36,18 @@ class FindByIndexQuery extends FindByKeyQuery {
 
     public <T, I> List<T> findByIndex(I index, Class<T> bean, Session session,
             ConsistencyLevel consistency) {
-        Field field = ColumnUtil.INTANCE.getIndexField(bean);
-        checkFieldNull(bean, field);
-        return findByIndex(field.getName(), index, bean, session, consistency);
+        ClassInformation classInformation = ClassInformations.INSTACE.getClass(bean);
+        List<FieldInformation> fields = classInformation.getIndexFields();
+        checkFieldNull(bean, fields);
+        return findByIndex(fields.get(0).getName(), index, bean, session, consistency);
     }
 
     /**
      * Edited by Nenita Casuga to make method static and package protected so it can be reused.
      *
      */
-	static <T> void checkFieldNull(Class<T> bean, Field field) {
-		if (field == null) {
+	static <T> void checkFieldNull(Class<T> bean, List<FieldInformation> fields) {
+		if (fields.isEmpty()) {
 			StringBuffer erro = new StringBuffer();
 			erro.append("No found some field with @org.easycassandra.Index within ");
 			erro.append(bean.getName()).append(" class.");
@@ -60,22 +63,22 @@ class FindByIndexQuery extends FindByKeyQuery {
 
     private <T> List<T> executeConditions(String indexName, Object key,
             Class<T> bean, Session session, QueryBean byKeyBean) {
-        /**
-         * Edited by Dinusha Nandika Add indexName parameter
-         */
-        byKeyBean.key = ColumnUtil.INTANCE
-                .getFieldByColumnName(indexName, bean);
+
+        ClassInformation classInformation = ClassInformations.INSTACE.getClass(bean);
+
+        byKeyBean.setSearchField(classInformation.findIndexByName(indexName));
         checkIndexProblem(bean, byKeyBean);
         ResultSet resultSet = executeQuery(key, bean, session, byKeyBean);
         return RecoveryObject.INTANCE.recoverObjet(bean, resultSet);
     }
-
+    protected void defineSearchField(QueryBean byKeyBean, Class<?> bean) {
+    }
     /**
      * Edited by Nenita Casuga to make method static and package protected so it
      * can be reused.
      */
     static <T> void checkIndexProblem(Class<T> bean, QueryBean byKeyBean) {
-        if (byKeyBean.key == null) {
+        if (byKeyBean.getSearchField() == null) {
             StringBuilder erro = new StringBuilder();
             erro.append("Some field in a class ").append(bean.getName());
             erro.append(" should be a annotation: @org.easycassandra.annotations.Index ");

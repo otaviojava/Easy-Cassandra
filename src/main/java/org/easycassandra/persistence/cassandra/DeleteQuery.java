@@ -14,12 +14,14 @@
  */
 package org.easycassandra.persistence.cassandra;
 
-import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.easycassandra.ClassInformation;
+import org.easycassandra.ClassInformation.KeySpaceInformation;
+import org.easycassandra.ClassInformations;
+import org.easycassandra.FieldInformation;
 import org.easycassandra.KeyProblemsException;
-import org.easycassandra.persistence.cassandra.ColumnUtil.KeySpaceInformation;
 import org.easycassandra.util.ReflectionUtil;
 
 import com.datastax.driver.core.ConsistencyLevel;
@@ -42,10 +44,10 @@ class DeleteQuery {
 
     public <T> boolean deleteByKey(T bean, Session session,
             ConsistencyLevel consistency) {
+        ClassInformation classInformation = ClassInformations.INSTACE.getClass(bean.getClass());
+        FieldInformation keyField = classInformation.getKeyInformation();
 
-        Field key = getKeyField(bean);
-
-        return deleteByKey(ReflectionUtil.INSTANCE.getMethod(bean, key),
+        return deleteByKey(ReflectionUtil.INSTANCE.getMethod(bean, keyField.getField()),
                 bean.getClass(), session, consistency);
     }
 
@@ -93,42 +95,32 @@ class DeleteQuery {
             throw new KeyProblemsException(
                     "The parameter key to column family should be passed");
         }
-
-        KeySpaceInformation keyInformation = ColumnUtil.INTANCE.getKeySpace(
-                keySpace, bean);
+        ClassInformation classInformations = ClassInformations.INSTACE.getClass(bean);
+        KeySpaceInformation keyInformation = classInformations.getKeySpace(keySpace);
         Delete delete = QueryBuilder
                 .delete()
                 .all()
                 .from(keyInformation.getKeySpace(),
                         keyInformation.getColumnFamily());
 
-        Field keyField = ColumnUtil.INTANCE.getKeyField(bean);
-        if (keyField != null) {
-
-            delete.where(QueryBuilder.eq(
-                    ColumnUtil.INTANCE.getColumnName(keyField), key));
+        FieldInformation keyField = classInformations.getKeyInformation();
+        if (classInformations.isComplexKey()) {
+            runComplexKey(delete, key, keyField.getSubFields().getFields());
         } else {
-            runComplexKey(delete, key);
+            delete.where(QueryBuilder.eq(keyField.getName(), key));
         }
+
         delete.setConsistencyLevel(consistency);
         return delete;
     }
 
-    private void runComplexKey(Delete delete, Object key) {
+    private void runComplexKey(Delete delete, Object key, List<FieldInformation> fields) {
 
-        for (Field subKey : ColumnUtil.INTANCE.listFields(key.getClass())) {
+        for (FieldInformation subKey : fields) {
             delete.where(QueryBuilder.eq(
-                    ColumnUtil.INTANCE.getColumnName(subKey),
-                    ReflectionUtil.INSTANCE.getMethod(key, subKey)));
+                    subKey.getName(),
+                    ReflectionUtil.INSTANCE.getMethod(key, subKey.getField())));
         }
-    }
-
-    private <T> Field getKeyField(T bean) {
-        Field key = ColumnUtil.INTANCE.getKeyField(bean.getClass());
-        if (key == null) {
-            key = ColumnUtil.INTANCE.getKeyComplexField(bean.getClass());
-        }
-        return key;
     }
 
 }

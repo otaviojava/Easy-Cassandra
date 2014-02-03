@@ -2,13 +2,11 @@ package org.easycassandra;
 
 import java.lang.reflect.Field;
 
-import org.easycassandra.persistence.cassandra.ColumnUtil;
-
 /**
  * enum that contains kinds of annotations to fields on java.
  */
 public enum FieldType {
- ENUM, LIST, SET, MAP, COLLECTION, CUSTOM, DEFAULT;
+ ENUM, LIST, SET, MAP, COLLECTION, CUSTOM, DEFAULT, EMPTY;
 
  /**
   * find you the kind of annotation on field and then define a enum type, follow the sequences:

@@ -20,6 +20,8 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
+import org.easycassandra.ClassInformations;
+import org.easycassandra.FieldInformation;
 import org.easycassandra.FieldType;
 /**
  * class util to verify the relationship between java type and cassandra columns type.
@@ -46,8 +48,8 @@ INTANCE;
      *            the field to verify
      * @return VerifyRow interface
      */
-    public VerifyRow factory(Field field) {
-        return verifyMap.get(FieldType.getTypeByField(field));
+    public VerifyRow factory(FieldInformation field) {
+        return verifyMap.get(field.getType());
     }
 
     /**
@@ -111,7 +113,7 @@ INTANCE;
         @Override
         public List<String> getTypes(Field field) {
             return RelationShipJavaCassandra.INSTANCE.getCQLType(
-                    ColumnUtil.DEFAULT_ENUM_CLASS.getName());
+                    ClassInformations.DEFAULT_ENUM_CLASS.getName());
         }
     }
     /**

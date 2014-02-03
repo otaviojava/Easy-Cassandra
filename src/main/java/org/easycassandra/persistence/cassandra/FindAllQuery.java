@@ -14,11 +14,13 @@
  */
 package org.easycassandra.persistence.cassandra;
 
-import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.easycassandra.persistence.cassandra.ColumnUtil.KeySpaceInformation;
+import org.easycassandra.ClassInformation;
+import org.easycassandra.ClassInformation.KeySpaceInformation;
+import org.easycassandra.ClassInformations;
+import org.easycassandra.FieldInformation;
 
 import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.Session;
@@ -66,11 +68,11 @@ public class FindAllQuery {
      */
     protected <T> QueryBean createQueryBean(Class<T> bean,
             ConsistencyLevel consistency) {
-        QueryBean byKeyBean = prepare(new QueryBean(), bean);
-        KeySpaceInformation key = ColumnUtil.INTANCE
-                .getKeySpace(keySpace, bean);
+        ClassInformation classInformation = ClassInformations.INSTACE.getClass(bean);
+        QueryBean byKeyBean = prepare(new QueryBean(), classInformation);
+        KeySpaceInformation keySpaceInformation = classInformation.getKeySpace(keySpace);
         byKeyBean.select = QueryBuilder.select(byKeyBean.getArray()).from(
-                key.getKeySpace(), key.getColumnFamily());
+                keySpaceInformation.getKeySpace(), keySpaceInformation.getColumnFamily());
         byKeyBean.select.setConsistencyLevel(consistency);
         return byKeyBean;
     }
@@ -78,25 +80,19 @@ public class FindAllQuery {
     /**
      * prepare {@link QueryBean}.
      * @param byKeyBean the byKeyBean
-     * @param class1 the class
+     * @param classInformation the class
      * @return {@link QueryBean} prepared
      */
-    protected QueryBean prepare(QueryBean byKeyBean, Class<?> class1) {
-        List<Field> fields = ColumnUtil.INTANCE.listFields(class1);
+    protected QueryBean prepare(QueryBean byKeyBean,
+            ClassInformation classInformation) {
 
-        for (Field field : fields) {
+        for (FieldInformation field : classInformation.getFields()) {
 
-            if (ColumnUtil.INTANCE.isEmbeddedField(field)
-                    || ColumnUtil.INTANCE.isEmbeddedIdField(field)) {
-                if (ColumnUtil.INTANCE.isEmbeddedIdField(field)) {
-                    byKeyBean.key = field;
-                }
-                byKeyBean = prepare(byKeyBean, field.getType());
+            if (field.isEmbedded()) {
+                byKeyBean = prepare(byKeyBean, field.getSubFields());
                 continue;
-            } else if (ColumnUtil.INTANCE.isIdField(field)) {
-                byKeyBean.key = field;
             }
-            byKeyBean.columns.add(ColumnUtil.INTANCE.getColumnName(field));
+            byKeyBean.columns.add(field.getName());
 
         }
         return byKeyBean;
@@ -107,9 +103,33 @@ public class FindAllQuery {
      * @author otaviojava
      */
     protected class QueryBean {
-        protected Field key;
-        protected List<String> columns = new LinkedList<String>();
-        protected Select select;
+        private List<String> columns = new LinkedList<String>();
+        private Select select;
+        private FieldInformation searchField;
+
+        public FieldInformation getSearchField() {
+            return searchField;
+        }
+
+        public void setSearchField(FieldInformation searchField) {
+            this.searchField = searchField;
+        }
+
+        public List<String> getColumns() {
+            return columns;
+        }
+
+        public void setColumns(List<String> columns) {
+            this.columns = columns;
+        }
+
+        public Select getSelect() {
+            return select;
+        }
+
+        public void setSelect(Select select) {
+            this.select = select;
+        }
 
         String[] getArray() {
             return columns.toArray(new String[0]);

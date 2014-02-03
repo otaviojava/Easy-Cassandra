@@ -1,11 +1,11 @@
 package org.easycassandra.persistence.cassandra;
 
-import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.util.EnumMap;
 import java.util.Map;
 
 import org.easycassandra.CustomData;
+import org.easycassandra.FieldInformation;
 import org.easycassandra.FieldType;
 import org.easycassandra.util.ReflectionUtil;
 
@@ -32,8 +32,8 @@ enum ReturnValues {
     	returnValuesMap.put(FieldType.CUSTOM, new CustomReturnValue());
     	returnValuesMap.put(FieldType.DEFAULT, new DefaultReturnValue());
     }
-    public ReturnValue factory(Field field) {
-    	return returnValuesMap.get(FieldType.getTypeByField(field));
+    public ReturnValue factory(FieldInformation field) {
+    	return returnValuesMap.get(field.getType());
     }
 
     /**
@@ -44,14 +44,13 @@ enum ReturnValues {
 
         @Override
         public Object getObject(Map<String, Definition> mapDefinition,
-                Field field, Row row) {
+                FieldInformation field, Row row) {
 
-            Definition column = mapDefinition.get(ColumnUtil.INTANCE
-                    .getColumnName(field).toLowerCase());
+            Definition column = mapDefinition.get(field.getName().toLowerCase());
             ByteBuffer buffer = (ByteBuffer) RelationShipJavaCassandra.INSTANCE
                     .getObject(row, column.getType().getName(),
                             column.getName());
-            CustomData customData = field.getAnnotation(CustomData.class);
+            CustomData customData = field.getField().getAnnotation(CustomData.class);
             Customizable customizable = Customizable.class
                     .cast(ReflectionUtil.INSTANCE.newInstance(customData
                             .classCustmo()));
@@ -68,12 +67,10 @@ enum ReturnValues {
 
         @Override
         public Object getObject(Map<String, Definition> mapDefinition,
-                Field field, Row row) {
-            ReflectionUtil.KeyValueClass keyValueClass = ReflectionUtil.INSTANCE
-                    .getGenericKeyValue(field);
+                FieldInformation field, Row row) {
+
             return RelationShipJavaCassandra.INSTANCE.getObject(row, Name.MAP,
-                    ColumnUtil.INTANCE.getColumnName(field),
-                    keyValueClass.getKeyClass(), keyValueClass.getValueClass());
+                    field.getName(), field.getKey(), field.getValue());
 
         }
 
@@ -87,10 +84,9 @@ enum ReturnValues {
 
         @Override
         public Object getObject(Map<String, Definition> mapDefinition,
-                Field field, Row row) {
+                FieldInformation field, Row row) {
             return RelationShipJavaCassandra.INSTANCE.getObject(row, Name.SET,
-                    ColumnUtil.INTANCE.getColumnName(field),
-                    ReflectionUtil.INSTANCE.getGenericType(field));
+                    field.getName().toLowerCase(), field.getKey());
 
         }
 
@@ -104,10 +100,9 @@ enum ReturnValues {
 
         @Override
         public Object getObject(Map<String, Definition> mapDefinition,
-                Field field, Row row) {
+                FieldInformation field, Row row) {
             return RelationShipJavaCassandra.INSTANCE.getObject(row, Name.LIST,
-                    ColumnUtil.INTANCE.getColumnName(field),
-                    ReflectionUtil.INSTANCE.getGenericType(field));
+                    field.getName().toLowerCase(), field.getKey());
 
         }
 
@@ -121,9 +116,8 @@ enum ReturnValues {
 
         @Override
         public Object getObject(Map<String, Definition> mapDefinition,
-                Field field, Row row) {
-            ReturnValue returnValue = returnValuesMap.get(FieldType
-                    .findCollectionbyQualifield(field));
+                FieldInformation field, Row row) {
+            ReturnValue returnValue = returnValuesMap.get(field.getCollectionType());
             return returnValue.getObject(mapDefinition, field, row);
         }
 
@@ -137,11 +131,11 @@ enum ReturnValues {
 
         @Override
         public Object getObject(Map<String, Definition> mapDefinition,
-                Field field, Row row) {
+                FieldInformation field, Row row) {
+
             Integer value = (Integer) RelationShipJavaCassandra.INSTANCE
-                    .getObject(row, Name.INT,
-                            ColumnUtil.INTANCE.getColumnName(field));
-            return field.getType().getEnumConstants()[value];
+                    .getObject(row, Name.INT, field.getName().toLowerCase());
+            return field.getField().getType().getEnumConstants()[value];
         }
 
     }
@@ -154,9 +148,8 @@ enum ReturnValues {
 
         @Override
         public Object getObject(Map<String, Definition> mapDefinition,
-                Field field, Row row) {
-            Definition column = mapDefinition.get(ColumnUtil.INTANCE
-                    .getColumnName(field).toLowerCase());
+                FieldInformation field, Row row) {
+            Definition column = mapDefinition.get(field.getName().toLowerCase());
             return RelationShipJavaCassandra.INSTANCE.getObject(row, column
                     .getType().getName(), column.getName());
         }
@@ -175,6 +168,6 @@ enum ReturnValues {
          * @param row - the information on cassandra
          * @return
          */
-        Object getObject(Map<String, Definition> mapDefinition, Field field, Row row);
+        Object getObject(Map<String, Definition> mapDefinition, FieldInformation field, Row row);
     }
 }

@@ -13,7 +13,9 @@
  */
 package org.easycassandra.persistence.cassandra;
 
-import org.easycassandra.persistence.cassandra.ColumnUtil.KeySpaceInformation;
+import org.easycassandra.ClassInformation;
+import org.easycassandra.ClassInformation.KeySpaceInformation;
+import org.easycassandra.ClassInformations;
 
 import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.ResultSet;
@@ -43,8 +45,8 @@ class CountQuery {
      */
     public Long count(Class<?> bean, Session session,
             ConsistencyLevel consistency) {
-        KeySpaceInformation key = ColumnUtil.INTANCE
-                .getKeySpace(keySpace, bean);
+        ClassInformation classInformation = ClassInformations.INSTACE.getClass(bean);
+        KeySpaceInformation key = classInformation.getKeySpace(keySpace);
         Select select = QueryBuilder.select().countAll()
                 .from(key.getKeySpace(), key.getColumnFamily());
         select.setConsistencyLevel(consistency);

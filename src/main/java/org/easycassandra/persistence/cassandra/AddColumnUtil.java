@@ -14,13 +14,13 @@
  */
 package org.easycassandra.persistence.cassandra;
 
-import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.util.EnumMap;
 import java.util.Map;
 
+import org.easycassandra.ClassInformations;
+import org.easycassandra.FieldInformation;
 import org.easycassandra.FieldType;
-import org.easycassandra.util.ReflectionUtil;
 
 /**
  * create a column to cassandra checking the annotation.
@@ -41,8 +41,8 @@ enum AddColumnUtil {
     	addColumnMap.put(FieldType.DEFAULT, new DefaultAdd());
     }
 
-    public AddColumn factory(Field field) {
-        return addColumnMap.get(FieldType.getTypeByField(field));
+    public AddColumn factory(FieldInformation field) {
+        return addColumnMap.get(field.getType());
     }
 
     /**
@@ -52,9 +52,9 @@ enum AddColumnUtil {
     class CustomAdd implements AddColumn {
 
         @Override
-        public String addRow(Field field,
+        public String addRow(FieldInformation field,
                 RelationShipJavaCassandra javaCassandra) {
-            String columnName = ColumnUtil.INTANCE.getColumnName(field);
+            String columnName = field.getName();
             StringBuilder row = new StringBuilder();
             row.append(columnName)
                     .append(" ")
@@ -72,20 +72,17 @@ enum AddColumnUtil {
     class MapAdd implements AddColumn {
 
         @Override
-        public String addRow(Field field,
+        public String addRow(FieldInformation field,
                 RelationShipJavaCassandra javaCassandra) {
             StringBuilder row = new StringBuilder();
-            String columnName = ColumnUtil.INTANCE.getColumnName(field);
-            ReflectionUtil.KeyValueClass keyValueClass = ReflectionUtil.INSTANCE
-                    .getGenericKeyValue(field);
-
+            String columnName = field.getName();
             row.append(columnName)
                     .append(" map<")
-                    .append(javaCassandra.getPreferenceCQLType(keyValueClass
-                            .getKeyClass().getName())).append(",");
+                    .append(javaCassandra.getPreferenceCQLType(field.getKey().getName()))
+                    .append(",");
             row.append(
-                    javaCassandra.getPreferenceCQLType(keyValueClass
-                            .getValueClass().getName())).append(">,");
+                    javaCassandra.getPreferenceCQLType(field
+                            .getValue().getName())).append(">,");
             return row.toString();
         }
 
@@ -98,11 +95,11 @@ enum AddColumnUtil {
     class SetAdd implements AddColumn {
 
         @Override
-        public String addRow(Field field,
+        public String addRow(FieldInformation field,
                 RelationShipJavaCassandra javaCassandra) {
             StringBuilder row = new StringBuilder();
-            String columnName = ColumnUtil.INTANCE.getColumnName(field);
-            Class<?> clazz = ReflectionUtil.INSTANCE.getGenericType(field);
+            String columnName = field.getName();
+            Class<?> clazz = field.getKey();
             row.append(columnName)
                     .append(" set<")
                     .append(javaCassandra.getPreferenceCQLType(clazz.getName()))
@@ -119,11 +116,11 @@ enum AddColumnUtil {
     class ListAdd implements AddColumn {
 
         @Override
-        public String addRow(Field field,
+        public String addRow(FieldInformation field,
                 RelationShipJavaCassandra javaCassandra) {
             StringBuilder row = new StringBuilder();
-            String columnName = ColumnUtil.INTANCE.getColumnName(field);
-            Class<?> clazz = ReflectionUtil.INSTANCE.getGenericType(field);
+            String columnName = field.getName();
+            Class<?> clazz = field.getKey();
             row.append(columnName)
                     .append(" list<")
                     .append(javaCassandra.getPreferenceCQLType(clazz.getName()))
@@ -140,14 +137,14 @@ enum AddColumnUtil {
     class EnumAdd implements AddColumn {
 
         @Override
-        public String addRow(Field field,
+        public String addRow(FieldInformation field,
                 RelationShipJavaCassandra javaCassandra) {
-            String columnName = ColumnUtil.INTANCE.getColumnName(field);
+            String columnName = field.getName();
             StringBuilder row = new StringBuilder();
             row.append(columnName)
                     .append(" ")
                     .append(javaCassandra
-                            .getPreferenceCQLType(ColumnUtil.DEFAULT_ENUM_CLASS
+                            .getPreferenceCQLType(ClassInformations.DEFAULT_ENUM_CLASS
                                     .getName())).append(",");
             return row.toString();
         }
@@ -161,13 +158,13 @@ enum AddColumnUtil {
     class DefaultAdd implements AddColumn {
 
         @Override
-        public String addRow(Field field,
+        public String addRow(FieldInformation field,
                 RelationShipJavaCassandra javaCassandra) {
-            String columnName = ColumnUtil.INTANCE.getColumnName(field);
+            String columnName = field.getName();
             StringBuilder row = new StringBuilder();
             row.append(columnName)
                     .append(" ")
-                    .append(javaCassandra.getPreferenceCQLType(field.getType()
+                    .append(javaCassandra.getPreferenceCQLType(field.getField().getType()
                             .getName())).append(",");
             return row.toString();
         }
@@ -181,10 +178,9 @@ enum AddColumnUtil {
     class CollectionAdd implements AddColumn {
 
         @Override
-        public String addRow(Field field,
+        public String addRow(FieldInformation field,
                 RelationShipJavaCassandra javaCassandra) {
-            AddColumn addColumn = addColumnMap.get(FieldType
-                    .findCollectionbyQualifield(field));
+            AddColumn addColumn = addColumnMap.get(field.getCollectionType());
             return addColumn.addRow(field, javaCassandra);
         }
 
@@ -203,6 +199,6 @@ enum AddColumnUtil {
          *            the {@link RelationShipJavaCassandra}
          * @return the string to query
          */
-        String addRow(Field field, RelationShipJavaCassandra javaCassandra);
+        String addRow(FieldInformation field, RelationShipJavaCassandra javaCassandra);
     }
 }

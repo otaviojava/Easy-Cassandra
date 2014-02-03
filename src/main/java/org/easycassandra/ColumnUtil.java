@@ -12,12 +12,13 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.easycassandra.persistence.cassandra;
+package org.easycassandra;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -32,24 +33,13 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
-import org.easycassandra.CustomData;
-import org.easycassandra.Index;
-import org.easycassandra.IndexProblemException;
-import org.easycassandra.ListData;
-import org.easycassandra.MapData;
-import org.easycassandra.SetData;
-
 /**
  * Class Util for Column.
  * @author otavio
  */
-public enum ColumnUtil {
+enum ColumnUtil {
     INTANCE;
 
-    /**
-     * The integer class is used to enum how default.
-     */
-    public static final Class<?> DEFAULT_ENUM_CLASS = Integer.class;
     /**
      * list contains the annotations to map a bean.
      */
@@ -82,7 +72,7 @@ public enum ColumnUtil {
         return schema.concat(getColumnFamily(object));
     }
 
-    private String getColumnFamily(Class<?> object) {
+    public String getColumnFamily(Class<?> object) {
         Entity columnFamily = (Entity) object.getAnnotation(Entity.class);
         Table columnFamilyTable = (Table) object.getAnnotation(Table.class);
         if (columnFamily != null) {
@@ -154,7 +144,11 @@ public enum ColumnUtil {
      * @return the Field if there are not will be return null
      */
     public Field getKeyField(Class<?> persistenceClass) {
-        return getField(persistenceClass, Id.class);
+        Field field = getField(persistenceClass, Id.class);
+        if (field == null) {
+            return getField(persistenceClass.getSuperclass(), Id.class);
+        }
+        return field;
     }
 
     /**
@@ -165,7 +159,11 @@ public enum ColumnUtil {
      * @return the Field if there are not will be return null
      */
     public Field getKeyComplexField(Class<?> persistenceClass) {
-        return getField(persistenceClass, EmbeddedId.class);
+        Field field = getField(persistenceClass, EmbeddedId.class);
+        if (field == null) {
+            return getField(persistenceClass.getSuperclass(), EmbeddedId.class);
+        }
+        return field;
     }
 
     /**
@@ -187,11 +185,11 @@ public enum ColumnUtil {
      *            - Class of the object viewed
      * @return the Fields if there are not will be return empty list
      */
-    public List<Field> getIndexFields(Class<?> persistenceClass) {
-        List<Field> indexFieldList = new ArrayList<Field>();
+    public List<FieldInformation> getIndexFields(Class<?> persistenceClass) {
+        List<FieldInformation> indexFieldList = new ArrayList<>();
         for (Field field : persistenceClass.getDeclaredFields()) {
             if (field.getAnnotation(Index.class) != null) {
-                indexFieldList.add(field);
+                indexFieldList.add(new FieldInformation(field));
             } else if (field.getAnnotation(Embedded.class) != null) {
                 indexFieldList.addAll(getIndexFields(field.getType()));
             }
@@ -223,8 +221,8 @@ public enum ColumnUtil {
      * @param class1 the class
      * @return list of the fields
      */
-    public List<Field> listFields(Class<?> class1) {
-        List<Field> fields = new ArrayList<Field>();
+    public List<FieldInformation> listFields(Class<?> class1) {
+        List<FieldInformation> fields = new LinkedList<>();
         feedFieldList(class1, fields);
         if (isMappedSuperclass(class1)) {
             feedFieldList(class1.getSuperclass(), fields);
@@ -234,16 +232,16 @@ public enum ColumnUtil {
     }
 
     /**
-     * feed the list com Fields.
+     * feed the list with Fields.
      * @param class1
      * @param fields
      */
-    private void feedFieldList(Class<?> class1, List<Field> fields) {
+    private void feedFieldList(Class<?> class1, List<FieldInformation> fields) {
 
         for (Field field : class1.getDeclaredFields()) {
 
             if (isColumnToPersist(field)) {
-                fields.add(field);
+                fields.add(new FieldInformation(field));
             }
 
         }
@@ -377,7 +375,7 @@ public enum ColumnUtil {
      * @param field the field
      * @return if has SetData annotation
      */
-    public boolean isSet(Field field){
+    public boolean isSet(Field field) {
         return field.getAnnotation(SetData.class) != null;
     }
 
@@ -396,61 +394,6 @@ public enum ColumnUtil {
      */
 	public boolean isElementCollection(Field field) {
 		return field.getAnnotation(ElementCollection.class) != null;
-	}
-
-   /**
-    * get the Field for parsing <b>columnName</b> in the <b>class1</b>.
-    * if there is no such column name or if it denies access  return null.
-    * @param columnName the columnName
-    * @param class1 the class
-    * @return the field with the name
-    */
-	public Field getFieldByColumnName(String columnName, Class<?> class1) {
-
-        for (Field index : getIndexFields(class1)) {
-            if (getColumnName(index).equals(columnName)) {
-                return index;
-            }
-        }
-
-		StringBuilder erro = new StringBuilder();
-		erro.append("Not found index on ").append(class1.getName());
-		erro.append(" with name ").append(columnName);
-	    throw new IndexProblemException(erro.toString());
-	}
-
-
-	/**
-	 * returns the keySpace information.
-	 * @param keySpace the keySpace
-	 * @param bean the kind of class
-	 * @return {@link KeySpaceInformation}
-	 */
-	public KeySpaceInformation getKeySpace(String keySpace, Class<?> bean) {
-        String keySchema = getSchema(bean);
-        KeySpaceInformation key = new KeySpaceInformation();
-        key.keySpace = "".equals(keySchema) ? keySpace : keySchema;
-        key.columnFamily = getColumnFamily(bean);
-        return key;
-	}
-
-	/**
-	 * The dto to information.
-	 * @author otaviojava
-	 */
-	public class KeySpaceInformation {
-		private String keySpace;
-
-		private String columnFamily;
-
-		public String getKeySpace() {
-			return keySpace;
-		}
-
-		public String getColumnFamily() {
-			return columnFamily;
-		}
-
 	}
 
 

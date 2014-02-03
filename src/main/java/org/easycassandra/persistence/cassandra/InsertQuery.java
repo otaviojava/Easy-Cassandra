@@ -13,12 +13,14 @@
  */
 package org.easycassandra.persistence.cassandra;
 
-import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.List;
 
-import javax.persistence.EmbeddedId;
-
+import org.easycassandra.ClassInformation;
+import org.easycassandra.ClassInformation.KeySpaceInformation;
+import org.easycassandra.ClassInformations;
+import org.easycassandra.FieldInformation;
 import org.easycassandra.KeyProblemsException;
-import org.easycassandra.persistence.cassandra.ColumnUtil.KeySpaceInformation;
 import org.easycassandra.persistence.cassandra.InsertColumnUtil.InsertColumn;
 import org.easycassandra.util.ReflectionUtil;
 
@@ -55,61 +57,60 @@ class InsertQuery {
 
 
     private <T> Statement createStatment(T bean, ConsistencyLevel consistency) {
-        isKeyNull(bean);
-        KeySpaceInformation key = ColumnUtil.INTANCE.getKeySpace(keySpace, bean.getClass());
+        ClassInformation classInformation = ClassInformations.INSTACE.getClass(bean.getClass());
+        isKeyNull(bean, classInformation);
+        KeySpaceInformation key = classInformation.getKeySpace(keySpace);
         Insert insert = QueryBuilder.insertInto(key.getKeySpace(), key.getColumnFamily());
-        insert = createInsert(bean, insert);
+        insert = createInsert(bean, insert, classInformation);
         insert.setConsistencyLevel(consistency);
         return insert;
     }
 
 
-    private <T> Insert createInsert(T bean, Insert insert) {
+    private <T> Insert createInsert(T bean, Insert insert, ClassInformation classInformation) {
 
-        for (Field field : ColumnUtil.INTANCE.listFields(bean.getClass())) {
+        for (FieldInformation field : classInformation.getFields()) {
 
-            if (ColumnUtil.INTANCE.isEmbeddedField(field)
-                    || ColumnUtil.INTANCE.isEmbeddedIdField(field)) {
-                if (ReflectionUtil.INSTANCE.getMethod(bean, field) != null) {
+            if (field.isEmbedded()) {
+                if (ReflectionUtil.INSTANCE.getMethod(bean, field.getField()) != null) {
+
+                    ClassInformation subClassInformation =
+                            ClassInformations.INSTACE.getClass(field.getField().getType());
+
                     insert = createInsert(
-                            ReflectionUtil.INSTANCE.getMethod(bean, field),
-                            insert);
+                            ReflectionUtil.INSTANCE.getMethod(bean, field.getField()),
+                            insert, subClassInformation);
                 }
                 continue;
-            } else if (ReflectionUtil.INSTANCE.getMethod(bean, field) != null) {
+            } else if (ReflectionUtil.INSTANCE.getMethod(bean, field.getField()) != null) {
                 InsertColumn insertColumn = InsertColumnUtil.INSTANCE.factory(field);
-                insert.value(ColumnUtil.INTANCE.getColumnName(field),
-                        insertColumn.getObject(bean, field));
+                insert.value(field.getName(), insertColumn.getObject(bean, field));
 
             }
         }
         return insert;
     }
 
-    private void isKeyNull(Object bean) {
-        Field key = ColumnUtil.INTANCE.getKeyField(bean.getClass());
-        if (key == null) {
+    private void isKeyNull(Object bean, ClassInformation classInformation) {
 
-            key = ColumnUtil.INTANCE.getField(bean.getClass(), EmbeddedId.class);
-            /*
-             * Added by Nenita Casuga to allow embedded id from mapped superclass
-             */
-            if (key == null) {
-                key = ColumnUtil.INTANCE.getField(bean.getClass()
-                        .getSuperclass(), EmbeddedId.class);
-            }
-            isKeyNull(ReflectionUtil.INSTANCE.getMethod(bean, key), key
-                    .getType().getDeclaredFields());
+        if (classInformation.isComplexKey()) {
+
+            FieldInformation keyInformation = classInformation.getKeyInformation();
+
+            verifyKeyNull(ReflectionUtil.INSTANCE.getMethod(bean,
+                    keyInformation.getField()), keyInformation.getSubFields()
+                    .getFields());
         } else {
-            isKeyNull(bean, key);
+            verifyKeyNull(bean, Arrays.asList(classInformation.getKeyInformation()));
         }
 
     }
 
-    private void isKeyNull(Object bean, Field... fields) {
-        for (Field field : fields) {
-            if (ReflectionUtil.INSTANCE.getMethod(bean, field) == null) {
-                throw new KeyProblemsException("Key is mandatory to insert a new column family");
+    private void verifyKeyNull(Object bean, List<FieldInformation> fields) {
+        for (FieldInformation field : fields) {
+            if (ReflectionUtil.INSTANCE.getMethod(bean, field.getField()) == null) {
+                throw new KeyProblemsException("Key is mandatory to insert a new column family,"
+                        + "check: " + field.getName());
             }
         }
     }

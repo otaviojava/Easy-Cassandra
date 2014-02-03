@@ -1,8 +1,11 @@
 package org.easycassandra.persistence.cassandra;
 
-import java.lang.reflect.Field;
+import java.util.EnumMap;
+import java.util.Map;
 
 import org.easycassandra.CustomData;
+import org.easycassandra.FieldInformation;
+import org.easycassandra.FieldType;
 import org.easycassandra.util.ReflectionUtil;
 /**
  * utils to insert query.
@@ -10,15 +13,21 @@ import org.easycassandra.util.ReflectionUtil;
 enum InsertColumnUtil  {
 INSTANCE;
 
-    public InsertColumn factory(Field field) {
-        if (ColumnUtil.INTANCE.isEnumField(field)) {
-            return new EnumInsert();
-        }
-        if (ColumnUtil.INTANCE.isCustom(field)) {
-            return new CustomInsert();
-        }
+    private Map<FieldType, InsertColumn> insertMap;
 
-        return new DefaultInsert();
+    {
+        insertMap = new EnumMap<>(FieldType.class);
+        insertMap.put(FieldType.ENUM, new EnumInsert());
+        insertMap.put(FieldType.CUSTOM, new CustomInsert());
+        insertMap.put(FieldType.LIST, new DefaultInsert());
+        insertMap.put(FieldType.SET, new DefaultInsert());
+        insertMap.put(FieldType.MAP, new DefaultInsert());
+        insertMap.put(FieldType.COLLECTION, new DefaultInsert());
+        insertMap.put(FieldType.DEFAULT, new DefaultInsert());
+
+    }
+    public InsertColumn factory(FieldInformation field) {
+        return insertMap.get(field.getType());
     }
 
     /**
@@ -28,12 +37,12 @@ INSTANCE;
     class CustomInsert implements InsertColumn {
 
         @Override
-        public Object getObject(Object bean, Field field) {
-            CustomData customData = field.getAnnotation(CustomData.class);
+        public Object getObject(Object bean, FieldInformation field) {
+            CustomData customData = field.getField().getAnnotation(CustomData.class);
             Customizable customizable = (Customizable) ReflectionUtil.INSTANCE
                     .newInstance(customData.classCustmo());
             return customizable.read(ReflectionUtil.INSTANCE.getMethod(bean,
-                    field));
+                    field.getField()));
         }
 
     }
@@ -44,10 +53,10 @@ INSTANCE;
     class EnumInsert implements InsertColumn {
 
         @Override
-        public Object getObject(Object bean, Field field) {
+        public Object getObject(Object bean, FieldInformation field) {
 
             Enum<?> enumS = (Enum<?>) ReflectionUtil.INSTANCE.getMethod(bean,
-                    field);
+                    field.getField());
             return enumS.ordinal();
         }
 
@@ -60,8 +69,8 @@ INSTANCE;
     class DefaultInsert implements InsertColumn {
 
         @Override
-        public Object getObject(Object bean, Field field) {
-            return ReflectionUtil.INSTANCE.getMethod(bean, field);
+        public Object getObject(Object bean, FieldInformation field) {
+            return ReflectionUtil.INSTANCE.getMethod(bean, field.getField());
         }
 
     }
@@ -71,7 +80,7 @@ INSTANCE;
      */
     public interface InsertColumn {
 
-        Object getObject(Object bean, Field field);
+        Object getObject(Object bean, FieldInformation field);
 
     }
 }

@@ -14,9 +14,11 @@
  */
 package org.easycassandra.persistence.cassandra;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
+import org.easycassandra.ClassInformation;
+import org.easycassandra.ClassInformations;
+import org.easycassandra.FieldInformation;
 import org.easycassandra.KeyProblemsException;
 import org.easycassandra.util.ReflectionUtil;
 
@@ -52,7 +54,10 @@ class FindByKeyQuery extends FindAllQuery {
 
         return null;
     }
-
+    protected void defineSearchField(QueryBean byKeyBean, Class<?> bean) {
+        ClassInformation classInformation = ClassInformations.INSTACE.getClass(bean);
+        byKeyBean.setSearchField(classInformation.getKeyInformation());
+    }
     /**
      * execute the query and returns the result set.
      * @param key
@@ -66,22 +71,26 @@ class FindByKeyQuery extends FindAllQuery {
     protected ResultSet executeQuery(Object key, Class<?> bean,
             Session session, QueryBean byKeyBean) {
 
-        if (!key.getClass().equals(byKeyBean.key.getType())) {
-            createKeyProblemMensage(key, byKeyBean);
+        defineSearchField(byKeyBean, bean);
+
+        FieldInformation fieldInformation = byKeyBean.getSearchField();
+
+        if (!key.getClass().equals(fieldInformation.getField().getType())) {
+            createKeyProblemMensage(key, fieldInformation.getField().getType());
         }
-        if (ColumnUtil.INTANCE.isEmbeddedIdField(byKeyBean.key)) {
+        if (fieldInformation.isEmbedded()) {
             return executeComplexKey(key, session, byKeyBean);
         } else {
             return executeSingleKey(key, session, byKeyBean);
         }
     }
 
-    private void createKeyProblemMensage(Object key, QueryBean byKeyBean) {
+    private void createKeyProblemMensage(Object key, Class<?> keyClass) {
         StringBuilder erro = new StringBuilder();
         erro.append("The parameter key should be the"
                 + " same type of the key of column family, the type passed was ");
         erro.append(key.getClass().getName()).append(" and was expected ")
-                .append(byKeyBean.key.getType().getName());
+                .append(keyClass.getName());
         throw new KeyProblemsException(erro.toString());
     }
 
@@ -94,9 +103,10 @@ class FindByKeyQuery extends FindAllQuery {
      */
     protected ResultSet executeSingleKey(Object key, Session session,
             QueryBean byKeyBean) {
-        byKeyBean.select.where(QueryBuilder.eq(
-                ColumnUtil.INTANCE.getColumnName(byKeyBean.key), key));
-        return session.execute(byKeyBean.select);
+
+        byKeyBean.getSelect().where(QueryBuilder.eq(
+                byKeyBean.getSearchField().getName(), key));
+        return session.execute(byKeyBean.getSelect());
 
     }
 
@@ -109,12 +119,17 @@ class FindByKeyQuery extends FindAllQuery {
      */
     protected ResultSet executeComplexKey(Object key, Session session,
             QueryBean byKeyBean) {
-        for (Field complexKey : ColumnUtil.INTANCE.listFields(key.getClass())) {
-            byKeyBean.select.where(QueryBuilder.eq(
-                    ColumnUtil.INTANCE.getColumnName(complexKey),
-                    ReflectionUtil.INSTANCE.getMethod(key, complexKey)));
+        ClassInformation classInformation = ClassInformations.INSTACE.getClass(key.getClass());
+
+        for (FieldInformation complexKey : classInformation.getFields()) {
+
+            byKeyBean.getSelect().where(
+                    QueryBuilder.eq(
+                            complexKey.getName(),
+                            ReflectionUtil.INSTANCE.getMethod(key,
+                                    complexKey.getField())));
         }
-        return session.execute(byKeyBean.select);
+        return session.execute(byKeyBean.getSelect());
 
     }
 }

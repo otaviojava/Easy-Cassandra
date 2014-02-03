@@ -16,6 +16,8 @@ package org.easycassandra.persistence.cassandra;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.easycassandra.ClassInformation;
+import org.easycassandra.ClassInformations;
 import org.easycassandra.ReplicaStrategy;
 
 import com.datastax.driver.core.Cluster;
@@ -125,11 +127,12 @@ public class EasyCassandraManager extends AbstractCassandraFactory  {
         if (classes.contains(class1)) {
             return true;
         }
+        ClassInformation classInformation = ClassInformations.INSTACE.getClass(class1);
 
-        String familyColumn = ColumnUtil.INTANCE.getColumnFamilyNameSchema(class1);
+        String familyColumn = classInformation.getNameSchema();
         Session session = getCluster().connect(keySpace);
-        if (!ColumnUtil.INTANCE.getSchema(class1).equals("")) {
-            getPersistence(getHost(), ColumnUtil.INTANCE.getSchema(class1));
+        if (!classInformation.getSchema().equals("")) {
+            getPersistence(getHost(), classInformation.getSchema());
 
         }
         classes.add(class1);

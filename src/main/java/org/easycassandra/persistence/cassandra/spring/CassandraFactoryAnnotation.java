@@ -16,7 +16,8 @@ package org.easycassandra.persistence.cassandra.spring;
 
 import java.util.List;
 
-import org.easycassandra.persistence.cassandra.ColumnUtil;
+import org.easycassandra.ClassInformation;
+import org.easycassandra.ClassInformations;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.datastax.driver.core.Session;
@@ -79,11 +80,11 @@ public class CassandraFactoryAnnotation extends AbstractCassandraFactory
 	 * @return the process with success or not
 	 */
 	public boolean mappedBean(Class<?> entity) {
-        String familyColumn = ColumnUtil.INTANCE
-                .getColumnFamilyNameSchema(entity);
+	    ClassInformation classInformation = ClassInformations.INSTACE.getClass(entity);
+        String familyColumn = classInformation.getNameSchema();
         Session session = getCluster().connect(getKeySpace());
-        if (!ColumnUtil.INTANCE.getSchema(entity).equals("")) {
-            getTemplate(getHost(), ColumnUtil.INTANCE.getSchema(entity));
+        if (!classInformation.getSchema().equals("")) {
+            getTemplate(getHost(), classInformation.getSchema());
 
         }
         return fixColumnFamily(session, familyColumn, entity);
