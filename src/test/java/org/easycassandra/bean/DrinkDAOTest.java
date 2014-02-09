@@ -12,6 +12,8 @@ import org.junit.Test;
  */
 public class DrinkDAOTest {
 
+    private static final int YEAR = 19;
+
     private PersistenceDao<Drink, Long> dao = new PersistenceDao<Drink, Long>(
             Drink.class);
 
@@ -30,7 +32,7 @@ public class DrinkDAOTest {
         Person person = new Person();
         person.setId(1L);
         person.setName("otávio");
-        person.setYear(19);
+        person.setYear(YEAR);
         personDao.insert(person);
 
         Assert.assertTrue(dao.insert(drink));

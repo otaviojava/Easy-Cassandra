@@ -4,7 +4,7 @@
 
     <groupId>org.easycassandra</groupId>
     <artifactId>EasyCassandra</artifactId>
-    <version>2.0.0-RC10</version>
+    <version>2.0.1</version>
     <packaging>jar</packaging>
 
 	<properties>
@@ -21,50 +21,22 @@
 
     <name>EasyCassandra</name>
     <url>https://github.com/otaviojava/Easy-Cassandra</url>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                </configuration>
-            </plugin>
-            
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-pmd-plugin</artifactId>
-            </plugin>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-            </plugin>
 
-	<plugin>
-		<groupId>org.codehaus.mojo</groupId>
-		<artifactId>exec-maven-plugin</artifactId>
-		<version>1.2.1</version>
-		<executions>
-			<execution>
-				<goals>
-					<goal>java</goal>
-				</goals>
-			</execution>
-		</executions>
-		<configuration>
-			<mainClass>App</mainClass>
-			<arguments>
-				<argument>foo</argument>
-				<argument>bar</argument>
-			</arguments>
-		</configuration>
-	</plugin>
- 
-          </plugins>
-    </build>
+
+		</plugins>
+	</build>
 
 
 	<dependencies>
@@ -112,13 +84,19 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.2.1</version>
-			<scope>test</scope>
-		</dependency>
+	<dependency>
+		<groupId>org.apache.commons</groupId>
+		<artifactId>commons-lang3</artifactId>
+		<version>3.2.1</version>
+		<scope>test</scope>
+	</dependency>
 
+	<dependency>
+		<groupId>commons-beanutils</groupId>
+		<artifactId>commons-beanutils</artifactId>
+		<version>1.8.3</version>
+	</dependency>
+            
 
 	</dependencies>
     

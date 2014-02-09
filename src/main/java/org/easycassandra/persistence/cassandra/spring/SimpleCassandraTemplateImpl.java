@@ -35,7 +35,7 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
      */
     private String keySpace;
 
-	private RunCassandraCommand command = new RunCassandraCommand();
+	private RunCassandraCommand command;
 
 	/**
 	 * return a simple template of cassandra.
@@ -44,6 +44,7 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
     public SimpleCassandraTemplateImpl(CassandraFactory factory) {
 	    this.session = factory.getSession();
         this.keySpace = factory.getKeySpace();
+        command = new RunCassandraCommand(keySpace);
         setSession();
 	}
 
@@ -61,34 +62,34 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
 	@Override
 	public <T> T save(T entity) {
 
-		return command.insert(entity, session, keySpace);
+		return command.insert(entity, session);
 	}
 
 	@Override
 	public <T> Iterable<T> save(Iterable<T> entities) {
-		command.insert(entities, session, keySpace);
+		command.insert(entities, session);
 		return entities;
 	}
 
 	@Override
 	public <T> void delete(T entity) {
-		command.delete(entity, session, keySpace);
+		command.delete(entity, session);
 	}
 
 	@Override
 	public <T> void delete(Iterable<T> entities) {
-		command.delete(entities, session, keySpace);
+		command.delete(entities, session);
 	}
 
 	@Override
 	public <K> void delete(K key, Class<?> entity) {
-		command.deleteByKey(key, entity, session, keySpace);
+		command.deleteByKey(key, entity, session);
 
 	}
 
 	@Override
 	public <K, T> void delete(Iterable<K> keys, Class<T> entity) {
-		command.deleteByKey(keys, entity, session, keySpace);
+		command.deleteByKey(keys, entity, session);
 	}
 
 	@Override
@@ -108,22 +109,22 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
 
 	@Override
 	public <T, K> T findOne(K key, Class<T> entity) {
-		return command.findByKey(key, entity, session, keySpace);
+		return command.findByKey(key, entity, session);
 	}
 
 	@Override
 	public <T, K> List<T> findAll(Iterable<K> keys, Class<T> entity) {
-		return command.findByKeys(keys, entity, session, keySpace);
+		return command.findByKeys(keys, entity, session);
 	}
 
 	@Override
 	public <T> List<T> findAll(Class<T> entity) {
-		return command.findAll(entity, session, keySpace);
+		return command.findAll(entity, session);
 	}
 
 	@Override
     public <T, I> List<T> findByIndex(String indexName, I index, Class<T> entity) {
-        return command.findByIndex(indexName, index, entity, session, keySpace);
+        return command.findByIndex(indexName, index, entity, session);
     }
 
 	@Override
@@ -139,7 +140,7 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
 
 	@Override
 	public <T>long count(Class<T> entity) {
-		return command.count(entity, session, keySpace);
+		return command.count(entity, session);
 	}
 
 
@@ -149,33 +150,33 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
 
 	@Override
 	public <T> T save(T entity, ConsistencyLevel consistency) {
-		return command.insert(entity, session, keySpace, consistency);
+		return command.insert(entity, session, consistency);
 	}
 
 	@Override
 	public <T> Iterable<T> save(Iterable<T> entities, ConsistencyLevel consistency) {
-		command.insert(entities, session, keySpace, consistency);
+		command.insert(entities, session, consistency);
 		return entities;
 	}
 
 	@Override
 	public <T> void delete(T entity, ConsistencyLevel consistency) {
-		command.delete(entity, session, keySpace, consistency);
+		command.delete(entity, session, consistency);
 	}
 
 	@Override
 	public <T> void delete(Iterable<T> entities, ConsistencyLevel consistency) {
-        command.delete(entities, session, keySpace, consistency);
+        command.delete(entities, session, consistency);
 	}
 
 	@Override
 	public <K> void delete(K key, Class<?> entity, ConsistencyLevel consistency) {
-		command.deleteByKey(key, entity, session, keySpace, consistency);
+		command.deleteByKey(key, entity, session, consistency);
 	}
 
 	@Override
 	public <K, T> void delete(Iterable<K> keys, Class<T> entity, ConsistencyLevel consistency) {
-		command.deleteByKey(keys, entity, session, keySpace, consistency);
+		command.deleteByKey(keys, entity, session, consistency);
 	}
 
 	@Override
@@ -190,35 +191,35 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
 
 	@Override
 	public <T, K> T findOne(K key, Class<T> entity, ConsistencyLevel consistency) {
-		return command.findByKey(key, entity, session, keySpace, consistency);
+		return command.findByKey(key, entity, session, consistency);
 	}
 
 	@Override
 	public <T, K> List<T> findAll(Iterable<K> keys, Class<T> entity, ConsistencyLevel consistency) {
-        return command.findByKeys(keys, entity, session, keySpace, consistency);
+        return command.findByKeys(keys, entity, session, consistency);
 	}
 
 	@Override
 	public <T> List<T> findAll(Class<T> entity, ConsistencyLevel consistency) {
-        return command.findAll(entity, session, keySpace, consistency);
+        return command.findAll(entity, session, consistency);
 	}
 
 	@Override
     public <T, I> List<T> findByIndex(String indexName, I index,
             Class<T> entity, ConsistencyLevel consistency) {
-        return command.findByIndex(indexName, index, entity, session, keySpace,
+        return command.findByIndex(indexName, index, entity, session,
                 consistency);
     }
 
     @Override
     public <T, I> List<T> findByKeyAndIndex(Object key, I index, Class<T> entity) {
-        return command.findByKeyAndIndex(key, index, entity, session, keySpace);
+        return command.findByKeyAndIndex(key, index, entity, session);
     }
 
     @Override
     public <T, I> List<T> findByKeyAndIndex(Object key, I index,
             Class<T> entity, ConsistencyLevel consistency) {
-        return command.findByKeyAndIndex(key, index, entity, session, keySpace,
+        return command.findByKeyAndIndex(key, index, entity, session,
                 consistency);
     }
 
@@ -226,7 +227,7 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
     public <T, I> List<T> findByKeyAndIndexRange(Object key, I indexStart,
             I indexEnd, boolean exclusive, Class<T> entity) {
         return command.findByKeyAndIndexRange(key, indexStart, indexEnd,
-                exclusive, entity, session, keySpace);
+                exclusive, entity, session);
     }
 
     @Override
@@ -234,7 +235,7 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
             I indexEnd, boolean exclusive, Class<T> entity,
             ConsistencyLevel consistency) {
         return command.findByKeyAndIndexRange(key, indexStart, indexEnd,
-                exclusive, entity, session, keySpace, consistency);
+                exclusive, entity, session, consistency);
     }
 
     @Override
@@ -244,6 +245,6 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
 
 	@Override
 	public <T> long count(Class<T> bean, ConsistencyLevel consistency) {
-		return command.count(bean, session, keySpace, consistency);
+		return command.count(bean, session, consistency);
 	}
 }

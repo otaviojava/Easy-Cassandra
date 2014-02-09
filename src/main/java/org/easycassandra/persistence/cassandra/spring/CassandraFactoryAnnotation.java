@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.easycassandra.ClassInformation;
 import org.easycassandra.ClassInformations;
+import org.easycassandra.persistence.cassandra.ClusterInformation;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.datastax.driver.core.Session;
@@ -31,36 +32,13 @@ public class CassandraFactoryAnnotation extends AbstractCassandraFactory
 
 	private List<Class<?>> annotatedClasses;
 
-	/**
-	 * constructor.
-	 * @param host the host
-	 * @param keySpace the keyspace
-	 */
-	public CassandraFactoryAnnotation(String host, String keySpace) {
-		super(host, keySpace);
-	}
-
-	/**
-	 * the constructor.
-	 * @param host the host
-	 * @param keySpace the keyspace
-	 * @param port the port
-	 */
-	public CassandraFactoryAnnotation(String host, String keySpace, int port) {
-		super(host, keySpace, port);
-	}
-	/**
-	 * the constructor.
-	 * @param host the host
-	 * @param keySpace the keyspace
-	 * @param port the port
-	 * @param user the user
-	 * @param password the password
-	 */
-	public CassandraFactoryAnnotation(String host, String keySpace, int port,
-			String user, String password) {
-		super(host, keySpace, port, user, password);
-	}
+	   /**
+     * Constructor to Factory.
+     * @param clusterInformation {@link ClusterInformation}
+     */
+	public CassandraFactoryAnnotation(ClusterInformation clusterInformation) {
+        super(clusterInformation);
+    }
 	/**
 	 * to run all classes on memory.
 	 * @throws Exception wrong
@@ -84,7 +62,7 @@ public class CassandraFactoryAnnotation extends AbstractCassandraFactory
         String familyColumn = classInformation.getNameSchema();
         Session session = getCluster().connect(getKeySpace());
         if (!classInformation.getSchema().equals("")) {
-            getTemplate(getHost(), classInformation.getSchema());
+            getTemplate(classInformation.getSchema());
 
         }
         return fixColumnFamily(session, familyColumn, entity);

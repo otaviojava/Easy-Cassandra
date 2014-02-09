@@ -23,28 +23,11 @@ public interface CassandraFactorySpring extends CassandraFactory {
 
 
 	/**
-	 * returns template using host in the parameter and default keyspace.
-	 * @param host the host
-	 * @return the Cassandra Template {@link CassandraTemplate}
-	 */
-	CassandraTemplate getTemplate(String host);
-
-	/**
 	 * returns the template of cassandra using host and keyspace in the parameters.
-	 * @param host the host
 	 * @param keySpace the keyspace
 	 * @return the Cassandra Template {@link CassandraTemplate}
 	 */
-	CassandraTemplate getTemplate(String host, String keySpace);
-
-	/**
-	 * returns the template of cassandra using host and keyspace in the parameters.
-	 * @param host the host
-	 * @param keySpace the keyspace
-	 * @param port the port
-	 * @return the cassandra template {@link CassandraTemplate}
-	 */
-	CassandraTemplate getTemplate(String host, String keySpace, int port);
+	CassandraTemplate getTemplate(String keySpace);
 
 	/**
 	 * returns template using values default.

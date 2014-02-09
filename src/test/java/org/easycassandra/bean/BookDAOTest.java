@@ -45,7 +45,6 @@ public class BookDAOTest {
         resumeChapter.put(12L, "Backing up and restoring data");
         resumeChapter.put(13L, "Cassandra tools");
         resumeChapter.put(14L, "Troubleshooting");
-        resumeChapter.put(14L, "Troubleshooting");
         resumeChapter.put(15L, "References");
         book.setChapterResume(resumeChapter);
         return book;

@@ -10,6 +10,7 @@ import org.junit.Test;
  */
 public class EngineerDaoTest {
 
+    private static final double SALARY = 34D;
     private PersistenceDao<Engineer, String> dao = new PersistenceDao<Engineer, String>(
             Engineer.class);
     /**
@@ -42,7 +43,7 @@ public class EngineerDaoTest {
         engineer.setEspecialization("computer");
         engineer.setName("Alex");
         engineer.setType("eletric");
-        engineer.setSalary(34D);
+        engineer.setSalary(SALARY);
         return engineer;
     }
 }

@@ -86,15 +86,9 @@ public class FindAllQuery {
     protected QueryBean prepare(QueryBean byKeyBean,
             ClassInformation classInformation) {
 
-        for (FieldInformation field : classInformation.getFields()) {
+        byKeyBean.columns.addAll(CreateColumns.INSTANCE
+                .getColumns(classInformation));
 
-            if (field.isEmbedded()) {
-                byKeyBean = prepare(byKeyBean, field.getSubFields());
-                continue;
-            }
-            byKeyBean.columns.add(field.getName());
-
-        }
         return byKeyBean;
     }
 

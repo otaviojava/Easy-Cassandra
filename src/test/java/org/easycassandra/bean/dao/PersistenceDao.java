@@ -1,8 +1,10 @@
 package org.easycassandra.bean.dao;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.easycassandra.Constants;
+import org.easycassandra.persistence.cassandra.ClusterInformation;
 import org.easycassandra.persistence.cassandra.EasyCassandraManager;
 import org.easycassandra.persistence.cassandra.Persistence;
 
@@ -16,8 +18,14 @@ public class PersistenceDao<T, K> {
 
     private Persistence persistence;
     private Class<T> baseClass;
-    private static EasyCassandraManager easyCassandraManager = new EasyCassandraManager(
-            Constants.HOST, Constants.KEY_SPACE);
+    private static EasyCassandraManager easyCassandraManager;
+
+    {
+        ClusterInformation clusterInformation = new ClusterInformation();
+        clusterInformation.setHosts(Arrays.asList(Constants.HOST));
+        clusterInformation.setKeySpace(Constants.KEY_SPACE);
+        easyCassandraManager = new EasyCassandraManager(clusterInformation);
+    }
     /**
      * the constructor.
      * @param baseClass the class
@@ -25,7 +33,7 @@ public class PersistenceDao<T, K> {
     public PersistenceDao(Class<T> baseClass) {
         this.baseClass = baseClass;
 
-        persistence = easyCassandraManager.getPersistence(Constants.HOST, Constants.KEY_SPACE);
+        persistence = easyCassandraManager.getPersistence();
         easyCassandraManager.addFamilyObject(baseClass, Constants.KEY_SPACE);
 
     }

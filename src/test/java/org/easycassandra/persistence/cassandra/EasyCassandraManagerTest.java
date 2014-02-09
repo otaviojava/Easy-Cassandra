@@ -1,5 +1,6 @@
 package org.easycassandra.persistence.cassandra;
 
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 import javax.persistence.Entity;
@@ -26,8 +27,14 @@ public class EasyCassandraManagerTest {
 
 
     private static final int THREE = 3;
-    private static EasyCassandraManager easyCassandraManager = new EasyCassandraManager(
-            Constants.HOST, Constants.KEY_SPACE_SIMPLE_TEST);
+    private static EasyCassandraManager easyCassandraManager;
+
+    {
+        ClusterInformation clusterInformation = new ClusterInformation();
+        clusterInformation.setHosts(Arrays.asList(Constants.HOST));
+        clusterInformation.setKeySpace(Constants.KEY_SPACE_SIMPLE_TEST);
+        easyCassandraManager = new EasyCassandraManager(clusterInformation);
+    }
     /**
      * run before the test.
      */
@@ -43,7 +50,7 @@ public class EasyCassandraManagerTest {
      */
     @Test
     public void getPersistenceTest() {
-        Assert.assertNotNull(easyCassandraManager.getPersistence(Constants.HOST, "javabahia"));
+        Assert.assertNotNull(easyCassandraManager.getPersistence("javabahia"));
     }
     /**
      * run the test.

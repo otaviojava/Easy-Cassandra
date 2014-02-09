@@ -34,49 +34,21 @@ public class EasyCassandraManager extends AbstractCassandraFactory  {
 
     /**
      * the constructor using default port.
-     * @param host the host
-     * @param keySpace the keySpace
+     * @param clusterInformation {@link ClusterInformation}
      */
-	public EasyCassandraManager(String host, String keySpace) {
-		super(host, keySpace);
-	}
-	/**
-	 * the constructor.
-	 * @param host the host
-	 * @param keySpace the keyspace
-	 * @param port the port
-	 */
-	public EasyCassandraManager(String host, String keySpace, int port) {
-		super(host, keySpace, port);
-	}
-
-	/**
-	 * The constructor using credentials.
-	 * @param host the host
-	 * @param keySpace the keySpace
-	 * @param port the port
-	 * @param user the user
-	 * @param password the password
-	 */
-    public EasyCassandraManager(String host, String keySpace, int port,
-            String user, String password) {
-		super(host, keySpace, port, user, password);
+	public EasyCassandraManager(ClusterInformation clusterInformation) {
+		super(clusterInformation);
 	}
 	 /**
      * Method for create the Cassandra's Client, if the keyspace there is not,if
      * keyspace there isn't, it will created with simple strategy replica and
      * number of fator 3.
-     * @param host
-     *            - place where is Cassandra data base
      * @param keySpace
      *            - the keyspace's name
      * @return the client bridge for the Cassandra data base
      */
-    public Persistence getPersistence(String host, String keySpace) {
+    public Persistence getPersistence(String keySpace) {
         Cluster cluter = getCluster();
-        if (!this.getHost().equals(host)) {
-            cluter = Cluster.builder().addContactPoints(host).build();
-        }
         Session session = cluter.connect();
         verifyKeySpace(keySpace, cluter.connect());
         return new PersistenceSimpleImpl(session, keySpace);
@@ -109,7 +81,7 @@ public class EasyCassandraManager extends AbstractCassandraFactory  {
      * @return the persistence
      */
     public Persistence getPersistence() {
-    	return getPersistence(getHost(), getKeySpace());
+    	return getPersistence(getKeySpace());
     }
 
     /**
@@ -132,7 +104,7 @@ public class EasyCassandraManager extends AbstractCassandraFactory  {
         String familyColumn = classInformation.getNameSchema();
         Session session = getCluster().connect(keySpace);
         if (!classInformation.getSchema().equals("")) {
-            getPersistence(getHost(), classInformation.getSchema());
+            getPersistence(classInformation.getSchema());
 
         }
         classes.add(class1);

@@ -1,5 +1,7 @@
 package org.easycassandra.persistence.cassandra;
 
+import java.util.List;
+
 import org.easycassandra.ReplicaStrategy;
 
 import com.datastax.driver.core.Cluster;
@@ -7,59 +9,21 @@ import com.datastax.driver.core.Session;
 /**
  * Template of CassandraFactory.
  * @author otaviojava
- *
  */
 class AbstractCassandraFactory implements CassandraFactory {
 
     /**
      * Constructor to Factory.
-     * @param host the host
-     * @param keySpace the keySpace
+     * @param clusterInformation {@link ClusterInformation}
      */
-    public AbstractCassandraFactory(String host, String keySpace) {
-		this.hostDefault = host;
-		this.keySpaceDefault = keySpace;
-		this.port = PORT_DEFAULT;
+    public AbstractCassandraFactory(ClusterInformation clusterInformation) {
+        this.clusterInformation = clusterInformation;
 		initConection();
 	}
-    /**
-     * the Constructor to factory with port.
-     * @param host the host
-     * @param keySpace the keySpace
-     * @param port the port
-     */
-    public AbstractCassandraFactory(String host, String keySpace, int port) {
-        this.hostDefault = host;
-        this.keySpaceDefault = keySpace;
-        this.port = port;
-        initConection();
-    }
 
-    /**
-     * the Constructor to factory with port.
-     * @param host the host
-     * @param keySpace the keySpace
-     * @param port the port
-     * @param user the user
-     * @param password the password
-     */
-    public AbstractCassandraFactory(String host, String keySpace, int port,
-            String user, String password) {
-		this.hostDefault = host;
-		this.keySpaceDefault = keySpace;
-		this.port = port;
-		initConectionCredentials(user, password);
-	}
-
-	private static final int PORT_DEFAULT = 9042;
+    private ClusterInformation clusterInformation;
 
     private Cluster cluter;
-
-    private String hostDefault;
-
-    private String keySpaceDefault;
-
-    private int port;
 
 
     protected Cluster getCluster() {
@@ -67,79 +31,35 @@ class AbstractCassandraFactory implements CassandraFactory {
     }
 
     @Override
-    public String getHost() {
-    	return hostDefault;
+    public List<String> getHosts() {
+    	return clusterInformation.getHosts();
     }
 
     @Override
     public String getKeySpace() {
-		return keySpaceDefault;
+		return clusterInformation.getKeySpace();
 	}
 
     @Override
     public int getPort() {
-    	return port;
-    }
-
-    @Override
-    public Session getSession(String host) {
-    	return verifyHost(host, port).connect();
+    	return clusterInformation.getPort();
     }
 
     @Override
     public Session getSession() {
-    	return verifyHost(hostDefault, port).connect();
+    	return cluter.connect();
     }
-    @Override
-    public Session getSession(String host, int port) {
-    	return createSession(host, port, keySpaceDefault);
-    }
-
-	@Override
-	public Session getSession(String host, int port, String user,
-			String password) {
-
-    	return getSession(host, port, keySpaceDefault, user, password);
-	}
-	@Override
-	public Session getSession(String host, int port, String keySpace,
-			String user, String password) {
-		Session session = verifyHost(host, port, user, password).connect();
-		new FixKeySpace().verifyKeySpace(keySpaceDefault, session);
-    	return session;
-	}
-
-    protected Session createSession(String host, int port, String keySpace) {
-    	new FixKeySpace().verifyKeySpace(keySpace, verifyHost(host, port).connect());
-    	return verifyHost(host, port).connect();
-    }
-
-    /**
-     * verifies if the host is equals host exists,
-     * if different will create a other new cluster.
-     * @param host
-     */
-	protected Cluster verifyHost(String host, int port) {
-		if (!this.hostDefault.equals(host)) {
-            return Cluster.builder().withPort(port).addContactPoints(host)
-                    .build();
-        }
-		return cluter;
-	}
-
-	protected Cluster verifyHost(String host, int port, String user, String password) {
-		if (!this.hostDefault.equals(host)) {
-            return Cluster.builder().withPort(port).addContactPoints(host)
-                    .withCredentials(user, password).build();
-        }
-		return cluter;
-	}
 
     protected boolean fixColumnFamily(Session session, String familyColumn,
             Class<?> class1) {
 		return new FixColumnFamily().verifyColumnFamily(session, familyColumn, class1);
 	}
 
+    @Override
+    public void createKeySpace(String keySpace,
+            ReplicaStrategy replicaStrategy, int factor) {
+        verifyKeySpace(keySpace, getSession(), replicaStrategy, factor);
+    }
 
     protected void verifyKeySpace(String keySpace, Session session,
             ReplicaStrategy replicaStrategy, int factor) {
@@ -153,16 +73,8 @@ class AbstractCassandraFactory implements CassandraFactory {
 	 * init the default connection.
 	 */
     private  void initConection() {
-        cluter = Cluster.builder().withPort(port).addContactPoints(hostDefault)
-                .build();
-        new FixKeySpace().verifyKeySpace(keySpaceDefault, getSession());
-    }
-
-    private void initConectionCredentials(String user, String password) {
-        cluter = Cluster.builder().withPort(port)
-                .withCredentials(user, password).addContactPoints(hostDefault)
-                .build();
-        new FixKeySpace().verifyKeySpace(keySpaceDefault, getSession());
+        cluter = clusterInformation.build();
+        new FixKeySpace().verifyKeySpace(clusterInformation.getKeySpace(), getSession());
     }
 
 }

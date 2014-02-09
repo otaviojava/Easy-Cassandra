@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.easycassandra.ClassInformation;
 import org.easycassandra.ClassInformations;
+import org.easycassandra.persistence.cassandra.ClusterInformation;
 
 import com.datastax.driver.core.Session;
 
@@ -29,35 +30,11 @@ import com.datastax.driver.core.Session;
 public class CassandraFactoryDynamically extends AbstractCassandraFactory {
 
     /**
-     * Constructor.
-     * @param host the host
-     * @param keySpace the keyspace
+     * Constructor to Factory.
+     * @param clusterInformation {@link ClusterInformation}
      */
-    public CassandraFactoryDynamically(String host, String keySpace) {
-		super(host, keySpace);
-	}
-
-    /**
-     * Constructor.
-     * @param host the host
-     * @param keySpace the key space
-     * @param port the port
-     */
-	public CassandraFactoryDynamically(String host, String keySpace, int port) {
-		super(host, keySpace, port);
-	}
-
-	/**
-	 * the constructor.
-	 * @param host the host
-	 * @param keySpace the keyspace
-	 * @param port the port
-	 * @param user the user
-	 * @param password the password
-	 */
-    public CassandraFactoryDynamically(String host, String keySpace, int port,
-            String user, String password) {
-		super(host, keySpace, port, user, password);
+    public CassandraFactoryDynamically(ClusterInformation clusterInformation) {
+		super(clusterInformation);
 	}
 
 	/**
@@ -79,7 +56,7 @@ public class CassandraFactoryDynamically extends AbstractCassandraFactory {
         String familyColumn = classInformation.getNameSchema();
         Session session = getCluster().connect(keySpace);
         if (!classInformation.getSchema().equals("")) {
-            getTemplate(getHost(), classInformation.getSchema());
+            getTemplate(classInformation.getSchema());
 
         }
         classes.add(class1);
