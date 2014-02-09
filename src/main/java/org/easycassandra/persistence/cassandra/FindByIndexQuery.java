@@ -48,7 +48,7 @@ class FindByIndexQuery extends FindByKeyQuery {
      */
 	static <T> void checkFieldNull(Class<T> bean, List<FieldInformation> fields) {
 		if (fields.isEmpty()) {
-			StringBuffer erro = new StringBuffer();
+			StringBuilder erro = new StringBuilder();
 			erro.append("No found some field with @org.easycassandra.Index within ");
 			erro.append(bean.getName()).append(" class.");
 			throw new IndexProblemException(erro.toString());

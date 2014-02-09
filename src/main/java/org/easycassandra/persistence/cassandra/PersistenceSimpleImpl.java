@@ -16,6 +16,8 @@ package org.easycassandra.persistence.cassandra;
 
 import java.util.List;
 
+import org.easycassandra.ClassInformations;
+
 import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.Session;
 
@@ -225,6 +227,12 @@ public class PersistenceSimpleImpl implements Persistence {
     @Override
     public <T> Long count(Class<T> bean, ConsistencyLevel consistency) {
         return command.count(bean, session, consistency);
+    }
+
+    @Override
+    public <T> SelectBuilder<T> select(Class<T> classBean) {
+        return new SelectBuilderImpl<>(session,
+                ClassInformations.INSTACE.getClass(classBean), keySpace);
     }
 
 

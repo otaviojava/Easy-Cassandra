@@ -16,8 +16,11 @@ package org.easycassandra.persistence.cassandra.spring;
 
 import java.util.List;
 
+import org.easycassandra.ClassInformations;
 import org.easycassandra.persistence.cassandra.CassandraFactory;
 import org.easycassandra.persistence.cassandra.RunCassandraCommand;
+import org.easycassandra.persistence.cassandra.SelectBuilder;
+import org.easycassandra.persistence.cassandra.SelectBuilderImpl;
 
 import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.Session;
@@ -247,4 +250,10 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
 	public <T> long count(Class<T> bean, ConsistencyLevel consistency) {
 		return command.count(bean, session, consistency);
 	}
+
+    @Override
+    public <T> SelectBuilder<T> select(Class<T> classBean) {
+        return new SelectBuilderImpl<T>(session,
+                ClassInformations.INSTACE.getClass(classBean), keySpace);
+    }
 }

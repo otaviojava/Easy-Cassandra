@@ -38,6 +38,8 @@ import com.datastax.driver.core.exceptions.InvalidQueryException;
  */
 class FixColumnFamily {
 
+    private static final String QUERY_PRIMARY_KEY = " PRIMARY KEY (";
+
     /**
      * verify if exist column family and try to create.
      * @param session
@@ -193,7 +195,7 @@ class FixColumnFamily {
         if (keyField == null) {
             createErro(classInformation);
         }
-        cqlCreateTable.append(" PRIMARY KEY (")
+        cqlCreateTable.append(QUERY_PRIMARY_KEY)
                 .append(keyField.getName())
                 .append(") );");
     }
@@ -207,7 +209,7 @@ class FixColumnFamily {
     private void addComlexID(ClassInformation classInformation, StringBuilder cqlCreateTable) {
 
         FieldInformation keyField = classInformation.getKeyInformation();
-        cqlCreateTable.append(" PRIMARY KEY (");
+        cqlCreateTable.append(QUERY_PRIMARY_KEY);
         boolean firstTime = true;
         if (keyField == null) {
             createErro(classInformation);

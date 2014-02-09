@@ -16,6 +16,8 @@ package org.easycassandra.persistence.cassandra.spring;
 
 import java.util.List;
 
+import org.easycassandra.persistence.cassandra.SelectBuilder;
+
 import com.datastax.driver.core.ConsistencyLevel;
 
 
@@ -397,5 +399,14 @@ public interface CassandraTemplate {
      * @return the value of entities on column family
      */
     <T> long count(Class<T> bean, ConsistencyLevel consistency);
+
+    /**
+     * create the selectbuilder.
+     * {@link SelectBuilder}
+     * @param classBean the class with column family
+     * @param <T> kind of class
+     * @return the builder
+     */
+    <T> SelectBuilder<T> select(Class<T> classBean);
 
 }

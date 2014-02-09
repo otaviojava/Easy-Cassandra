@@ -157,6 +157,7 @@ public class FieldInformation implements Comparable<FieldInformation> {
                     .getGenericKeyValue(field);
                 this.key = keyValueClass.getKeyClass();
                 this.value = keyValueClass.getValueClass();
+                break;
             default:
                 break;
         }
@@ -173,6 +174,7 @@ public class FieldInformation implements Comparable<FieldInformation> {
                 .getGenericKeyValue(field);
                 this.key = keyValueClass.getKeyClass();
                 this.value = keyValueClass.getValueClass();
+                break;
             default:
                 break;
         }

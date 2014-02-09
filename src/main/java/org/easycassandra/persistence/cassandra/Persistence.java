@@ -291,5 +291,13 @@ public interface Persistence  {
      * @return the value of entities on column family
      */
     <T> Long count(Class<T> bean, ConsistencyLevel consistency);
+    /**
+     * create the selectbuilder.
+     * {@link SelectBuilder}
+     * @param classBean the class with column family
+     * @param <T> kind of class
+     * @return the builder
+     */
+    <T> SelectBuilder<T> select(Class<T> classBean);
 }
 
