@@ -3,6 +3,13 @@ Easy-Cassandra
 Easily programming with this framework, the Easy Cassandra.
 The EasyCassandra uses the Cassandra Driver and has as main objective to be a simple ORM( Object relational manager). 
 
+Version: 2.0.1
+* read faster
+* write faster
+* constructor factory with just one class instead many parameters
+* SelectBuilder
+
+
 Version: 2.0.0
 * Complex rowkey (a key with tow or more keyrow).
 * Map some collections (java.util.List, java.util.Set, java.util.Map).
