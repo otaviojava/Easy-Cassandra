@@ -7,6 +7,7 @@ import org.easycassandra.Constants;
 import org.easycassandra.persistence.cassandra.ClusterInformation;
 import org.easycassandra.persistence.cassandra.EasyCassandraManager;
 import org.easycassandra.persistence.cassandra.Persistence;
+import org.easycassandra.persistence.cassandra.SelectBuilder;
 
 /**
  * Base to persistence.
@@ -144,6 +145,13 @@ public class PersistenceDao<T, K> {
      */
     public boolean executeUpdateCql(String string) {
         return persistence.executeUpdate(string);
+    }
+    /**
+     * call select.
+     * @return select
+     */
+    public SelectBuilder<T> select() {
+        return persistence.select(baseClass);
     }
 
 }

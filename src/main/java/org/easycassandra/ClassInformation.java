@@ -3,6 +3,8 @@ package org.easycassandra;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * data structure that contains information of the class.
@@ -23,6 +25,8 @@ public class ClassInformation {
     private FieldInformation keyInformation;
 
     private Class<?> classInstance;
+
+    private Map<String, String> fieldColumnMap;
 
     private boolean complexKey;
 
@@ -70,7 +74,21 @@ public class ClassInformation {
         this.classInstance = clazz;
         this.fields = ColumnUtil.INTANCE.listFields(clazz);
         this.indexFields = ColumnUtil.INTANCE.getIndexFields(clazz);
+        this.fieldColumnMap = new TreeMap<>();
+        runFeildColumnMap(this);
         Collections.sort(indexFields);
+    }
+
+    private void runFeildColumnMap(ClassInformation classInformation) {
+        for (FieldInformation field : classInformation.getFields()) {
+
+            if (field.isEmbedded()) {
+                runFeildColumnMap(field.getSubFields());
+                continue;
+            }
+            fieldColumnMap.put(field.getField().getName(), field.getName());
+
+        }
     }
 
     private void findKey(Class<?> clazz) {
@@ -116,7 +134,14 @@ public class ClassInformation {
         }
 
     }
-
+    /**
+     * return the column's name from field name.
+     * @param fieldName the property on the class
+     * @return the column name on Cassandra to this field
+     */
+    public String toColumn(String fieldName) {
+        return fieldColumnMap.get(fieldName);
+    }
     /**
      * find out a field on the field indx by index.
      * @param indexName the indexName
@@ -129,6 +154,11 @@ public class ClassInformation {
         }
 
         return null;
+    }
+    @Override
+    public String toString() {
+
+        return nameSchema;
     }
 
 }

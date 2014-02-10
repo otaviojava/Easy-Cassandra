@@ -45,37 +45,38 @@ public class SelectBuilderImpl <T> implements SelectBuilder<T> {
 
     @Override
     public SelectBuilder<T> eq(String name, Object value) {
-        select.where(QueryBuilder.eq(name, value));
+        select.where(QueryBuilder.eq(classBean.toColumn(name), value));
         return this;
     }
 
     @Override
     public SelectBuilder<T> in(String name, Object... values) {
-        select.where(QueryBuilder.in(name, values));
+        select.where(QueryBuilder.in(classBean.toColumn(name), values));
         return this;
     }
 
     @Override
     public SelectBuilder<T> lt(String name, Object value) {
-        select.where(QueryBuilder.lt(name, value));
+
+        select.where(QueryBuilder.lt(classBean.toColumn(name), value));
         return this;
     }
 
     @Override
     public SelectBuilder<T> lte(String name, Object value) {
-        select.where(QueryBuilder.lte(name, value));
+        select.where(QueryBuilder.lte(classBean.toColumn(name), value));
         return this;
     }
 
     @Override
     public SelectBuilder<T> gt(String name, Object value) {
-        select.where(QueryBuilder.gt(name, value));
+        select.where(QueryBuilder.gt(classBean.toColumn(name), value));
         return this;
     }
 
     @Override
     public SelectBuilder<T> gte(String name, Object value) {
-        select.where(QueryBuilder.gte(name, value));
+        select.where(QueryBuilder.gte(classBean.toColumn(name), value));
         return this;
     }
 
@@ -99,13 +100,13 @@ public class SelectBuilderImpl <T> implements SelectBuilder<T> {
 
     @Override
     public SelectBuilder<T> asc(String name) {
-        select.orderBy(QueryBuilder.asc(name));
+        select.orderBy(QueryBuilder.asc(classBean.toColumn(name)));
         return this;
     }
 
     @Override
     public SelectBuilder<T> desc(String name) {
-        select.orderBy(QueryBuilder.desc(name));
+        select.orderBy(QueryBuilder.desc(classBean.toColumn(name)));
         return this;
     }
 

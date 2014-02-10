@@ -183,4 +183,9 @@ public class FieldInformation implements Comparable<FieldInformation> {
     public int compareTo(FieldInformation other) {
         return name.compareTo(other.name);
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }
