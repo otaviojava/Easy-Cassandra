@@ -141,7 +141,7 @@ public interface SelectBuilder<T> {
          * @param policy the retry policy to use for this query.
          * @return this
          */
-    SelectBuilder<T> withFetchSize(RetryPolicy policy);
+    SelectBuilder<T> withRetryPolicy(RetryPolicy policy);
     /**
      * run the query.
      * @return list by query

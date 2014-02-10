@@ -144,7 +144,7 @@ public class SelectBuilderImpl <T> implements SelectBuilder<T> {
     }
 
     @Override
-    public SelectBuilder<T> withFetchSize(RetryPolicy policy) {
+    public SelectBuilder<T> withRetryPolicy(RetryPolicy policy) {
         select.setRetryPolicy(policy);
         return this;
     }
