@@ -15,6 +15,16 @@ public class InsertBuilderImpl<T> implements InsertBuilder<T> {
     private Insert insert;
     private Session session;
 
+    /**
+     * Constructor.
+     * @param insert the insert
+     * @param session the session
+     */
+    public InsertBuilderImpl(Insert insert, Session session) {
+        this.insert = insert;
+        this.session = session;
+    }
+
     @Override
     public InsertBuilder<T> withTracing(boolean tracing) {
         if (tracing) {

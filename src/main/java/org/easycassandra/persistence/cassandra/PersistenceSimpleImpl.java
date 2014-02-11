@@ -16,10 +16,14 @@ package org.easycassandra.persistence.cassandra;
 
 import java.util.List;
 
+import org.easycassandra.ClassInformation;
 import org.easycassandra.ClassInformations;
+import org.easycassandra.ClassInformation.KeySpaceInformation;
 
 import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.querybuilder.Insert;
+import com.datastax.driver.core.querybuilder.QueryBuilder;
 
 /**
  * Class to persist information in cassandra database.
@@ -230,10 +234,38 @@ public class PersistenceSimpleImpl implements Persistence {
     }
 
     @Override
-    public <T> SelectBuilder<T> select(Class<T> classBean) {
+    public <T> SelectBuilder<T> selectBuilder(Class<T> classBean) {
         return new SelectBuilderImpl<>(session,
                 ClassInformations.INSTACE.getClass(classBean), keySpace);
     }
+
+    @Override
+    public <T> InsertBuilder<T> insertBuilder(Class<T> classBean) {
+        ClassInformation classInformation = ClassInformations.INSTACE.getClass(classBean);
+        KeySpaceInformation key = classInformation.getKeySpace(keySpace);
+        Insert insert = QueryBuilder.insertInto(key.getKeySpace(), key.getColumnFamily());
+        return new InsertBuilderImpl<>(insert, session);
+    }
+
+    @Override
+    public <T> InsertBuilder<T> insertBuilder(T classBean) {
+
+        return new InsertBuilderImpl<>(command.createInsertStatment(classBean),
+                session);
+    }
+
+    @Override
+    public <T> UpdateBuilder<T> updateBuilder(Class<T> classBean) {
+        ClassInformation classInformation = ClassInformations.INSTACE.getClass(classBean);
+        return new UpdateBuilderImpl<>(session, classInformation, keySpace);
+    }
+
+    @Override
+    public <T> DeleteBuilder<T> deleteBuilder(Class<T> classBean) {
+        ClassInformation classInformation = ClassInformations.INSTACE.getClass(classBean);
+        return new DeleteBuilderImpl<>(session, classInformation, keySpace);
+    }
+
 
 
 

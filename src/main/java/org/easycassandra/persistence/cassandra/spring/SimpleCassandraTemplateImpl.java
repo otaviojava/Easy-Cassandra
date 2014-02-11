@@ -16,14 +16,24 @@ package org.easycassandra.persistence.cassandra.spring;
 
 import java.util.List;
 
+import org.easycassandra.ClassInformation;
 import org.easycassandra.ClassInformations;
+import org.easycassandra.ClassInformation.KeySpaceInformation;
 import org.easycassandra.persistence.cassandra.CassandraFactory;
+import org.easycassandra.persistence.cassandra.DeleteBuilder;
+import org.easycassandra.persistence.cassandra.DeleteBuilderImpl;
+import org.easycassandra.persistence.cassandra.InsertBuilder;
+import org.easycassandra.persistence.cassandra.InsertBuilderImpl;
 import org.easycassandra.persistence.cassandra.RunCassandraCommand;
 import org.easycassandra.persistence.cassandra.SelectBuilder;
 import org.easycassandra.persistence.cassandra.SelectBuilderImpl;
+import org.easycassandra.persistence.cassandra.UpdateBuilder;
+import org.easycassandra.persistence.cassandra.UpdateBuilderImpl;
 
 import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.querybuilder.Insert;
+import com.datastax.driver.core.querybuilder.QueryBuilder;
 
 /**
  * Class to persist information in cassandra database.
@@ -252,8 +262,35 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
 	}
 
     @Override
-    public <T> SelectBuilder<T> select(Class<T> classBean) {
+    public <T> SelectBuilder<T> selectBuilder(Class<T> classBean) {
         return new SelectBuilderImpl<T>(session,
                 ClassInformations.INSTACE.getClass(classBean), keySpace);
     }
+    @Override
+    public <T> InsertBuilder<T> insertBuilder(Class<T> classBean) {
+        ClassInformation classInformation = ClassInformations.INSTACE.getClass(classBean);
+        KeySpaceInformation key = classInformation.getKeySpace(keySpace);
+        Insert insert = QueryBuilder.insertInto(key.getKeySpace(), key.getColumnFamily());
+        return new InsertBuilderImpl<>(insert, session);
+    }
+
+    @Override
+    public <T> InsertBuilder<T> insertBuilder(T classBean) {
+
+        return new InsertBuilderImpl<>(command.createInsertStatment(classBean),
+                session);
+    }
+
+    @Override
+    public <T> UpdateBuilder<T> updateBuilder(Class<T> classBean) {
+        ClassInformation classInformation = ClassInformations.INSTACE.getClass(classBean);
+        return new UpdateBuilderImpl<>(session, classInformation, keySpace);
+    }
+
+    @Override
+    public <T> DeleteBuilder<T> deleteBuilder(Class<T> classBean) {
+        ClassInformation classInformation = ClassInformations.INSTACE.getClass(classBean);
+        return new DeleteBuilderImpl<>(session, classInformation, keySpace);
+    }
+
 }

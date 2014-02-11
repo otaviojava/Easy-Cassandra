@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.easycassandra.ClassInformation;
+import org.easycassandra.ClassInformation.KeySpaceInformation;
+
 import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.policies.RetryPolicy;
@@ -18,6 +21,20 @@ public class UpdateBuilderImpl<T> implements UpdateBuilder<T> {
 
     private Update update;
     private Session session;
+
+    /**
+     * constructor.
+     * @param session the sesion
+     * @param classBean the class bean information
+     * @param keySpace the keyspace
+     */
+    public UpdateBuilderImpl(Session session, ClassInformation classBean, String keySpace) {
+        this.session = session;
+        KeySpaceInformation keySpaceInformation = classBean.getKeySpace(keySpace);
+        update = QueryBuilder.update(keySpaceInformation.getKeySpace(),
+                keySpaceInformation.getColumnFamily());
+
+    }
 
     @Override
     public UpdateBuilder<T> withTracing(boolean tracing) {

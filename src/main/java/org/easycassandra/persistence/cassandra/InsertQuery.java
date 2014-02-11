@@ -26,7 +26,6 @@ import org.easycassandra.util.ReflectionUtil;
 
 import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.Session;
-import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.querybuilder.Insert;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 
@@ -56,7 +55,7 @@ class InsertQuery {
     }
 
 
-    private <T> Statement createStatment(T bean, ConsistencyLevel consistency) {
+    public <T> Insert createStatment(T bean, ConsistencyLevel consistency) {
         ClassInformation classInformation = ClassInformations.INSTACE.getClass(bean.getClass());
         isKeyNull(bean, classInformation);
         KeySpaceInformation key = classInformation.getKeySpace(keySpace);

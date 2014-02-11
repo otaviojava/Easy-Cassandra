@@ -151,7 +151,7 @@ public class PersistenceDao<T, K> {
      * @return select
      */
     public SelectBuilder<T> select() {
-        return persistence.select(baseClass);
+        return persistence.selectBuilder(baseClass);
     }
 
 }

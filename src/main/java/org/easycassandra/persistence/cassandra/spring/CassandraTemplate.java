@@ -16,7 +16,10 @@ package org.easycassandra.persistence.cassandra.spring;
 
 import java.util.List;
 
+import org.easycassandra.persistence.cassandra.DeleteBuilder;
+import org.easycassandra.persistence.cassandra.InsertBuilder;
 import org.easycassandra.persistence.cassandra.SelectBuilder;
+import org.easycassandra.persistence.cassandra.UpdateBuilder;
 
 import com.datastax.driver.core.ConsistencyLevel;
 
@@ -407,6 +410,36 @@ public interface CassandraTemplate {
      * @param <T> kind of class
      * @return the builder
      */
-    <T> SelectBuilder<T> select(Class<T> classBean);
+    <T> SelectBuilder<T> selectBuilder(Class<T> classBean);
+
+    /**
+     * create the insert builder.
+     * @param classBean the class
+     * @param <T> the kind of class
+     * @return the builder
+     */
+    <T> InsertBuilder<T> insertBuilder(Class<T> classBean);
+    /**
+     * create the insert builder with fields no null on the object.
+      * @param classBean the class
+     *  @param <T> the kind of class
+     * @return the builder
+     */
+    <T> InsertBuilder<T> insertBuilder(T classBean);
+
+    /**
+     * create the insert builder with fields no null on the object.
+      * @param classBean the class
+     *  @param <T> the kind of class
+     * @return the builder
+     */
+    <T> UpdateBuilder<T> updateBuilder(Class<T> classBean);
+    /**
+     * create the insert builder with fields no null on the object.
+      * @param classBean the class
+     *  @param <T> the kind of class
+     * @return the builder
+     */
+    <T> DeleteBuilder<T> deleteBuilder(Class<T> classBean);
 
 }

@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.querybuilder.Insert;
 
 /**
  * Facade to run Cassandra.
@@ -442,6 +443,15 @@ public class RunCassandraCommand {
         }
 
         return beans;
+    }
+    /**
+     * create statment to insert.
+     * @param bean the bean
+     * @param <T> the kind of class
+     * @return the insert
+     */
+    public <T> Insert createInsertStatment(T bean) {
+        return insertQuery.createStatment(bean, ConsistencyLevel.ONE);
     }
 
     /**
