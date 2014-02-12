@@ -1,5 +1,7 @@
 package org.easycassandra.persistence.cassandra;
 
+import org.easycassandra.ClassInformation;
+
 import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.policies.RetryPolicy;
@@ -14,15 +16,18 @@ public class InsertBuilderImpl<T> implements InsertBuilder<T> {
 
     private Insert insert;
     private Session session;
+    private ClassInformation classBean;
 
     /**
      * Constructor.
      * @param insert the insert
      * @param session the session
+     * @param classBean the class bean
      */
-    public InsertBuilderImpl(Insert insert, Session session) {
+    public InsertBuilderImpl(Insert insert, Session session, ClassInformation classBean) {
         this.insert = insert;
         this.session = session;
+        this.classBean = classBean;
     }
 
     @Override
@@ -84,31 +89,36 @@ public class InsertBuilderImpl<T> implements InsertBuilder<T> {
     }
     @Override
     public InsertBuilder<T> value(String name, Object value) {
-        insert.value(name, value);
+        insert.value(classBean.toColumn(name), value);
         return this;
     }
     @Override
     public InsertBuilder<T> enumValue(String name, Enum<?> value) {
-        insert.value(name, value.ordinal());
+        insert.value(classBean.toColumn(name), value.ordinal());
         return this;
     }
     @Override
     public InsertBuilder<T> customValue(String name, Object value) {
-        return customValue(name, value, new Customizable.DefaultCustmomizable());
+        return customValue(classBean.toColumn(name), value,
+                new Customizable.DefaultCustmomizable());
     }
     @Override
     public InsertBuilder<T> customValue(String name, Object value, Customizable customizable) {
-        insert.value(name, customizable.read(value));
+        insert.value(classBean.toColumn(name), customizable.read(value));
         return this;
     }
     @Override
     public InsertBuilder<T> values(String[] names, Object[] values) {
-        insert.values(names, values);
+        insert.values(classBean.toColumn(names), values);
         return this;
     }
     @Override
     public boolean execute() {
         return session.execute(insert) != null;
+    }
+    @Override
+    public boolean executeAsync() {
+        return session.executeAsync(insert) != null;
     }
 
     @Override

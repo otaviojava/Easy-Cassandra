@@ -1,6 +1,11 @@
 package org.easycassandra.bean.query;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 
@@ -11,7 +16,7 @@ import org.easycassandra.Index;
  * @author otaviojava
  */
 @Entity(name = "simplequerybuilder")
-public class SimpleQueryBuilder {
+public class SimpleBean {
 
     @EmbeddedId
     private SimpleID id = new SimpleID();
@@ -22,6 +27,18 @@ public class SimpleQueryBuilder {
 
     @Column(name = "valuebuilder")
     private Double value;
+
+    @ElementCollection
+    @Column(name = "mapbuilder")
+    private Map<String, String> map;
+
+    @ElementCollection
+    @Column(name = "listbuilder")
+    private List<String> list;
+
+    @ElementCollection
+    @Column(name = "setbuilder")
+    private Set<String> set;
 
     public SimpleID getId() {
         return id;
@@ -45,6 +62,30 @@ public class SimpleQueryBuilder {
 
     public void setValue(Double value) {
         this.value = value;
+    }
+
+    public Map<String, String> getMap() {
+        return map;
+    }
+
+    public void setMap(Map<String, String> map) {
+        this.map = map;
+    }
+
+    public List<String> getList() {
+        return list;
+    }
+
+    public void setList(List<String> list) {
+        this.list = list;
+    }
+
+    public Set<String> getSet() {
+        return set;
+    }
+
+    public void setSet(Set<String> set) {
+        this.set = set;
     }
 
 

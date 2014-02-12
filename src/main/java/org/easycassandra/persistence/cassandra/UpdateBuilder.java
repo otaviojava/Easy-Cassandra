@@ -215,4 +215,10 @@ public interface UpdateBuilder<T> {
      */
     boolean execute();
 
+    /**
+     * Executes the provided query asynchronously.
+     * @return if run with success
+     */
+    boolean executeAsync();
+
 }

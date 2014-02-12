@@ -5,9 +5,12 @@ import java.util.List;
 
 import org.easycassandra.Constants;
 import org.easycassandra.persistence.cassandra.ClusterInformation;
+import org.easycassandra.persistence.cassandra.DeleteBuilder;
 import org.easycassandra.persistence.cassandra.EasyCassandraManager;
+import org.easycassandra.persistence.cassandra.InsertBuilder;
 import org.easycassandra.persistence.cassandra.Persistence;
 import org.easycassandra.persistence.cassandra.SelectBuilder;
+import org.easycassandra.persistence.cassandra.UpdateBuilder;
 
 /**
  * Base to persistence.
@@ -152,6 +155,36 @@ public class PersistenceDao<T, K> {
      */
     public SelectBuilder<T> select() {
         return persistence.selectBuilder(baseClass);
+    }
+    /**
+     * call the update bean.
+     * @return update
+     */
+    public UpdateBuilder<T> update() {
+        return persistence.updateBuilder(baseClass);
+    }
+    /**
+     * call the insert bean.
+     * @return insert
+     */
+    public InsertBuilder<T> insertBuilder() {
+        return persistence.insertBuilder(baseClass);
+    }
+    /**
+     * call the insert bean.
+     * @param bean the bean
+     * @return insert
+     */
+    public InsertBuilder<T> insertBuilder(T bean) {
+        return persistence.insertBuilder(bean);
+    }
+    /**
+     *call the delete.
+     * @param columnNames the column names
+     * @return delete
+     */
+    public DeleteBuilder<T> deleteBuilder(String... columnNames) {
+        return persistence.deleteBuilder(baseClass, columnNames);
     }
 
 }

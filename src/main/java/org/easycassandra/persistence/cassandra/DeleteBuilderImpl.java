@@ -23,6 +23,8 @@ public class DeleteBuilderImpl<T> implements DeleteBuilder<T> {
     private Delete delete;
     private Session session;
 
+    private ClassInformation classBean;
+
 
     /**
      * Constructor.
@@ -37,9 +39,11 @@ public class DeleteBuilderImpl<T> implements DeleteBuilder<T> {
         KeySpaceInformation keySpaceInformation = classBean
                 .getKeySpace(keySpace);
 
-        delete = QueryBuilder.delete(columnNames).from(
-                keySpaceInformation.getKeySpace(),
+        this.classBean = classBean;
+
+        delete = QueryBuilder.delete().from(keySpaceInformation.getKeySpace(),
                 keySpaceInformation.getColumnFamily());
+
 
     }
 
@@ -99,13 +103,17 @@ public class DeleteBuilderImpl<T> implements DeleteBuilder<T> {
         return session.execute(delete) != null;
     }
     @Override
+    public boolean executeAsync() {
+        return session.executeAsync(delete) != null;
+    }
+    @Override
     public DeleteBuilder<T> whereEq(String name, Object value) {
-        delete.where(QueryBuilder.eq(name, value));
+        delete.where(QueryBuilder.eq(classBean.toColumn(name), value));
         return this;
     }
     @Override
     public DeleteBuilder<T> whereIn(String name, Object... values) {
-        delete.where(QueryBuilder.eq(name, values));
+        delete.where(QueryBuilder.eq(classBean.toColumn(name), values));
         return this;
     }
 

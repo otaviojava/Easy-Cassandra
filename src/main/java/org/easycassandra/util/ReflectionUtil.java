@@ -15,6 +15,7 @@
 package org.easycassandra.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,16 +37,7 @@ public enum ReflectionUtil {
     public  Object getMethod(Object object, Field field) {
 
         try {
-            boolean isAccessibleCopy = field.isAccessible();
-            if (isAccessibleCopy) {
-                return field.get(object);
-            } else {
-                field.setAccessible(true);
-                Object value = field.get(object);
-                field.setAccessible(isAccessibleCopy);
-                return value;
-            }
-
+            return field.get(object);
         } catch (Exception exception) {
             Logger.getLogger(ReflectionUtil.class.getName()).log(Level.SEVERE, null, exception);
         }
@@ -61,14 +53,9 @@ public enum ReflectionUtil {
      */
     public boolean setMethod(Object object, Field field, Object value) {
         try {
-            boolean isAccessibleCopy = field.isAccessible();
-            if (isAccessibleCopy) {
-                field.set(object, value);
-            } else {
-                field.setAccessible(true);
-                field.set(object, value);
-                field.setAccessible(isAccessibleCopy);
-            }
+
+            field.set(object, value);
+
         } catch (Exception exception) {
             Logger.getLogger(ReflectionUtil.class.getName()).log(Level.SEVERE, null, exception);
             return false;
@@ -143,5 +130,19 @@ public enum ReflectionUtil {
 			return valueClass;
 		}
 
+    }
+    /**
+     *  Make the given field accessible, explicitly setting it accessible
+     *  if necessary. The setAccessible(true) method is only
+     *  called when actually necessary, to avoid unnecessary
+     *   conflicts with a JVM SecurityManager (if active).
+     *  @param field field the field to make accessible
+     */
+    public void makeAccessible(Field field) {
+        if ((!Modifier.isPublic(field.getModifiers()) || !Modifier
+                .isPublic(field.getDeclaringClass().getModifiers()))
+                && !field.isAccessible()) {
+            field.setAccessible(true);
+        }
     }
 }

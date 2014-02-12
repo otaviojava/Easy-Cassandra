@@ -271,14 +271,15 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
         ClassInformation classInformation = ClassInformations.INSTACE.getClass(classBean);
         KeySpaceInformation key = classInformation.getKeySpace(keySpace);
         Insert insert = QueryBuilder.insertInto(key.getKeySpace(), key.getColumnFamily());
-        return new InsertBuilderImpl<>(insert, session);
+        return new InsertBuilderImpl<>(insert, session, classInformation);
     }
 
     @Override
     public <T> InsertBuilder<T> insertBuilder(T classBean) {
-
+        ClassInformation classInformation = ClassInformations.INSTACE
+                .getClass(classBean.getClass());
         return new InsertBuilderImpl<>(command.createInsertStatment(classBean),
-                session);
+                session, classInformation);
     }
 
     @Override
@@ -288,9 +289,9 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
     }
 
     @Override
-    public <T> DeleteBuilder<T> deleteBuilder(Class<T> classBean) {
+    public <T> DeleteBuilder<T> deleteBuilder(Class<T> classBean, String... columnNames) {
         ClassInformation classInformation = ClassInformations.INSTACE.getClass(classBean);
-        return new DeleteBuilderImpl<>(session, classInformation, keySpace);
+        return new DeleteBuilderImpl<>(session, classInformation, keySpace, columnNames);
     }
 
 }

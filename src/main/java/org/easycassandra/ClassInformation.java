@@ -1,6 +1,7 @@
 package org.easycassandra;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -140,7 +141,24 @@ public class ClassInformation {
      * @return the column name on Cassandra to this field
      */
     public String toColumn(String fieldName) {
-        return fieldColumnMap.get(fieldName);
+        String column = fieldColumnMap.get(fieldName);
+        if (column == null) {
+            return fieldName;
+        }
+        return column;
+    }
+    /**
+     * return the column's name from field name.
+     * @param fieldNames the property on the class
+     * @return the column name on Cassandra to this field
+     */
+    public String[] toColumn(String[] fieldNames) {
+        List<String> array = new ArrayList<>();
+
+        for (String fieldName : fieldNames) {
+            array.add(toColumn(fieldName));
+        }
+        return array.toArray(new String[0]);
     }
     /**
      * find out a field on the field indx by index.
@@ -160,5 +178,6 @@ public class ClassInformation {
 
         return nameSchema;
     }
+
 
 }

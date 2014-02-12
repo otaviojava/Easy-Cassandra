@@ -128,7 +128,7 @@ public class FieldInformation implements Comparable<FieldInformation> {
         this.field = field;
         this.collectionType = FieldType.EMPTY;
         this.name = ColumnUtil.INTANCE.getColumnName(field);
-
+        ReflectionUtil.INSTANCE.makeAccessible(field);
         if (embedded) {
             subFields = ClassInformations.INSTACE.getClass(field.getType());
         }

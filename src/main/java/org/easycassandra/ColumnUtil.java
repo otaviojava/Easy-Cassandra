@@ -33,6 +33,8 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import org.easycassandra.util.ReflectionUtil;
+
 /**
  * Class Util for Column.
  * @author otavio

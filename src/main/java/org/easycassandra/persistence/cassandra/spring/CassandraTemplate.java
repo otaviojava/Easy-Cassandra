@@ -437,9 +437,10 @@ public interface CassandraTemplate {
     /**
      * create the insert builder with fields no null on the object.
       * @param classBean the class
+      * @param columnNames fields to remove
      *  @param <T> the kind of class
      * @return the builder
      */
-    <T> DeleteBuilder<T> deleteBuilder(Class<T> classBean);
+    <T> DeleteBuilder<T> deleteBuilder(Class<T> classBean, String... columnNames);
 
 }

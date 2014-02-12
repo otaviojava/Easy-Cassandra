@@ -79,5 +79,10 @@ public interface DeleteBuilder<T> {
      * @return if run with success
      */
     boolean execute();
+    /**
+     * Executes the provided query asynchronously.
+     * @return if run with success
+     */
+    boolean executeAsync();
 
 }
