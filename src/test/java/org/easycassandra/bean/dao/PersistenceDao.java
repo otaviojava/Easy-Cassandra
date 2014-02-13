@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.easycassandra.Constants;
+import org.easycassandra.persistence.cassandra.BatchBuilder;
 import org.easycassandra.persistence.cassandra.ClusterInformation;
 import org.easycassandra.persistence.cassandra.DeleteBuilder;
 import org.easycassandra.persistence.cassandra.EasyCassandraManager;
@@ -191,6 +192,13 @@ public class PersistenceDao<T, K> {
      */
     public void removeAll() {
         persistence.removeAll(baseClass);
+    }
+    /**
+     *call the delete.
+     * @return delete
+     */
+    public BatchBuilder batchBuilder() {
+        return persistence.batchBuilder();
     }
 
 }

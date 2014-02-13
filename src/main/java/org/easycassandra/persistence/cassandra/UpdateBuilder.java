@@ -11,7 +11,7 @@ import com.datastax.driver.core.policies.RetryPolicy;
  * @author otaviojava
  * @param <T>
  */
-public interface UpdateBuilder<T> {
+public interface UpdateBuilder<T> extends SingleInsertStatment {
     /**
      * Enables or not tracing for this query.
      * @param tracing the tracing
@@ -209,20 +209,5 @@ public interface UpdateBuilder<T> {
      * @return this
      */
     UpdateBuilder<T> whereIn(String name, Object... values);
-    /**
-     * execute the query.
-     * @return if run with success
-     */
-    boolean execute();
-
-    /**
-     * update the provided query asynchronously.
-     */
-    void executeAsync();
-    /**
-     * execute the process asynchronous.
-     * @param resultCallBack the callback
-     */
-    void executeAsync(ResultCallBack<Boolean> resultCallBack);
 
 }

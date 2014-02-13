@@ -16,4 +16,8 @@ interface Constant {
     int TWO = 2;
     int ONE = 1;
     int SIZE = 10;
+    int ONE_HUNDRED = 100;
+    int ONE_HUNDRED_TWO = 102;
+    String SET_COLUMN = "set";
+    String LIST_COLUMN = "list";
 }

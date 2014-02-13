@@ -3,6 +3,7 @@ package org.easycassandra.persistence.cassandra;
 import org.easycassandra.ClassInformation;
 
 import com.datastax.driver.core.ConsistencyLevel;
+import com.datastax.driver.core.RegularStatement;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.policies.RetryPolicy;
 import com.datastax.driver.core.querybuilder.Insert;
@@ -129,5 +130,10 @@ public class InsertBuilderImpl<T> implements InsertBuilder<T> {
     @Override
     public String toString() {
         return insert.toString();
+    }
+
+    @Override
+    public RegularStatement getStatement() {
+        return insert;
     }
 }

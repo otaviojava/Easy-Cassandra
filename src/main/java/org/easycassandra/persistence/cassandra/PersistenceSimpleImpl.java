@@ -267,5 +267,10 @@ public class PersistenceSimpleImpl implements Persistence {
         return new DeleteBuilderImpl<>(session, classInformation, keySpace, columnNames);
     }
 
+    @Override
+    public BatchBuilder batchBuilder() {
+        return new BatchBuilderImpl(session);
+    }
+
 
 }

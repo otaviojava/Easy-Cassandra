@@ -4,6 +4,7 @@ import org.easycassandra.ClassInformation;
 import org.easycassandra.ClassInformation.KeySpaceInformation;
 
 import com.datastax.driver.core.ConsistencyLevel;
+import com.datastax.driver.core.RegularStatement;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.policies.RetryPolicy;
 import com.datastax.driver.core.querybuilder.Delete;
@@ -126,5 +127,10 @@ public class DeleteBuilderImpl<T> implements DeleteBuilder<T> {
     @Override
     public String toString() {
         return delete.toString();
+    }
+
+    @Override
+    public RegularStatement getStatement() {
+        return delete;
     }
 }

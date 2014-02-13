@@ -329,5 +329,10 @@ public interface Persistence  {
      * @return the builder
      */
     <T> DeleteBuilder<T> deleteBuilder(Class<T> classBean, String... columnNames);
+    /**
+     * create a batch builder.
+     * @return batch builder
+     */
+    BatchBuilder batchBuilder();
 }
 

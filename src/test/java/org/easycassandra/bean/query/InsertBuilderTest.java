@@ -19,9 +19,6 @@ import org.junit.Test;
 public class InsertBuilderTest {
     private static final double VALUE = 12d;
     private static final int ONE_HUNDRED_ONE = 101;
-    private static final String SET_COLUMN = "set";
-    private static final String LIST_COLUMN = "list";
-    private static final int ONE_HUNDRED = 100;
     private PersistenceDao<SimpleBean, Integer> dao = new PersistenceDao<>(
             SimpleBean.class);
 
@@ -31,22 +28,23 @@ public class InsertBuilderTest {
     @Test
     public void insertTest() {
         InsertBuilder<SimpleBean> insert = dao.insertBuilder();
-        insert.value(Constant.KEY, ONE_HUNDRED).value(Constant.INDEX, ONE_HUNDRED);
-        insert.value(LIST_COLUMN, Arrays.asList("Poliana", "Otavio", "Love"));
+        insert.value(Constant.KEY, Constant.ONE_HUNDRED).value(Constant.INDEX,
+                Constant.ONE_HUNDRED);
+        insert.value(Constant.LIST_COLUMN, Arrays.asList("Poliana", "Otavio", "Love"));
         Set<String> set = new HashSet<>();
         set.add("Linda");
 
         Map<String, String> map = new HashMap<>();
         map.put("love", "Otavio and Poliana");
 
-        insert.value(SET_COLUMN, set);
+        insert.value(Constant.SET_COLUMN, set);
         insert.value("map", map);
 
         insert.execute();
 
         SimpleID id = new SimpleID();
-        id.setIndex(ONE_HUNDRED);
-        id.setKey(ONE_HUNDRED);
+        id.setIndex(Constant.ONE_HUNDRED);
+        id.setKey(Constant.ONE_HUNDRED);
 
         SimpleBean bean = dao.retrieve(id);
 

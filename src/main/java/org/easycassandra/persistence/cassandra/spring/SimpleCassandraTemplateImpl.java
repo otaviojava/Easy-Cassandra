@@ -19,6 +19,8 @@ import java.util.List;
 import org.easycassandra.ClassInformation;
 import org.easycassandra.ClassInformations;
 import org.easycassandra.ClassInformation.KeySpaceInformation;
+import org.easycassandra.persistence.cassandra.BatchBuilder;
+import org.easycassandra.persistence.cassandra.BatchBuilderImpl;
 import org.easycassandra.persistence.cassandra.CassandraFactory;
 import org.easycassandra.persistence.cassandra.DeleteBuilder;
 import org.easycassandra.persistence.cassandra.DeleteBuilderImpl;
@@ -293,5 +295,8 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
         ClassInformation classInformation = ClassInformations.INSTACE.getClass(classBean);
         return new DeleteBuilderImpl<>(session, classInformation, keySpace, columnNames);
     }
-
+    @Override
+    public BatchBuilder batchBuilder() {
+        return new BatchBuilderImpl(session);
+    }
 }

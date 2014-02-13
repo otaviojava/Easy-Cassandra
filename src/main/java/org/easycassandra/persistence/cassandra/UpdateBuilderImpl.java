@@ -8,6 +8,7 @@ import org.easycassandra.ClassInformation;
 import org.easycassandra.ClassInformation.KeySpaceInformation;
 
 import com.datastax.driver.core.ConsistencyLevel;
+import com.datastax.driver.core.RegularStatement;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.policies.RetryPolicy;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
@@ -204,6 +205,11 @@ public class UpdateBuilderImpl<T> implements UpdateBuilder<T> {
     @Override
     public String toString() {
         return update.toString();
+    }
+
+    @Override
+    public RegularStatement getStatement() {
+        return update;
     }
 
 }

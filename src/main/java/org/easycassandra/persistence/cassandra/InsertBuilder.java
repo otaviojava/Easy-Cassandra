@@ -7,7 +7,7 @@ import com.datastax.driver.core.policies.RetryPolicy;
  * @author otaviojava
  * @param <T>
  */
-public interface InsertBuilder<T> {
+public interface InsertBuilder<T> extends SingleInsertStatment {
     /**
      * Enables or not tracing for this query.
      * @param tracing the tracing
@@ -78,20 +78,6 @@ public interface InsertBuilder<T> {
      * @return this
      */
     InsertBuilder<T> values(String[] names, Object[] values);
-    /**
-     * execute the query.
-     * @return if run with success
-     */
-    boolean execute();
-    /**
-     * delete the provided query asynchronously.
-     */
-    void executeAsync();
-    /**
-     * execute the process asynchronous.
-     * @param resultCallBack the callback
-     */
-    void executeAsync(ResultCallBack<Boolean> resultCallBack);
     /**
      * Adds a column/value pair to the values inserted by this INSERT statement with enum.
     *  @param name the name of the column to insert/update.

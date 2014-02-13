@@ -7,7 +7,7 @@ import com.datastax.driver.core.policies.RetryPolicy;
  * @author otaviojava
  * @param <T>
  */
-public interface DeleteBuilder<T> {
+public interface DeleteBuilder<T> extends SingleInsertStatment {
     /**
      * Enables or not tracing for this query.
      * @param tracing the tracing
@@ -74,19 +74,4 @@ public interface DeleteBuilder<T> {
      * @return this
      */
     DeleteBuilder<T> whereIn(String name, Object... values);
-    /**
-     * execute the query.
-     * @return if run with success
-     */
-    boolean execute();
-    /**
-     * delete the provided query asynchronously.
-     */
-    void executeAsync();
-    /**
-     * execute the process asynchronous.
-     * @param resultCallBack the callback
-     */
-    void executeAsync(ResultCallBack<Boolean> resultCallBack);
-
 }
