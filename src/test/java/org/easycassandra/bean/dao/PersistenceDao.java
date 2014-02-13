@@ -27,7 +27,7 @@ public class PersistenceDao<T, K> {
     {
         ClusterInformation clusterInformation = ClusterInformation.create()
                 .addHost(Constants.HOST)
-                .withDefaultKeySpace(Constants.KEY_SPACE);
+                .withDefaultKeySpace(Constants.KEY_SPACE).withUser("user").withPassword("passWord");
         easyCassandraManager = new EasyCassandraManager(clusterInformation);
     }
     /**
