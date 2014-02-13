@@ -15,8 +15,11 @@ import com.datastax.driver.core.ResultSetFuture;
 enum AsyncResult {
     INSTANCE;
 
-    private static final int THREAD_NUMBER = 10;
-    private ExecutorService service = Executors.newFixedThreadPool(THREAD_NUMBER);
+    {
+        int processorsNumber = Runtime.getRuntime().availableProcessors();
+        service = Executors.newFixedThreadPool(processorsNumber * 2);
+    }
+    private ExecutorService service;
 
     public <T> void runSelect(ResultCallBack<List<T>> callBack,
             ResultSetFuture result, Class<?> class1) {
