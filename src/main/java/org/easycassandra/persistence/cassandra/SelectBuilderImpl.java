@@ -158,7 +158,7 @@ public class SelectBuilderImpl <T> implements SelectBuilder<T> {
                 resultSet);
     }
     @Override
-    public void executeAssync(ResultCallBack<List<T>> callBack) {
+    public void executeAsync(ResultAsyncCallBack<List<T>> callBack) {
         ResultSetFuture resultSet = session.executeAsync(select);
         AsyncResult.INSTANCE.runSelect(callBack, resultSet, classBean.getClassInstance());
     }

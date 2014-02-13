@@ -21,14 +21,14 @@ enum AsyncResult {
     }
     private ExecutorService service;
 
-    public <T> void runSelect(ResultCallBack<List<T>> callBack,
+    public <T> void runSelect(ResultAsyncCallBack<List<T>> callBack,
             ResultSetFuture result, Class<?> class1) {
 
         result.addListener(new RunSelectRunnable<>(callBack, result, class1),
                 service);
     }
 
-    public void runUpdate(ResultCallBack<Boolean> callBack, ResultSetFuture resultSet) {
+    public void runUpdate(ResultAsyncCallBack<Boolean> callBack, ResultSetFuture resultSet) {
         resultSet.addListener(new RunUpdateRunnable<>(callBack), service);
     }
     /**
@@ -38,11 +38,11 @@ enum AsyncResult {
      */
     class RunSelectRunnable<T> implements Runnable {
 
-        private ResultCallBack<List<T>> callBack;
+        private ResultAsyncCallBack<List<T>> callBack;
         private ResultSetFuture resultSetFuture;
         private Class<?> beanClass;
 
-        public RunSelectRunnable(ResultCallBack<List<T>> callBack,
+        public RunSelectRunnable(ResultAsyncCallBack<List<T>> callBack,
                 ResultSetFuture resultSetFuture, Class<?> beanClass) {
             this.callBack = callBack;
             this.resultSetFuture = resultSetFuture;
@@ -72,9 +72,9 @@ enum AsyncResult {
      */
     class RunUpdateRunnable<T> implements Runnable {
 
-        private ResultCallBack<Boolean> callBack;
+        private ResultAsyncCallBack<Boolean> callBack;
 
-        public RunUpdateRunnable(ResultCallBack<Boolean> callBack) {
+        public RunUpdateRunnable(ResultAsyncCallBack<Boolean> callBack) {
             this.callBack = callBack;
         }
 

@@ -5,7 +5,7 @@ package org.easycassandra.persistence.cassandra;
  * @author otaviojava
  * @param <T>
  */
-public interface ResultCallBack<T> {
+public interface ResultAsyncCallBack<T> {
     /**
      * callback to result asynchronous.
      * @param bean the result

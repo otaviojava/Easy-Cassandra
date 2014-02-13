@@ -6,7 +6,7 @@ import java.util.Random;
 import junit.framework.Assert;
 
 import org.easycassandra.bean.dao.PersistenceDao;
-import org.easycassandra.persistence.cassandra.ResultCallBack;
+import org.easycassandra.persistence.cassandra.ResultAsyncCallBack;
 import org.easycassandra.persistence.cassandra.SelectBuilder;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -37,7 +37,7 @@ public class SelectBuilderTest {
     @Test
     public void selectAllAssyncTest() {
         SelectBuilder<SimpleBean> select = dao.select();
-        select.executeAssync(new ResultCallBack<List<SimpleBean>>() {
+        select.executeAsync(new ResultAsyncCallBack<List<SimpleBean>>() {
 
             @Override
             public void result(List<SimpleBean> beans) {

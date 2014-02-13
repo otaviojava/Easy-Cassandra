@@ -8,7 +8,7 @@ import org.easycassandra.bean.dao.PersistenceDao;
 import org.easycassandra.persistence.cassandra.BatchBuilder;
 import org.easycassandra.persistence.cassandra.DeleteBuilder;
 import org.easycassandra.persistence.cassandra.InsertBuilder;
-import org.easycassandra.persistence.cassandra.ResultCallBack;
+import org.easycassandra.persistence.cassandra.ResultAsyncCallBack;
 import org.easycassandra.persistence.cassandra.UpdateBuilder;
 import org.junit.Test;
 
@@ -36,7 +36,7 @@ public class BatchBuilderTest {
     @Test
     public void executeBatchAssyncTest() {
         BatchBuilder batchBuilder = prepareBatch();
-        batchBuilder.executeAsync(new ResultCallBack<Boolean>() {
+        batchBuilder.executeAsync(new ResultAsyncCallBack<Boolean>() {
             @Override
             public void result(Boolean bean) {
                 Assert.assertTrue(bean);

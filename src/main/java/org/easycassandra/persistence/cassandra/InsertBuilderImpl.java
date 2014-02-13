@@ -123,7 +123,7 @@ public class InsertBuilderImpl<T> implements InsertBuilder<T> {
     }
 
     @Override
-    public void executeAsync(ResultCallBack<Boolean> resultCallBack) {
+    public void executeAsync(ResultAsyncCallBack<Boolean> resultCallBack) {
         AsyncResult.INSTANCE.runUpdate(resultCallBack, session.executeAsync(insert));
 
     }

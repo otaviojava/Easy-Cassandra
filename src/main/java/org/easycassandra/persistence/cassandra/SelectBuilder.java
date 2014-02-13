@@ -151,5 +151,5 @@ public interface SelectBuilder<T> {
      * perform query asynchronously with callback an asynchronous.
      * @param callBack the callback
      */
-    void executeAssync(ResultCallBack<List<T>> callBack);
+    void executeAsync(ResultAsyncCallBack<List<T>> callBack);
 }

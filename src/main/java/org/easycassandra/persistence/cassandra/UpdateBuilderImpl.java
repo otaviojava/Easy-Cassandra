@@ -197,7 +197,7 @@ public class UpdateBuilderImpl<T> implements UpdateBuilder<T> {
     }
 
     @Override
-    public void executeAsync(ResultCallBack<Boolean> resultCallBack) {
+    public void executeAsync(ResultAsyncCallBack<Boolean> resultCallBack) {
         AsyncResult.INSTANCE.runUpdate(resultCallBack, session.executeAsync(update));
 
     }

@@ -84,7 +84,7 @@ public class BatchBuilderImpl implements BatchBuilder {
     }
 
     @Override
-    public void executeAsync(ResultCallBack<Boolean> resultCallBack) {
+    public void executeAsync(ResultAsyncCallBack<Boolean> resultCallBack) {
         AsyncResult.INSTANCE.runUpdate(resultCallBack, session.executeAsync(batch));
     }
 

@@ -18,5 +18,5 @@ public interface AlterationBuilder {
      * execute the process asynchronous.
      * @param resultCallBack the callback
      */
-    void executeAsync(ResultCallBack<Boolean> resultCallBack);
+    void executeAsync(ResultAsyncCallBack<Boolean> resultCallBack);
 }
