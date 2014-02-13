@@ -54,8 +54,10 @@ enum AsyncResult {
                 @SuppressWarnings("unchecked")
                 List<T> beans = (List<T>) RecoveryObject.INTANCE.recoverObjet(beanClass, result);
                 callBack.result(beans);
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+            } catch (InterruptedException | ExecutionException exception) {
+                throw new AsyncExecption(
+                        "a problem trying to retrieve the select query",
+                        exception);
             }
         }
 
@@ -78,5 +80,20 @@ enum AsyncResult {
             callBack.result(Boolean.TRUE);
         }
 
+    }
+    /**
+     * execption to async process.
+     * @author otaviojava
+     */
+    public class AsyncExecption extends RuntimeException {
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * The Constructor for Exception.
+         * @param message information to log
+         */
+        public AsyncExecption(String message, Throwable throwable) {
+            super(message, throwable);
+        }
     }
 }
