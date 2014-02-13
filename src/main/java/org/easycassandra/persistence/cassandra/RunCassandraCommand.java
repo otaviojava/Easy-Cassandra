@@ -7,6 +7,7 @@ import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.querybuilder.Delete;
 import com.datastax.driver.core.querybuilder.Insert;
+import com.datastax.driver.core.querybuilder.Update;
 
 /**
  * Facade to run Cassandra.
@@ -23,6 +24,7 @@ public class RunCassandraCommand {
     private FindByIndexQuery findByIndexQuery;
     private FindByKeyAndIndexQuery findByKeyAndIndex;
     private CountQuery countQuery;
+    private UpdateQuery updateQuery;
 
     /**
      * construct all class to run commands on cassandra.
@@ -36,6 +38,7 @@ public class RunCassandraCommand {
         findByIndexQuery = new FindByIndexQuery(keySpace);
         findByKeyAndIndex = new FindByKeyAndIndexQuery(keySpace);
         countQuery = new CountQuery(keySpace);
+        updateQuery = new UpdateQuery(keySpace);
     }
 
     /**
@@ -171,6 +174,15 @@ public class RunCassandraCommand {
      */
     public Delete runDelete(Object key, Class<?> bean) {
         return deleteQuery.runDelete(key, bean, ConsistencyLevel.ONE);
+    }
+    /**
+     * update on object from cassandra by key.
+     * @param key the key
+     * @param bean the bean
+     * @return the update
+     */
+    public Update runUpdate(Object key, Class<?> bean) {
+        return updateQuery.runUpdate(key, bean);
     }
     /**
      * delete on object from cassandra by Key.

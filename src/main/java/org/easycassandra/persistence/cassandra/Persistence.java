@@ -322,6 +322,14 @@ public interface Persistence  {
      */
     <T> UpdateBuilder<T> updateBuilder(Class<T> classBean);
     /**
+     * create the insert builder with fields no null on the object.
+      * @param classBean the class
+      * @param key the key
+     *  @param <T> the kind of class
+     * @return the builder
+     */
+    <T> UpdateBuilder<T> updateBuilder(Class<T> classBean, Object key);
+    /**
      * create the delete builder with fields.
       * @param classBean the class
       * @param columnNames fields to remove

@@ -30,14 +30,23 @@ public class UpdateBuilderImpl<T> implements UpdateBuilder<T> {
      * constructor.
      * @param session the sesion
      * @param classBean the class bean information
+     * @param update the update
      * @param keySpace the keyspace
      */
-    public UpdateBuilderImpl(Session session, ClassInformation classBean, String keySpace) {
+    public UpdateBuilderImpl(Session session, ClassInformation classBean,
+            String keySpace, Update update) {
+
         this.session = session;
         this.classBean = classBean;
-        KeySpaceInformation keySpaceInformation = classBean.getKeySpace(keySpace);
-        update = QueryBuilder.update(keySpaceInformation.getKeySpace(),
-                keySpaceInformation.getColumnFamily());
+
+        if (update == null) {
+            KeySpaceInformation keySpaceInformation = classBean
+                    .getKeySpace(keySpace);
+            this.update = QueryBuilder.update(keySpaceInformation.getKeySpace(),
+                    keySpaceInformation.getColumnFamily());
+        } else {
+            this.update = update;
+        }
 
     }
 

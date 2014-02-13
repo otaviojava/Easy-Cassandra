@@ -36,6 +36,7 @@ import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.querybuilder.Insert;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
+import com.datastax.driver.core.querybuilder.Update;
 
 /**
  * Class to persist information in cassandra database.
@@ -287,9 +288,18 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
     @Override
     public <T> UpdateBuilder<T> updateBuilder(Class<T> classBean) {
         ClassInformation classInformation = ClassInformations.INSTACE.getClass(classBean);
-        return new UpdateBuilderImpl<>(session, classInformation, keySpace);
+        return new UpdateBuilderImpl<>(session, classInformation, keySpace,
+                null);
     }
 
+    @Override
+    public <T> UpdateBuilder<T> updateBuilder(Class<T> classBean, Object key) {
+        ClassInformation classInformation = ClassInformations.INSTACE.getClass(classBean);
+        Update update = command.runUpdate(key, classBean);
+
+        return new UpdateBuilderImpl<>(session, classInformation, keySpace,
+                update);
+    }
 
     @Override
     public <T> DeleteBuilder<T> deleteBuilder(Class<T> classBean, String... columnNames) {

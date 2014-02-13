@@ -3,6 +3,7 @@ package org.easycassandra.bean.dao;
 import java.util.List;
 
 import org.easycassandra.Constants;
+import org.easycassandra.bean.query.SimpleID;
 import org.easycassandra.persistence.cassandra.BatchBuilder;
 import org.easycassandra.persistence.cassandra.ClusterInformation;
 import org.easycassandra.persistence.cassandra.DeleteBuilder;
@@ -207,6 +208,15 @@ public class PersistenceDao<T, K> {
      */
     public BatchBuilder batchBuilder() {
         return persistence.batchBuilder();
+    }
+    /**
+     * call the update.
+     * @param id the id
+     * @return update builder
+     */
+    public UpdateBuilder<T> update(SimpleID id) {
+
+        return persistence.updateBuilder(baseClass, id);
     }
 
 }
