@@ -122,11 +122,11 @@ public class ClusterInformation {
         return this;
     }
     /**
-     * defines the keySpace default.
+     * defines the keySpace.
      * @param keySpace the keySpace
      * @return this
      */
-    public ClusterInformation withDefaultKeySpace(String keySpace) {
+    public ClusterInformation witKeySpace(String keySpace) {
         this.keySpace = keySpace;
         return this;
     }
