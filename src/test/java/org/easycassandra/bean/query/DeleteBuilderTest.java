@@ -35,4 +35,17 @@ public class DeleteBuilderTest {
 
         Assert.assertNull(dao.retrieve(id));
     }
+
+    /**
+     * run the test.
+     */
+    @Test
+    public void deleteKeyTest() {
+        SimpleID id = new SimpleID();
+        id.setIndex(ONE_HUNDRED_TWO);
+        id.setKey(ONE_HUNDRED_TWO);
+
+        DeleteBuilder<SimpleBean> delete = dao.deleteBuilder(id);
+        delete.execute();
+    }
 }

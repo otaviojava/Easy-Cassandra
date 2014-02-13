@@ -188,6 +188,15 @@ public class PersistenceDao<T, K> {
         return persistence.deleteBuilder(baseClass, columnNames);
     }
     /**
+     * call the delete.
+     * @param id the id
+     * @param columnNames the column names
+     * @return delete buider
+     */
+    public DeleteBuilder<T> deleteBuilder(Object id, String... columnNames) {
+        return persistence.deleteBuilder(baseClass, id, columnNames);
+    }
+    /**
      * remove all.
      */
     public void removeAll() {

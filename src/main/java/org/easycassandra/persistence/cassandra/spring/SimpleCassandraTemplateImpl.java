@@ -290,13 +290,29 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
         return new UpdateBuilderImpl<>(session, classInformation, keySpace);
     }
 
+
     @Override
     public <T> DeleteBuilder<T> deleteBuilder(Class<T> classBean, String... columnNames) {
         ClassInformation classInformation = ClassInformations.INSTACE.getClass(classBean);
-        return new DeleteBuilderImpl<>(session, classInformation, keySpace, columnNames);
+        return new DeleteBuilderImpl<>(session, classInformation, keySpace,
+                null, columnNames);
     }
+
+    @Override
+    public <T, K> DeleteBuilder<T> deleteBuilder(Class<T> classBean, K key,
+            String... columnNames) {
+
+        ClassInformation classInformation = ClassInformations.INSTACE
+                .getClass(classBean);
+
+        return new DeleteBuilderImpl<>(session, classInformation, keySpace,
+                command.runDelete(key, classBean), columnNames);
+    }
+
     @Override
     public BatchBuilder batchBuilder() {
         return new BatchBuilderImpl(session);
     }
+
+
 }

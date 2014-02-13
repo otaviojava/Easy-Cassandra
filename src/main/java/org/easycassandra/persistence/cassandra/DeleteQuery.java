@@ -89,7 +89,7 @@ class DeleteQuery {
         return true;
     }
 
-    private Delete runDelete(Object key, Class<?> bean,
+    public Delete runDelete(Object key, Class<?> bean,
             ConsistencyLevel consistency) {
         if (key == null) {
             throw new KeyProblemsException(

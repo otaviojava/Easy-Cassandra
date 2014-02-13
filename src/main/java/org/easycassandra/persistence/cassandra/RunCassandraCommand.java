@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.querybuilder.Delete;
 import com.datastax.driver.core.querybuilder.Insert;
 
 /**
@@ -161,6 +162,15 @@ public class RunCassandraCommand {
              ConsistencyLevel consistency) {
         return deleteQuery.deleteByKey(key, bean, session,
                 consistency);
+    }
+    /**
+     * delete on object from cassandra by Key.
+     * @param key the key
+     * @param bean the bean
+     * @return the delete
+     */
+    public Delete runDelete(Object key, Class<?> bean) {
+        return deleteQuery.runDelete(key, bean, ConsistencyLevel.ONE);
     }
     /**
      * delete on object from cassandra by Key.

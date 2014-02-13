@@ -436,13 +436,24 @@ public interface CassandraTemplate {
      */
     <T> UpdateBuilder<T> updateBuilder(Class<T> classBean);
     /**
-     * create the insert builder with fields no null on the object.
+     * create the delete builder with fields.
       * @param classBean the class
       * @param columnNames fields to remove
      *  @param <T> the kind of class
      * @return the builder
      */
     <T> DeleteBuilder<T> deleteBuilder(Class<T> classBean, String... columnNames);
+    /**
+     * create the delete builder by key.
+     * @param classBean the class
+      *@param columnNames fields to remove
+      *@param key the key
+     * @param <T> the kind of class
+     * @param <K> the kind of key
+     * @return the builder
+     */
+    <T, K> DeleteBuilder<T> deleteBuilder(Class<T> classBean, K key,
+            String... columnNames);
     /**
      * create a batch builder.
      * @return batch builder

@@ -39,7 +39,7 @@ public class BatchBuilderTest {
         batchBuilder.executeAsync(new ResultCallBack<Boolean>() {
             @Override
             public void result(Boolean bean) {
-                Assert.assertTrue(true);
+                Assert.assertTrue(bean);
             }
         });
     }

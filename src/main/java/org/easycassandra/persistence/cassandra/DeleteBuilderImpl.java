@@ -32,19 +32,23 @@ public class DeleteBuilderImpl<T> implements DeleteBuilder<T> {
      * @param session the session
      * @param classBean the class
      * @param keySpace the keyspace name
+     * @param delete the delete
      * @param columnNames the columns to remove
      */
     public DeleteBuilderImpl(Session session, ClassInformation classBean,
-            String keySpace, String... columnNames) {
+            String keySpace, Delete delete, String... columnNames) {
         this.session = session;
         KeySpaceInformation keySpaceInformation = classBean
                 .getKeySpace(keySpace);
 
         this.classBean = classBean;
-
-        delete = QueryBuilder.delete().from(keySpaceInformation.getKeySpace(),
-                keySpaceInformation.getColumnFamily());
-
+        if (delete == null) {
+            this.delete = QueryBuilder.delete().from(
+                    keySpaceInformation.getKeySpace(),
+                    keySpaceInformation.getColumnFamily());
+        } else {
+            this.delete = delete;
+        }
 
     }
 
