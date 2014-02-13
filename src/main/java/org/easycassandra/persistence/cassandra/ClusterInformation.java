@@ -76,6 +76,13 @@ public class ClusterInformation {
         this.replicaFactor = replicaFactor;
     }
     /**
+     * new instance of ClusterInformation.
+     * @return the new instance
+     */
+    public static ClusterInformation create() {
+        return new ClusterInformation();
+    }
+    /**
      * set the port.
      * @param port the port
      * @return this
