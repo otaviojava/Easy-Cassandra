@@ -189,13 +189,21 @@ public class UpdateBuilderImpl<T> implements UpdateBuilder<T> {
     public boolean execute() {
         return session.execute(update) != null;
     }
+
     @Override
-    public boolean executeAsync() {
-        return session.executeAsync(update) != null;
+    public void executeAsync() {
+        session.executeAsync(update);
+    }
+
+    @Override
+    public void executeAsync(ResultCallBack<Boolean> resultCallBack) {
+        AsyncResult.INSTANCE.runUpdate(resultCallBack, session.executeAsync(update));
+
     }
 
     @Override
     public String toString() {
         return update.toString();
     }
+
 }

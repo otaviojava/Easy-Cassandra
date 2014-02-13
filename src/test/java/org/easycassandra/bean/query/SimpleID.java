@@ -7,11 +7,12 @@ import javax.persistence.Column;
  */
 public class SimpleID {
 
+    @Column(name = "indexbuilder")
+    private Integer index;
+
     @Column(name = "idbuilder")
     private Integer key;
 
-    @Column(name = "indexbuilder")
-    private Integer index;
 
     public Integer getKey() {
         return key;

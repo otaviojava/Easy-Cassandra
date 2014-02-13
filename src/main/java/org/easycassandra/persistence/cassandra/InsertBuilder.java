@@ -84,10 +84,14 @@ public interface InsertBuilder<T> {
      */
     boolean execute();
     /**
-     * Executes the provided query asynchronously.
-     * @return if run with success
+     * delete the provided query asynchronously.
      */
-    boolean executeAsync();
+    void executeAsync();
+    /**
+     * execute the process asynchronous.
+     * @param resultCallBack the callback
+     */
+    void executeAsync(ResultCallBack<Boolean> resultCallBack);
     /**
      * Adds a column/value pair to the values inserted by this INSERT statement with enum.
     *  @param name the name of the column to insert/update.

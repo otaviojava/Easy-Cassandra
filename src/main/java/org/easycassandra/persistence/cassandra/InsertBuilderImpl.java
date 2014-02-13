@@ -117,10 +117,15 @@ public class InsertBuilderImpl<T> implements InsertBuilder<T> {
         return session.execute(insert) != null;
     }
     @Override
-    public boolean executeAsync() {
-        return session.executeAsync(insert) != null;
+    public void executeAsync() {
+        session.executeAsync(insert);
     }
 
+    @Override
+    public void executeAsync(ResultCallBack<Boolean> resultCallBack) {
+        AsyncResult.INSTANCE.runUpdate(resultCallBack, session.executeAsync(insert));
+
+    }
     @Override
     public String toString() {
         return insert.toString();

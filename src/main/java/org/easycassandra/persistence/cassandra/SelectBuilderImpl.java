@@ -7,6 +7,7 @@ import org.easycassandra.ClassInformation.KeySpaceInformation;
 
 import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.ResultSetFuture;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.policies.RetryPolicy;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
@@ -156,7 +157,11 @@ public class SelectBuilderImpl <T> implements SelectBuilder<T> {
         return (List<T>) RecoveryObject.INTANCE.recoverObjet(classBean.getClassInstance(),
                 resultSet);
     }
-
+    @Override
+    public void executeAssync(ResultCallBack<List<T>> callBack) {
+        ResultSetFuture resultSet = session.executeAsync(select);
+        AsyncResult.INSTANCE.runSelect(callBack, resultSet, classBean.getClassInstance());
+    }
     @Override
     public String toString() {
         return select.toString();

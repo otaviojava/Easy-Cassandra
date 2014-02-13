@@ -103,8 +103,14 @@ public class DeleteBuilderImpl<T> implements DeleteBuilder<T> {
         return session.execute(delete) != null;
     }
     @Override
-    public boolean executeAsync() {
-        return session.executeAsync(delete) != null;
+    public void executeAsync() {
+        session.executeAsync(delete);
+    }
+
+    @Override
+    public void executeAsync(ResultCallBack<Boolean> resultCallBack) {
+        AsyncResult.INSTANCE.runUpdate(resultCallBack, session.executeAsync(delete));
+
     }
     @Override
     public DeleteBuilder<T> whereEq(String name, Object value) {

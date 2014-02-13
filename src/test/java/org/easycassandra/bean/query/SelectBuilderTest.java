@@ -1,12 +1,15 @@
 package org.easycassandra.bean.query;
 
+import java.util.List;
 import java.util.Random;
 
 import junit.framework.Assert;
 
 import org.easycassandra.bean.dao.PersistenceDao;
+import org.easycassandra.persistence.cassandra.ResultCallBack;
 import org.easycassandra.persistence.cassandra.SelectBuilder;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -15,7 +18,7 @@ import org.junit.Test;
  */
 public class SelectBuilderTest {
 
-    private PersistenceDao<SimpleBean, Integer> dao = new PersistenceDao<>(
+    private static PersistenceDao<SimpleBean, Integer> dao = new PersistenceDao<>(
             SimpleBean.class);
 
 
@@ -25,7 +28,22 @@ public class SelectBuilderTest {
     @Test
     public void selectAllTest() {
         SelectBuilder<SimpleBean> select = dao.select();
-        Assert.assertTrue(select.execute().size() == Constant.SIZE);
+        Assert.assertTrue(!select.execute().isEmpty());
+
+    }
+    /**
+     * select test assync.
+     */
+    @Test
+    public void selectAllAssyncTest() {
+        SelectBuilder<SimpleBean> select = dao.select();
+        select.executeAssync(new ResultCallBack<List<SimpleBean>>() {
+
+            @Override
+            public void result(List<SimpleBean> beans) {
+                Assert.assertTrue(beans.size() == Constant.SIZE);
+            }
+        });
 
     }
     /**
@@ -44,9 +62,9 @@ public class SelectBuilderTest {
     @Test
     public void inTest() {
         SelectBuilder<SimpleBean> select = dao.select();
-        select.eq(Constant.NAME, Constant.NAME);
-        select.in(Constant.INDEX, Constant.ONE, Constant.TWO, Constant.THREE);
-        Assert.assertTrue(select.execute().size() == Constant.THREE);
+        select.in(Constant.KEY, Constant.ONE, Constant.TWO, Constant.THREE);
+        select.eq(Constant.INDEX, Constant.ONE);
+        Assert.assertTrue(select.execute().size() == Constant.ONE);
     }
     /**
      * lt test.
@@ -94,8 +112,8 @@ public class SelectBuilderTest {
     @Test
     public void ascTest() {
         SelectBuilder<SimpleBean> select = dao.select();
-        select.eq(Constant.KEY, Constant.ONE);
-        select.in(Constant.INDEX, Constant.ONE, Constant.TWO, Constant.THREE);
+        select.in(Constant.KEY, Constant.ONE, Constant.TWO, Constant.THREE);
+        select.eq(Constant.INDEX, Constant.ONE);
         select.asc(Constant.INDEX);
         Assert.assertTrue(select.execute().get(0).getId().getIndex().equals(Constant.ONE));
     }
@@ -105,9 +123,9 @@ public class SelectBuilderTest {
     @Test
     public void desTest() {
         SelectBuilder<SimpleBean> select = dao.select();
-        select.eq(Constant.KEY, Constant.ONE);
+        select.in(Constant.KEY, Constant.ONE, Constant.TWO, Constant.THREE);
         select.desc(Constant.INDEX);
-        Assert.assertTrue(select.execute().get(0).getId().getIndex().equals(Constant.NINE));
+        Assert.assertTrue(select.execute().get(0).getId().getIndex().equals(Constant.THREE));
     }
     /**
      * init.
@@ -117,11 +135,18 @@ public class SelectBuilderTest {
         Random random = new Random();
         for (int i = 0; i < Constant.SIZE; i++) {
             SimpleBean simple = new SimpleBean();
-            simple.getId().setKey(1);
+            simple.getId().setKey(i);
             simple.getId().setIndex(i);
             simple.setName(Constant.NAME);
             simple.setValue(random.nextDouble());
             dao.insert(simple);
         }
+    }
+    /**
+     * remove all.
+     */
+    @BeforeClass
+    public static void start() {
+        dao.removeAll();
     }
 }

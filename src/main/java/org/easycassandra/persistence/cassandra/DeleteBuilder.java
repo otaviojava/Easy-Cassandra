@@ -80,9 +80,13 @@ public interface DeleteBuilder<T> {
      */
     boolean execute();
     /**
-     * Executes the provided query asynchronously.
-     * @return if run with success
+     * delete the provided query asynchronously.
      */
-    boolean executeAsync();
+    void executeAsync();
+    /**
+     * execute the process asynchronous.
+     * @param resultCallBack the callback
+     */
+    void executeAsync(ResultCallBack<Boolean> resultCallBack);
 
 }
