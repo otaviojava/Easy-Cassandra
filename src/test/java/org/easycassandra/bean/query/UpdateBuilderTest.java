@@ -15,6 +15,7 @@ import org.junit.Test;
  */
 public class UpdateBuilderTest {
 
+    private static final double TEN_DOUBLE = 10D;
     private static final int ONE_HUNDRED_THIRTY = 130;
     private PersistenceDao<SimpleBean, Integer> dao = new PersistenceDao<>(
             SimpleBean.class);
@@ -73,7 +74,7 @@ public class UpdateBuilderTest {
         id.setKey(ONE_HUNDRED_THIRTY);
 
         UpdateBuilder<SimpleBean> update = dao.update(id);
-        update.put("map", "name", "otavioMap").execute();
+        update.put("map", "name", "otavioMap").value("value", TEN_DOUBLE).execute();
 
         SimpleBean bean = dao.retrieve(id);
         Assert.assertTrue(bean.getMap() != null && !bean.getMap().isEmpty());

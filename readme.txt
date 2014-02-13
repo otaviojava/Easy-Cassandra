@@ -7,7 +7,12 @@ Version: 2.0.1
 * read faster
 * write faster
 * constructor factory with just one class instead many parameters
-* SelectBuilder
+* BatchQuery
+* DeleteQuery
+* InsertQuery
+* SelectQuery
+* UpdateQuery
+* supports to asynchronous process with callBack
 
 
 Version: 2.0.0
