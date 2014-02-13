@@ -1,6 +1,6 @@
 package org.easycassandra.persistence.cassandra;
 
-import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.datastax.driver.core.Cluster;
@@ -12,7 +12,7 @@ import com.datastax.driver.core.Cluster.Builder;
  */
 public class ClusterInformation {
 
-    private List<String> hosts = Collections.<String>emptyList();
+    private List<String> hosts = new LinkedList<>();
 
     private String keySpace;
 
@@ -74,6 +74,68 @@ public class ClusterInformation {
 
     public void setReplicaFactor(int replicaFactor) {
         this.replicaFactor = replicaFactor;
+    }
+    /**
+     * set the port.
+     * @param port the port
+     * @return this
+     */
+    public ClusterInformation withPort(int port) {
+        this.port = port;
+        return this;
+    }
+
+    /**
+     * informs the replicaFactor will be used when will generate keySpace
+     * Automatically.
+     * @param replicaFactor the replicaFactor
+     * @return this
+     */
+    public ClusterInformation withReplicaFactor(int replicaFactor) {
+        this.replicaFactor = replicaFactor;
+        return this;
+    }
+
+    /**
+     * set user to authentication.
+     * @param user the user
+     * @return this
+     */
+    public ClusterInformation withUser(String user) {
+        this.user = user;
+        return this;
+    }
+    /**
+     * set the password to authentication.
+     * @param password the password
+     * @return this
+     */
+    public ClusterInformation withPassword(String password) {
+        this.password = password;
+        return this;
+    }
+    /**
+     * defines the keySpace default.
+     * @param keySpace the keySpace
+     * @return this
+     */
+    public ClusterInformation withDefaultKeySpace(String keySpace) {
+        this.keySpace = keySpace;
+        return this;
+    }
+    /**
+     * add host to cluster, the best practice
+     * say you should add all clusters in this configuration.
+     * @param parameterHost the host
+     * @param parameterHosts the parameterHosts
+     * @return this
+     */
+    public ClusterInformation addHost(String parameterHost, String... parameterHosts) {
+        this.hosts.add(parameterHost);
+        for (String hostParamether: parameterHosts) {
+            this.hosts.add(hostParamether);
+        }
+        return this;
     }
 
     Cluster build() {

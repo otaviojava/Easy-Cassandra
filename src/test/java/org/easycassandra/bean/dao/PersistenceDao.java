@@ -1,6 +1,5 @@
 package org.easycassandra.bean.dao;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.easycassandra.Constants;
@@ -27,8 +26,7 @@ public class PersistenceDao<T, K> {
 
     {
         ClusterInformation clusterInformation = new ClusterInformation();
-        clusterInformation.setHosts(Arrays.asList(Constants.HOST));
-        clusterInformation.setKeySpace(Constants.KEY_SPACE);
+        clusterInformation.addHost(Constants.HOST).withDefaultKeySpace(Constants.KEY_SPACE);
         easyCassandraManager = new EasyCassandraManager(clusterInformation);
     }
     /**
