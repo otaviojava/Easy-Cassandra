@@ -71,6 +71,32 @@ public interface UpdateBuilder<T> extends SingleInsertStatment {
      */
     UpdateBuilder<T> value(String name, Object value);
     /**
+     * Incrementation of a counter column.
+     * @param name the column name to increment
+     * @return this
+     */
+    UpdateBuilder<T> incr(String name);
+    /**
+     * Incrementation of a counter column by a provided value.
+     * @param name the column name to increment
+     * @param value the column name to decrement
+     * @return this
+     */
+    UpdateBuilder<T> incr(String name, long value);
+    /**
+     * decrementation of a counter column.
+     * @param name the column name to decrement
+     * @return this
+     */
+    UpdateBuilder<T> decr(String name);
+    /**
+     * Decrementation of a counter column by a provided value.
+     * @param name the column name to decrement
+     * @param value the value by which to decrement
+     * @return this
+     */
+    UpdateBuilder<T> decr(String name, long value);
+    /**
      * Adds a value to a set column. This will generate: name = name + {value}}.
      * @param name the column name
      * @param value the value to add

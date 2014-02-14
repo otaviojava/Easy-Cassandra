@@ -84,6 +84,27 @@ public class UpdateBuilderImpl<T> implements UpdateBuilder<T> {
         return this;
     }
     @Override
+    public UpdateBuilder<T> incr(String name) {
+        update.with(QueryBuilder.incr(classBean.toColumn(name)));
+        return this;
+    }
+    @Override
+    public UpdateBuilder<T> incr(String name, long value) {
+        update.with(QueryBuilder.incr(classBean.toColumn(name), value));
+        return this;
+    }
+    @Override
+    public UpdateBuilder<T> decr(String name) {
+        update.with(QueryBuilder.decr(classBean.toColumn(name)));
+        return this;
+    }
+    @Override
+    public UpdateBuilder<T> decr(String name, long value) {
+        update.with(QueryBuilder.decr(classBean.toColumn(name), value));
+        return this;
+    }
+
+    @Override
     public UpdateBuilder<T> addSet(String name, Object value) {
         update.with(QueryBuilder.add(classBean.toColumn(name), value));
         return this;
@@ -190,6 +211,7 @@ public class UpdateBuilderImpl<T> implements UpdateBuilder<T> {
         update.where(QueryBuilder.eq(classBean.toColumn(name), value));
         return this;
     }
+
     @Override
     public UpdateBuilder<T> whereIn(String name, Object... values) {
         update.where(QueryBuilder.in(classBean.toColumn(name), values));
