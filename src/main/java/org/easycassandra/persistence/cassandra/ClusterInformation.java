@@ -126,7 +126,7 @@ public class ClusterInformation {
      * @param keySpace the keySpace
      * @return this
      */
-    public ClusterInformation witKeySpace(String keySpace) {
+    public ClusterInformation withKeySpace(String keySpace) {
         this.keySpace = keySpace;
         return this;
     }
