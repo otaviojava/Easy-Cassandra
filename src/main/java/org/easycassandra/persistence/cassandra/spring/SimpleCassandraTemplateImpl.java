@@ -72,6 +72,7 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
 	public SimpleCassandraTemplateImpl(Session session, String keySpace) {
 	    this.session = session;
         this.keySpace = keySpace;
+        command = new RunCassandraCommand(keySpace);
         setSession();
 	}
 
