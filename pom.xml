@@ -4,14 +4,14 @@
 
     <groupId>org.easycassandra</groupId>
     <artifactId>EasyCassandra</artifactId>
-    <version>2.0.1</version>
+    <version>2.0.2</version>
     <packaging>jar</packaging>
 
 	<properties>
 		<github.maven.repository>file:///home/otaviojava/Ambiente/repositorio/otaviojava/repository/</github.maven.repository>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<junit.version>4.10</junit.version>
-		<cassandra.driver.core.version>2.0.0-rc2</cassandra.driver.core.version>
+		<cassandra.driver.core.version>2.0.0</cassandra.driver.core.version>
 		<spring.version>3.2.2.RELEASE</spring.version>
 		<spring.data.version>1.4.1.RELEASE</spring.data.version>
 		<jpa.version>2.0.0</jpa.version>
