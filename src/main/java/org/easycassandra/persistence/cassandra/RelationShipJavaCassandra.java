@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import com.datastax.driver.core.DataType;
 import com.datastax.driver.core.DataType.Name;
@@ -21,28 +22,44 @@ enum RelationShipJavaCassandra {
      * key is cql and value is Java.
      */
     private Map<String, String> mapCQL;
+    private Map<String, String> primitiveMap;
     /**
      * key is Java and value is CQL.
      */
     private Map<String, List<String>> mapJava;
 
     {
-        mapCQL = new HashMap<String, String>();
+        mapCQL = new TreeMap<>();
 
-        mapJava = new HashMap<String, List<String>>();
+        mapJava = new TreeMap<>();
+
+        primitiveMap = new TreeMap<>();
+
+        initPrimitive();
 
         for (DataType.Name name : DataType.Name.values()) {
             String cqlType = name.name().toLowerCase();
             String javaType = name.asJavaClass().getName();
             List<String> cqlvalues = mapJava.get(javaType);
             if (cqlvalues == null) {
-                cqlvalues = new LinkedList<String>();
+                cqlvalues = new LinkedList<>();
                 mapJava.put(javaType, cqlvalues);
             }
             cqlvalues.add(cqlType);
             mapCQL.put(cqlType, javaType);
         }
 
+    }
+
+    private void initPrimitive() {
+        primitiveMap.put("byte", "java.lang.Byte");
+        primitiveMap.put("short", "java.lang.Short");
+        primitiveMap.put("char", "java.lang.Character");
+        primitiveMap.put("int", "java.lang.Integer");
+        primitiveMap.put("long", "java.lang.Long");
+        primitiveMap.put("float", "java.lang.Float");
+        primitiveMap.put("Double", "java.lang.Double");
+        primitiveMap.put("boolean", "java.lang.Boolean");
     }
 
     /**
@@ -62,6 +79,10 @@ enum RelationShipJavaCassandra {
      * @return the java type
      */
     public List<String> getCQLType(String javaTypeKey) {
+        String primitive = primitiveMap.get(javaTypeKey);
+        if (primitive != null) {
+            return mapJava.get(primitive);
+        }
         return mapJava.get(javaTypeKey);
     }
 
@@ -72,7 +93,10 @@ enum RelationShipJavaCassandra {
         } else if (Long.class.getName().endsWith(javaTypeKey)) {
             return DataType.Name.BIGINT.name().toLowerCase();
         }
-
+        String primitiveType = primitiveMap.get(javaTypeKey);
+        if (primitiveType != null) {
+            return getCQLType(primitiveType).get(0);
+        }
         return getCQLType(javaTypeKey).get(0);
     }
 
