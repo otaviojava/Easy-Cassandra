@@ -28,7 +28,7 @@ public class LogDAOTest {
      * run the test.
      */
     @Test
-    public void retrivetWithAcent() {
+    public void retrieveWithListIndex() {
 
         for (int i = 0; i < LOOP_SIZE; i++) {
             Log log = new Log();

@@ -24,7 +24,7 @@ public class UpdateBuilderTest {
      * run test.
      */
     @Test
-    public void updateaddListTest() {
+    public void updateListTest() {
         UpdateBuilder<SimpleBean> update = dao.update();
         update.whereEq(Constant.KEY, Constant.ONE).whereEq(Constant.INDEX, Constant.ONE);
         update.addList("list", "otavioList");
@@ -39,7 +39,7 @@ public class UpdateBuilderTest {
      * run test.
      */
     @Test
-    public void updateaddSetTest() {
+    public void updateSetTest() {
         UpdateBuilder<SimpleBean> update = dao.update();
         update.whereEq(Constant.KEY, Constant.ONE).whereEq(Constant.INDEX, Constant.ONE);
         update.addSet("set", "otavioSet");
@@ -54,7 +54,7 @@ public class UpdateBuilderTest {
      * run test.
      */
     @Test
-    public void updateaddMapTest() {
+    public void updateMapTest() {
         UpdateBuilder<SimpleBean> update = dao.update();
         update.whereEq(Constant.KEY, Constant.ONE).whereEq(Constant.INDEX, Constant.ONE);
         update.put("map", "name", "otavioMap");

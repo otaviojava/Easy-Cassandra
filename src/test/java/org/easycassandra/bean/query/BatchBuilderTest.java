@@ -34,7 +34,7 @@ public class BatchBuilderTest {
      * test.
      */
     @Test
-    public void executeBatchAssyncTest() {
+    public void executeBatchAsyncTest() {
         BatchBuilder batchBuilder = prepareBatch();
         batchBuilder.executeAsync(new ResultAsyncCallBack<Boolean>() {
             @Override

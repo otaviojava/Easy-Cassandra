@@ -124,7 +124,7 @@ public class DeleteBuilderImpl<T> implements DeleteBuilder<T> {
     }
     @Override
     public DeleteBuilder<T> whereIn(String name, Object... values) {
-        delete.where(QueryBuilder.eq(classBean.toColumn(name), values));
+        delete.where(QueryBuilder.in(classBean.toColumn(name), values));
         return this;
     }
 

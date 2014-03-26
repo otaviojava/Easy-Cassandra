@@ -36,7 +36,7 @@ public class PictureDAOTest {
      * run the test.
      */
     @Test
-    public void retriveTest() {
+    public void retrieveTest() {
         Picture picture = dao.retrieve("mypicture");
         Assert.assertNotNull(picture);
     }

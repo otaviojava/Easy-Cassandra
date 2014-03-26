@@ -5,7 +5,7 @@ import java.util.UUID;
 import junit.framework.Assert;
 
 import org.easycassandra.persistence.cassandra.spring.entity.Contact;
-import org.easycassandra.persistence.cassandra.spring.repository.ContactReporitory;
+import org.easycassandra.persistence.cassandra.spring.repository.ContactRepository;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -15,7 +15,7 @@ import org.junit.Test;
 public class ContactRepositoryTest {
 
 	private static final int TWENTY = 20;
-    private ContactReporitory contactReporitory;
+    private ContactRepository contactReporitory;
 	/**
      * run the test.
      */
@@ -43,7 +43,7 @@ public class ContactRepositoryTest {
 	@Before
 	public void initMethod() {
         contactReporitory = SpringUtil.INSTANCE
-                .getBean(ContactReporitory.class);
+                .getBean(ContactRepository.class);
 	}
 	/**
      * run the all test.

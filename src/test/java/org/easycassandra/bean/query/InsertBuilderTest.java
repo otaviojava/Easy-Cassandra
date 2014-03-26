@@ -55,7 +55,7 @@ public class InsertBuilderTest {
      * run test.
      */
     @Test
-    public void updateaddListTest() {
+    public void updateListTest() {
         SimpleID id = new SimpleID();
         id.setIndex(ONE_HUNDRED_ONE);
         id.setKey(ONE_HUNDRED_ONE);
