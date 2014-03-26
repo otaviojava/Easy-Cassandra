@@ -35,7 +35,7 @@ public class SelectBuilderTest {
      * select test assync.
      */
     @Test
-    public void selectAllAssyncTest() {
+    public void selectAllAsyncTest() {
         SelectBuilder<SimpleBean> select = dao.select();
         select.executeAsync(new ResultAsyncCallBack<List<SimpleBean>>() {
 

@@ -50,7 +50,7 @@ public class PersonDAOTest {
      * run the test.
      */
     @Test
-    public void retriveSubClassTest() {
+    public void retrieveSubClassTest() {
         Person person = dao.retrieve(FOUR);
 
         Assert.assertNotNull(person.getAddress().getCity());
@@ -85,7 +85,7 @@ public class PersonDAOTest {
      * run the test.
      */
     @Test
-    public void removefromRowKeyTest() {
+    public void removeFromRowKeyTest() {
         Assert.assertTrue(dao.removeFromRowKey(new Long(2)));
     }
     /**
@@ -174,7 +174,7 @@ public class PersonDAOTest {
      * run the test.
      */
     @Test
-    public void insertWithAcent() {
+    public void insertWithPerson() {
         Person person = getPerson();
         person.setName(NAME);
         person.setId(SAMPLE_ID);

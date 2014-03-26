@@ -33,7 +33,7 @@ public class EngineerDaoTest {
      * run the test.
      */
     @Test
-    public void retriveDadAtribute() {
+    public void retrieveDadAttribute() {
         Assert.assertNotNull(dao.retrieve(getEngineer().getNickName()));
     }
 

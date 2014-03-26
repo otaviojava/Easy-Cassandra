@@ -11,8 +11,8 @@ import org.springframework.stereotype.Repository;
 /**
  * repository of Contact.
  */
-@Repository("contactReporitory")
-public class ContactReporitory extends CassandraRepository<Contact, UUID> {
+@Repository("contactRepository")
+public class ContactRepository extends CassandraRepository<Contact, UUID> {
 
 	@Autowired
 	private CassandraTemplate cassandraTemplate;
