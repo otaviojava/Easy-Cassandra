@@ -35,7 +35,7 @@ public class RelationShipJavaCassandraTest {
                 .getCQLType("java.lang.String");
         org.junit.Assert.assertArrayEquals(
                 result.toArray(new String[result.size()]), new String[] {
-                        "ascii", "text", "varchar" });
+                    "ascii", "text", "varchar" });
 
 	}
 }

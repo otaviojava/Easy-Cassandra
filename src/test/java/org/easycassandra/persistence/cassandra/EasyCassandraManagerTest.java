@@ -17,7 +17,7 @@ import org.easycassandra.bean.model.createtable.SimpleBeanSubClass;
 import org.easycassandra.bean.model.createtable.SimpleBeanWrong;
 import org.easycassandra.bean.model.createtable.SimpleComplexBean;
 import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 /**
  * test to Cassandra manager.
@@ -38,8 +38,8 @@ public class EasyCassandraManagerTest {
     /**
      * run before the test.
      */
-    @BeforeClass
-	public static void beforeClass() {
+    @Before
+	public  void beforeClass() {
         easyCassandraManager.getPersistence(Constants.HOST,
                 Constants.KEY_SPACE_SIMPLE_TEST,
                 ReplicaStrategy.SIMPLES_TRATEGY, THREE);
@@ -90,7 +90,9 @@ public class EasyCassandraManagerTest {
             Persistence persistence = easyCassandraManager.getPersistence(
                     Constants.HOST, Constants.KEY_SPACE_SIMPLE_TEST,
                     ReplicaStrategy.SIMPLES_TRATEGY, THREE);
-            persistence.executeUpdate("DROP TABLE ".concat(columnFamily)
+            persistence.executeUpdate("DROP TABLE ".concat(
+                    Constants.KEY_SPACE_SIMPLE_TEST.concat(".").concat(
+                            columnFamily))
                     .concat(" ;"));
         } catch (Exception exception) {
             Logger.getLogger(EasyCassandraManagerTest.class.getName()).info(
@@ -106,8 +108,9 @@ public class EasyCassandraManagerTest {
         Persistence persistence = easyCassandraManager.getPersistence(
                 Constants.HOST, Constants.KEY_SPACE_SIMPLE_TEST,
                 ReplicaStrategy.SIMPLES_TRATEGY, THREE);
-        persistence
-                .executeUpdate("create table SimpleBeanWrong( id bigint,"
+        persistence.executeUpdate("create table "
+                + Constants.KEY_SPACE_SIMPLE_TEST
+                + ".SimpleBeanWrong( id bigint,"
                         + " name ascii, born int,  PRIMARY KEY (id) )");
         Assert.assertTrue(easyCassandraManager.addFamilyObject(
                 SimpleBeanWrong.class, Constants.KEY_SPACE_SIMPLE_TEST));
@@ -129,9 +132,10 @@ public class EasyCassandraManagerTest {
         Persistence persistence = easyCassandraManager.getPersistence(
                 Constants.HOST, Constants.KEY_SPACE_SIMPLE_TEST,
                 ReplicaStrategy.SIMPLES_TRATEGY, THREE);
-        persistence
-                .executeUpdate("create table SimpleBeanAlterTable( id bigint, "
-                        + "name ascii, born int,  PRIMARY KEY (id) )");
+        persistence.executeUpdate("create table "
+                + Constants.KEY_SPACE_SIMPLE_TEST
+                + ".SimpleBeanAlterTable( id bigint, "
+                + "name ascii, born int,  PRIMARY KEY (id) )");
         Assert.assertTrue(easyCassandraManager.addFamilyObject(
                 SimpleBeanAlterTable.class, Constants.KEY_SPACE_SIMPLE_TEST));
     }

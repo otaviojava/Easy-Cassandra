@@ -16,27 +16,18 @@ package org.easycassandra.persistence.cassandra.spring;
 
 import java.util.List;
 
-import org.easycassandra.ClassInformation;
-import org.easycassandra.ClassInformations;
-import org.easycassandra.ClassInformation.KeySpaceInformation;
 import org.easycassandra.persistence.cassandra.BatchBuilder;
-import org.easycassandra.persistence.cassandra.BatchBuilderImpl;
+import org.easycassandra.persistence.cassandra.BuilderPersistence;
+import org.easycassandra.persistence.cassandra.BuilderPersistenceImpl;
 import org.easycassandra.persistence.cassandra.CassandraFactory;
 import org.easycassandra.persistence.cassandra.DeleteBuilder;
-import org.easycassandra.persistence.cassandra.DeleteBuilderImpl;
 import org.easycassandra.persistence.cassandra.InsertBuilder;
-import org.easycassandra.persistence.cassandra.InsertBuilderImpl;
 import org.easycassandra.persistence.cassandra.RunCassandraCommand;
 import org.easycassandra.persistence.cassandra.SelectBuilder;
-import org.easycassandra.persistence.cassandra.SelectBuilderImpl;
 import org.easycassandra.persistence.cassandra.UpdateBuilder;
-import org.easycassandra.persistence.cassandra.UpdateBuilderImpl;
 
 import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.Session;
-import com.datastax.driver.core.querybuilder.Insert;
-import com.datastax.driver.core.querybuilder.QueryBuilder;
-import com.datastax.driver.core.querybuilder.Update;
 
 /**
  * Class to persist information in cassandra database.
@@ -53,6 +44,8 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
 
 	private RunCassandraCommand command;
 
+	private BuilderPersistence builderPersistence;
+
 	/**
 	 * return a simple template of cassandra.
 	 * @param factory the factory
@@ -61,7 +54,7 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
 	    this.session = factory.getSession();
         this.keySpace = factory.getKeySpace();
         command = new RunCassandraCommand(keySpace);
-        setSession();
+        builderPersistence = new BuilderPersistenceImpl(session, keySpace);
 	}
 
     /**
@@ -73,7 +66,7 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
 	    this.session = session;
         this.keySpace = keySpace;
         command = new RunCassandraCommand(keySpace);
-        setSession();
+        builderPersistence = new BuilderPersistenceImpl(session, keySpace);
 	}
 
 	@Override
@@ -160,10 +153,6 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
 		return command.count(entity, session);
 	}
 
-
-    private void setSession() {
-        session.execute("use " + keySpace);
-    }
 
 	@Override
 	public <T> T save(T entity, ConsistencyLevel consistency) {
@@ -265,65 +254,47 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
 		return command.count(bean, session, consistency);
 	}
 
-    @Override
+	@Override
     public <T> SelectBuilder<T> selectBuilder(Class<T> classBean) {
-        return new SelectBuilderImpl<T>(session,
-                ClassInformations.INSTACE.getClass(classBean), keySpace);
+        return builderPersistence.selectBuilder(classBean);
     }
+
     @Override
     public <T> InsertBuilder<T> insertBuilder(Class<T> classBean) {
-        ClassInformation classInformation = ClassInformations.INSTACE.getClass(classBean);
-        KeySpaceInformation key = classInformation.getKeySpace(keySpace);
-        Insert insert = QueryBuilder.insertInto(key.getKeySpace(), key.getColumnFamily());
-        return new InsertBuilderImpl<>(insert, session, classInformation);
+        return builderPersistence.insertBuilder(classBean);
     }
 
     @Override
     public <T> InsertBuilder<T> insertBuilder(T classBean) {
-        ClassInformation classInformation = ClassInformations.INSTACE
-                .getClass(classBean.getClass());
-        return new InsertBuilderImpl<>(command.createInsertStatment(classBean),
-                session, classInformation);
+        return builderPersistence.insertBuilder(classBean);
     }
 
     @Override
     public <T> UpdateBuilder<T> updateBuilder(Class<T> classBean) {
-        ClassInformation classInformation = ClassInformations.INSTACE.getClass(classBean);
-        return new UpdateBuilderImpl<>(session, classInformation, keySpace,
-                null);
+        return builderPersistence.updateBuilder(classBean);
     }
+
 
     @Override
     public <T> UpdateBuilder<T> updateBuilder(Class<T> classBean, Object key) {
-        ClassInformation classInformation = ClassInformations.INSTACE.getClass(classBean);
-        Update update = command.runUpdate(key, classBean);
-
-        return new UpdateBuilderImpl<>(session, classInformation, keySpace,
-                update);
+        return builderPersistence.updateBuilder(classBean, key);
     }
 
     @Override
     public <T> DeleteBuilder<T> deleteBuilder(Class<T> classBean, String... columnNames) {
-        ClassInformation classInformation = ClassInformations.INSTACE.getClass(classBean);
-        return new DeleteBuilderImpl<>(session, classInformation, keySpace,
-                null, columnNames);
+        return builderPersistence.deleteBuilder(classBean, columnNames);
     }
 
     @Override
     public <T, K> DeleteBuilder<T> deleteBuilder(Class<T> classBean, K key,
             String... columnNames) {
 
-        ClassInformation classInformation = ClassInformations.INSTACE
-                .getClass(classBean);
-
-        return new DeleteBuilderImpl<>(session, classInformation, keySpace,
-                command.runDelete(key, classBean), columnNames);
+        return builderPersistence.deleteBuilder(classBean, key, columnNames);
     }
 
     @Override
     public BatchBuilder batchBuilder() {
-        return new BatchBuilderImpl(session);
+        return builderPersistence.batchBuilder();
     }
-
 
 }

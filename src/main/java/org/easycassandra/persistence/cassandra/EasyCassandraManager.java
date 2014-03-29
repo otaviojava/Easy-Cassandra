@@ -19,6 +19,7 @@ import java.util.List;
 import org.easycassandra.ClassInformation;
 import org.easycassandra.ClassInformations;
 import org.easycassandra.ReplicaStrategy;
+import org.easycassandra.ClassInformation.KeySpaceInformation;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
@@ -29,7 +30,8 @@ import com.datastax.driver.core.Session;
  * @author otaviojava
  * @version 2.0
  */
-public class EasyCassandraManager extends AbstractCassandraFactory  {
+public class EasyCassandraManager extends AbstractCassandraFactory implements
+        EasyCassandraFactory {
 
 
     /**
@@ -39,14 +41,8 @@ public class EasyCassandraManager extends AbstractCassandraFactory  {
 	public EasyCassandraManager(ClusterInformation clusterInformation) {
 		super(clusterInformation);
 	}
-	 /**
-     * Method for create the Cassandra's Client, if the keyspace there is not,if
-     * keyspace there isn't, it will created with simple strategy replica and
-     * number of fator 3.
-     * @param keySpace
-     *            - the keyspace's name
-     * @return the client bridge for the Cassandra data base
-     */
+
+	@Override
     public Persistence getPersistence(String keySpace) {
         Cluster cluter = getCluster();
         Session session = cluter.connect();
@@ -54,20 +50,7 @@ public class EasyCassandraManager extends AbstractCassandraFactory  {
         return new PersistenceSimpleImpl(session, keySpace);
     }
 
-    /**
-     * Method for create the Cassandra's Client, if the keyspace there is not,if
-     * keyspace there isn't, it will created with replacyStrategy and number of
-     * factor.
-     * @param host
-     *            - place where is Cassandra data base
-     * @param keySpace
-     *            - the keyspace's name
-     * @param replicaStrategy
-     *            - replica strategy
-     * @param factor
-     *            - number of the factor
-     * @return the client bridge for the Cassandra data base
-     */
+	@Override
     public Persistence getPersistence(String host, String keySpace,
             ReplicaStrategy replicaStrategy, int factor) {
         Cluster cluter = Cluster.builder().addContactPoints(host).build();
@@ -76,12 +59,14 @@ public class EasyCassandraManager extends AbstractCassandraFactory  {
         return new PersistenceSimpleImpl(session, keySpace);
     }
 
-    /**
-     * returns a persistence.
-     * @return the persistence
-     */
+	@Override
     public Persistence getPersistence() {
     	return getPersistence(getKeySpace());
+    }
+
+    @Override
+    public BuilderPersistence getBuilderPersistence() {
+        return new BuilderPersistenceImpl(getSession(), getKeySpace());
     }
 
     /**
@@ -108,7 +93,9 @@ public class EasyCassandraManager extends AbstractCassandraFactory  {
 
         }
         classes.add(class1);
-        return new FixColumnFamily().verifyColumnFamily(session, familyColumn, class1);
+        KeySpaceInformation key = classInformation.getKeySpace(keySpace);
+        return new FixColumnFamily().verifyColumnFamily(session, key.getKeySpace(),
+                key.getColumnFamily(), class1);
     }
 
     /**
@@ -120,5 +107,4 @@ public class EasyCassandraManager extends AbstractCassandraFactory  {
     public boolean addFamilyObject(Class<?> class1) {
         return addFamilyObject(class1, getKeySpace());
     }
-
 }

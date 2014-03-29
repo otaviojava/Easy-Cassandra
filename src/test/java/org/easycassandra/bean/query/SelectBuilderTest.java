@@ -62,9 +62,8 @@ public class SelectBuilderTest {
     @Test
     public void inTest() {
         SelectBuilder<SimpleBean> select = dao.select();
-        select.in(Constant.KEY, Constant.ONE, Constant.TWO, Constant.THREE);
-        select.eq(Constant.INDEX, Constant.ONE);
-        Assert.assertTrue(select.execute().size() == Constant.ONE);
+        select.in(Constant.INDEX, Constant.ONE, Constant.TWO, Constant.THREE);
+        Assert.assertTrue(select.execute().size() == Constant.THREE);
     }
     /**
      * lt test.
@@ -73,7 +72,7 @@ public class SelectBuilderTest {
     public void ltTest() {
         SelectBuilder<SimpleBean> select = dao.select();
         select.eq(Constant.NAME, Constant.NAME);
-        select.lt(Constant.INDEX, Constant.THREE);
+        select.lt(Constant.KEY, Constant.THREE);
         Assert.assertTrue(select.execute().size() == Constant.THREE);
     }
     /**
@@ -83,7 +82,7 @@ public class SelectBuilderTest {
     public void lteTest() {
         SelectBuilder<SimpleBean> select = dao.select();
         select.eq(Constant.NAME, Constant.NAME);
-        select.lte(Constant.INDEX, Constant.THREE);
+        select.lte(Constant.KEY, Constant.THREE);
         Assert.assertTrue(select.execute().size() == Constant.FOUR);
     }
     /**
@@ -93,7 +92,7 @@ public class SelectBuilderTest {
     public void gtTest() {
         SelectBuilder<SimpleBean> select = dao.select();
         select.eq(Constant.NAME, Constant.NAME);
-        select.gt(Constant.INDEX, Constant.THREE);
+        select.gt(Constant.KEY, Constant.THREE);
         Assert.assertTrue(select.execute().size() == Constant.SIX);
     }
     /**
@@ -103,7 +102,7 @@ public class SelectBuilderTest {
     public void gteTest() {
         SelectBuilder<SimpleBean> select = dao.select();
         select.eq(Constant.NAME, Constant.NAME);
-        select.gte(Constant.INDEX, Constant.THREE);
+        select.gte(Constant.KEY, Constant.THREE);
         Assert.assertTrue(select.execute().size() == Constant.SEVEN);
     }
     /**
@@ -112,9 +111,8 @@ public class SelectBuilderTest {
     @Test
     public void ascTest() {
         SelectBuilder<SimpleBean> select = dao.select();
-        select.in(Constant.KEY, Constant.ONE, Constant.TWO, Constant.THREE);
         select.eq(Constant.INDEX, Constant.ONE);
-        select.asc(Constant.INDEX);
+        select.asc(Constant.KEY);
         Assert.assertTrue(select.execute().get(0).getId().getIndex().equals(Constant.ONE));
     }
     /**
@@ -123,8 +121,8 @@ public class SelectBuilderTest {
     @Test
     public void desTest() {
         SelectBuilder<SimpleBean> select = dao.select();
-        select.in(Constant.KEY, Constant.ONE, Constant.TWO, Constant.THREE);
-        select.desc(Constant.INDEX);
+        select.eq(Constant.INDEX, Constant.THREE);
+        select.desc(Constant.KEY);
         Assert.assertTrue(select.execute().get(0).getId().getIndex().equals(Constant.THREE));
     }
     /**

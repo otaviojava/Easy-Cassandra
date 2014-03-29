@@ -23,99 +23,8 @@ import com.datastax.driver.core.ConsistencyLevel;
  * Cassandra database.
  * @author otaviojava
  */
-public interface Persistence  {
+public interface Persistence extends BasePersistence, BuilderPersistence  {
 
-    /**
-     * insert a object.
-     * @param bean the bean
-     * @param <T> kind of object
-     * @return the object persisted
-     */
-    <T> boolean insert(T bean);
-    /**
-     * insert a object.
-     * @param bean the bean
-     * @param <T> kind of object
-     * @param consistency the consistency
-     * @return the object persisted
-     */
-    <T> boolean insert(T bean, ConsistencyLevel consistency);
-    /**
-     * insert a list of objects.
-     * @param beans the entities
-     * @param <T> kind of object
-     * @return the entities persisted
-     */
-    <T> boolean insert(Iterable<T> beans);
-    /**
-     * insert a list of objects.
-     * @param beans the entities
-     * @param consistency the consistency
-     * @param <T> kind of object
-     * @return the entities persisted
-     */
-    <T> boolean insert(Iterable<T> beans, ConsistencyLevel consistency);
-
-    /**
-     * remove an object.
-     * @param bean the bean
-     * @param <T> kind of object
-     * @return if process was success
-     */
-    <T> boolean delete(T bean);
-    /**
-     * remove an object.
-     * @param bean the bean
-     * @param <T> kind of object
-     * @param consistency the consistency
-     * @return if process was success
-     */
-    <T> boolean delete(T bean, ConsistencyLevel consistency);
-    /**
-     * remove a list object.
-     * @param beans the beans
-     * @param <T> kind of object
-     * @return if process was success
-     */
-    <T> boolean delete(Iterable<T> beans);
-    /**
-     * remove a list object.
-     * @param beans the beans
-     * @param <T> kind of object
-     * @param consistency the consistency
-     * @return if process was success
-     */
-    <T> boolean delete(Iterable<T> beans, ConsistencyLevel consistency);
-     /**
-      * update the object on cassandra.
-      * @param bean the bean
-      * @param <T> kind of object
-      * @return the object updated.
-      */
-    <T> boolean update(T bean);
-    /**
-     * update the object on cassandra.
-     * @param bean the bean
-     * @param <T> kind of object
-     * @param consistency the consistency
-     * @return the object updated.
-     */
-    <T> boolean update(T bean, ConsistencyLevel consistency);
-    /**
-     * update the list of objects.
-     * @param beans the beans
-     * @param <T> kind of object
-     * @return the list updated
-     */
-    <T> boolean update(Iterable<T> beans);
-    /**
-     * update the list of objects.
-     * @param beans the beans
-     * @param consistency the consistency
-     * @param <T> kind of object
-     * @return the list updated
-     */
-    <T> boolean update(Iterable<T> beans, ConsistencyLevel consistency);
 
     /**
      * execute select * from column family.
@@ -173,38 +82,6 @@ public interface Persistence  {
      */
     <K, T> T findByKey(K key, Class<T> bean, ConsistencyLevel consistency);
 
-    /**
-     * delete by key.
-     * @param key  the key
-     * @param bean the bean
-     * @param <T> kind of object
-     * @param <K> kind of key
-     * @return if was with success the process
-     */
-    <K, T> boolean deleteByKey(K key, Class<T> bean);
-    /**
-     * delete by key.
-     * @param key  the key
-     * @param bean the bean
-     * @param consistency the consistency
-     * @param <T> kind of object
-     * @param <K> kind of key
-     * @return if was with success the process
-     */
-    <K, T> boolean deleteByKey(K key, Class<T> bean,
-            ConsistencyLevel consistency);
-    /**
-     * execute a query.
-     * @param query the query
-     * @return if was with success
-     */
-    boolean executeUpdate(String query);
-    /**
-     * remove all entities on column families.
-     * @param bean the bean
-     * @param <T> kind of object
-     */
-    <T> void removeAll(Class<T> bean);
     /**
      * return by index.
      * @param indexName the indexName
@@ -291,67 +168,5 @@ public interface Persistence  {
      * @return the value of entities on column family
      */
     <T> Long count(Class<T> bean, ConsistencyLevel consistency);
-    /**
-     * create the selectbuilder.
-     * {@link SelectBuilder}
-     * @param classBean the class with column family
-     * @param <T> kind of class
-     * @return the builder
-     */
-    <T> SelectBuilder<T> selectBuilder(Class<T> classBean);
-    /**
-     * create the insert builder.
-     * @param classBean the class
-     * @param <T> the kind of class
-     * @return the builder
-     */
-    <T> InsertBuilder<T> insertBuilder(Class<T> classBean);
-    /**
-     * create the insert builder with fields no null on the object.
-      * @param classBean the class
-     *  @param <T> the kind of class
-     * @return the builder
-     */
-    <T> InsertBuilder<T> insertBuilder(T classBean);
-
-    /**
-     * create the insert builder with fields no null on the object.
-      * @param classBean the class
-     *  @param <T> the kind of class
-     * @return the builder
-     */
-    <T> UpdateBuilder<T> updateBuilder(Class<T> classBean);
-    /**
-     * create the insert builder with fields no null on the object.
-      * @param classBean the class
-      * @param key the key
-     *  @param <T> the kind of class
-     * @return the builder
-     */
-    <T> UpdateBuilder<T> updateBuilder(Class<T> classBean, Object key);
-    /**
-     * create the delete builder with fields.
-      * @param classBean the class
-      * @param columnNames fields to remove
-     *  @param <T> the kind of class
-     * @return the builder
-     */
-    <T> DeleteBuilder<T> deleteBuilder(Class<T> classBean, String... columnNames);
-    /**
-     * create the delete builder by key.
-     * @param classBean the class
-      *@param columnNames fields to remove
-      *@param key the key
-     * @param <T> the kind of class
-     * @param <K> the kind of key
-     * @return the builder
-     */
-    <T, K> DeleteBuilder<T> deleteBuilder(Class<T> classBean, K key,
-            String... columnNames);
-    /**
-     * create a batch builder.
-     * @return batch builder
-     */
-    BatchBuilder batchBuilder();
 }
 

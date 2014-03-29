@@ -33,7 +33,7 @@ public class Person implements Serializable {
     private String name;
 
     @Column(name = "born")
-    private Integer year;
+    private int year;
 
     @Enumerated
     private Sex sex;
@@ -58,11 +58,11 @@ public class Person implements Serializable {
         this.id = id;
     }
 
-    public Integer getYear() {
+    public int getYear() {
         return year;
     }
 
-    public void setYear(Integer year) {
+    public void setYear(int year) {
         this.year = year;
     }
 

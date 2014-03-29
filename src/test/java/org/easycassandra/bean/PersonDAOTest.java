@@ -2,6 +2,7 @@ package org.easycassandra.bean;
 
 import java.util.List;
 
+import org.easycassandra.Constants;
 import org.easycassandra.bean.dao.PersistenceDao;
 import org.easycassandra.bean.model.Address;
 import org.easycassandra.bean.model.Person;
@@ -161,7 +162,8 @@ public class PersonDAOTest {
      */
     @Test
     public void executeUpdateCqlTest() {
-        Assert.assertTrue(dao.executeUpdateCql("select * from Person"));
+        Assert.assertTrue(dao.executeUpdateCql("select * from "
+                + Constants.KEY_SPACE + ".Person"));
     }
     /**
      * run the test.

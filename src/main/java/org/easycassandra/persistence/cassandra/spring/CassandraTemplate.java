@@ -16,11 +16,7 @@ package org.easycassandra.persistence.cassandra.spring;
 
 import java.util.List;
 
-import org.easycassandra.persistence.cassandra.BatchBuilder;
-import org.easycassandra.persistence.cassandra.DeleteBuilder;
-import org.easycassandra.persistence.cassandra.InsertBuilder;
-import org.easycassandra.persistence.cassandra.SelectBuilder;
-import org.easycassandra.persistence.cassandra.UpdateBuilder;
+import org.easycassandra.persistence.cassandra.BuilderPersistence;
 
 import com.datastax.driver.core.ConsistencyLevel;
 
@@ -31,7 +27,7 @@ import com.datastax.driver.core.ConsistencyLevel;
  * Cassandra database.
  * @author otaviojava
  */
-public interface CassandraTemplate {
+public interface CassandraTemplate extends BuilderPersistence {
     /**
      * saves the object.
      * @param entity
@@ -403,69 +399,5 @@ public interface CassandraTemplate {
      * @return the value of entities on column family
      */
     <T> long count(Class<T> bean, ConsistencyLevel consistency);
-
-    /**
-     * create the selectbuilder.
-     * {@link SelectBuilder}
-     * @param classBean the class with column family
-     * @param <T> kind of class
-     * @return the builder
-     */
-    <T> SelectBuilder<T> selectBuilder(Class<T> classBean);
-
-    /**
-     * create the insert builder.
-     * @param classBean the class
-     * @param <T> the kind of class
-     * @return the builder
-     */
-    <T> InsertBuilder<T> insertBuilder(Class<T> classBean);
-    /**
-     * create the insert builder with fields no null on the object.
-      * @param classBean the class
-     *  @param <T> the kind of class
-     * @return the builder
-     */
-    <T> InsertBuilder<T> insertBuilder(T classBean);
-
-    /**
-     * create the insert builder with fields no null on the object.
-      * @param classBean the class
-     *  @param <T> the kind of class
-     * @return the builder
-     */
-    <T> UpdateBuilder<T> updateBuilder(Class<T> classBean);
-    /**
-     * create the insert builder with fields no null on the object.
-      * @param classBean the class
-      * @param key the key
-     *  @param <T> the kind of class
-     * @return the builder
-     */
-    <T> UpdateBuilder<T> updateBuilder(Class<T> classBean, Object key);
-    /**
-     * create the delete builder with fields.
-      * @param classBean the class
-      * @param columnNames fields to remove
-     *  @param <T> the kind of class
-     * @return the builder
-     */
-    <T> DeleteBuilder<T> deleteBuilder(Class<T> classBean, String... columnNames);
-    /**
-     * create the delete builder by key.
-     * @param classBean the class
-      *@param columnNames fields to remove
-      *@param key the key
-     * @param <T> the kind of class
-     * @param <K> the kind of key
-     * @return the builder
-     */
-    <T, K> DeleteBuilder<T> deleteBuilder(Class<T> classBean, K key,
-            String... columnNames);
-    /**
-     * create a batch builder.
-     * @return batch builder
-     */
-    BatchBuilder batchBuilder();
 
 }

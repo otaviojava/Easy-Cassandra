@@ -52,7 +52,8 @@ class AbstractCassandraFactory implements CassandraFactory {
 
     protected boolean fixColumnFamily(Session session, String familyColumn,
             Class<?> class1) {
-		return new FixColumnFamily().verifyColumnFamily(session, familyColumn, class1);
+        return new FixColumnFamily().verifyColumnFamily(session,
+                clusterInformation.getKeySpace(), familyColumn, class1);
 	}
 
     @Override

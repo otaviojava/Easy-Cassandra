@@ -25,6 +25,7 @@ public class RunCassandraCommand {
     private FindByKeyAndIndexQuery findByKeyAndIndex;
     private CountQuery countQuery;
     private UpdateQuery updateQuery;
+    private TruncateQuery truncateQuery;
 
     /**
      * construct all class to run commands on cassandra.
@@ -39,6 +40,7 @@ public class RunCassandraCommand {
         findByKeyAndIndex = new FindByKeyAndIndexQuery(keySpace);
         countQuery = new CountQuery(keySpace);
         updateQuery = new UpdateQuery(keySpace);
+        truncateQuery = new TruncateQuery(keySpace);
     }
 
     /**
@@ -483,6 +485,6 @@ public class RunCassandraCommand {
      * @param <T> kind of object
      */
     public <T> void removeAll(Class<T> bean, Session session) {
-        new RemoveAll().truncate(bean, session);
+        truncateQuery.truncate(bean, session);
     }
 }

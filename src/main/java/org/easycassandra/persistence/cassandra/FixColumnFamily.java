@@ -31,6 +31,8 @@ import com.datastax.driver.core.ColumnDefinitions.Definition;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.exceptions.InvalidQueryException;
+import com.datastax.driver.core.querybuilder.QueryBuilder;
+import com.datastax.driver.core.querybuilder.Select;
 
 /**
  * Class to fix a column family.
@@ -42,18 +44,17 @@ class FixColumnFamily {
 
     /**
      * verify if exist column family and try to create.
-     * @param session
-     *            - bridge to cassandra data base
-     * @param familyColumn
-     *            - name of family column
-     * @param class1
-     *            - bean
+     * @param session - bridge to cassandra data base
+     * @param keySpace - the keyspace
+     * @param familyColumn - name of family column
+     * @param class1 - bean
      * @return - if get it or not
      */
-    public boolean verifyColumnFamily(Session session, String familyColumn,
+    public boolean verifyColumnFamily(Session session, String keySpace, String familyColumn,
             Class<?> class1) {
         try {
-            ResultSet resultSet = session.execute("SELECT * FROM " + familyColumn + " LIMIT 1");
+            Select select = QueryBuilder.select().from(keySpace, familyColumn).limit(1);
+            ResultSet resultSet = session.execute(select);
             verifyRowType(resultSet, class1, session);
             findIndex(class1, session);
             return true;

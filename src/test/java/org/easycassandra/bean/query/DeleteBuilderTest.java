@@ -54,12 +54,15 @@ public class DeleteBuilderTest {
         DeleteBuilder<SimpleBean> delete = dao.deleteBuilder(id);
         delete.execute();
     }
-
+    /**
+     * remove.
+     * @throws Exception an exception
+     */
     @Test
     public void testInQuery() throws Exception {
         DeleteBuilder<Book> delete = bookDao.deleteBuilder();
 
-        delete.whereIn("booksname", new Integer[]{1,2,3});
+        delete.whereIn("name", new Object[] { "1", "2", "3" });
         delete.execute();
     }
 }
