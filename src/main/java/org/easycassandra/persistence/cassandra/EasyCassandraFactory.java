@@ -17,6 +17,7 @@ public interface EasyCassandraFactory {
     *            - the keyspace's name
     * @return the client bridge for the Cassandra data base
     */
+    @Deprecated
     Persistence getPersistence(String keySpace);
     /**
      * Method for create the Cassandra's Client, if the keyspace there is not,if
@@ -32,6 +33,7 @@ public interface EasyCassandraFactory {
      *            - number of the factor
      * @return the client bridge for the Cassandra data base
      */
+    @Deprecated
     Persistence getPersistence(String host, String keySpace,
             ReplicaStrategy replicaStrategy, int factor);
 
@@ -43,10 +45,10 @@ public interface EasyCassandraFactory {
 
     /**
      * interface to create an easy way to create query.
-     * @see BuilderPersistence
-     * @return the {@link BuilderPersistenceImpl}
+     * @see PersistenceBuilder
+     * @return the {@link PersistenceBuilderImpl}
      */
-    BuilderPersistence getBuilderPersistence();
+    PersistenceBuilder getBuilderPersistence();
 
     /**
      * returns a persistence async.

@@ -27,7 +27,7 @@ import com.datastax.driver.core.querybuilder.Update;
  * @see BuilderPersistence.
  * @author otaviojava
  */
-public class BuilderPersistenceImpl implements BuilderPersistence {
+public class PersistenceBuilderImpl implements PersistenceBuilder {
 
     private Session session;
 
@@ -40,7 +40,7 @@ public class BuilderPersistenceImpl implements BuilderPersistence {
      * @param session - the sesion
      * @param keySpace - the keyspace
      */
-    public BuilderPersistenceImpl(Session session, String keySpace) {
+    public PersistenceBuilderImpl(Session session, String keySpace) {
         this.session = session;
         this.keySpace = keySpace;
         command = new RunCassandraCommand(keySpace);

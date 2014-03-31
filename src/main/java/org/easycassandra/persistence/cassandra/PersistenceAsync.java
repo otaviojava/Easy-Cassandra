@@ -8,7 +8,7 @@ import com.datastax.driver.core.ConsistencyLevel;
  * Do the same of {@link Persistence}, but all process are async.
  * @author otaviojava
  */
-public interface PersistenceAsync extends BasePersistence, BuilderPersistence {
+public interface PersistenceAsync extends BasePersistence, PersistenceBuilder {
 
 
     /**

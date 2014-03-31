@@ -75,7 +75,7 @@ class AbstractCassandraFactory implements CassandraFactory {
 	 */
     private  void initConection() {
         cluter = clusterInformation.build();
-        new FixKeySpace().verifyKeySpace(clusterInformation.getKeySpace(), getSession());
+        new FixKeySpace().createKeySpace(clusterInformation.toInformationKeySpace(), getSession());
     }
 
 }

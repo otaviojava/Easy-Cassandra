@@ -13,8 +13,11 @@
  */
 package org.easycassandra.persistence.cassandra;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.easycassandra.ClassInformation;
 import org.easycassandra.ClassInformations;
@@ -33,30 +36,47 @@ import com.datastax.driver.core.Session;
 public class EasyCassandraManager extends AbstractCassandraFactory implements
         EasyCassandraFactory {
 
-
+    private Map<String, Persistence> persistenceMap = new HashMap<String, Persistence>();
+    private List<String> keySpaces = new ArrayList<>();
     /**
      * the constructor using default port.
      * @param clusterInformation {@link ClusterInformation}
      */
 	public EasyCassandraManager(ClusterInformation clusterInformation) {
 		super(clusterInformation);
+		keySpaces.add(getKeySpace());
 	}
 
-	@Override
+    @Override
     public Persistence getPersistence(String keySpace) {
-        Cluster cluter = getCluster();
-        Session session = cluter.connect();
-        verifyKeySpace(keySpace, cluter.connect());
-        return new PersistenceSimpleImpl(session, keySpace);
+
+        if (!persistenceMap.containsKey(keySpace)) {
+            Session session = getSession();
+            if (!keySpace.contains(keySpace)) {
+                verifyKeySpace(keySpace, getSession());
+                keySpaces.add(keySpace);
+            }
+            persistenceMap.put(keySpace, new PersistenceSimpleImpl(session,
+                    keySpace));
+        }
+        return persistenceMap.get(keySpace);
     }
 
-	@Override
+    @Override
     public Persistence getPersistence(String host, String keySpace,
             ReplicaStrategy replicaStrategy, int factor) {
-        Cluster cluter = Cluster.builder().addContactPoints(host).build();
-        Session session = cluter.connect();
-        verifyKeySpace(keySpace, cluter.connect(), replicaStrategy, factor);
-        return new PersistenceSimpleImpl(session, keySpace);
+
+        if (!persistenceMap.containsKey(keySpace)) {
+            Cluster cluter = Cluster.builder().addContactPoints(host).build();
+            Session session = cluter.connect();
+            if (!keySpace.contains(keySpace)) {
+                verifyKeySpace(keySpace, cluter.connect(), replicaStrategy, factor);
+                keySpaces.add(keySpace);
+            }
+            persistenceMap.put(keySpace, new PersistenceSimpleImpl(session,
+                    keySpace));
+        }
+        return persistenceMap.get(keySpace);
     }
 
 	@Override
@@ -65,8 +85,8 @@ public class EasyCassandraManager extends AbstractCassandraFactory implements
     }
 
     @Override
-    public BuilderPersistence getBuilderPersistence() {
-        return new BuilderPersistenceImpl(getSession(), getKeySpace());
+    public PersistenceBuilder getBuilderPersistence() {
+        return new PersistenceBuilderImpl(getSession(), getKeySpace());
     }
 
     @Override

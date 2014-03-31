@@ -10,7 +10,7 @@ import com.datastax.driver.core.Session;
  * @author otaviojava
  *
  */
-public class PersistenceAsyncImpl extends BuilderPersistenceImpl implements PersistenceAsync {
+public class PersistenceAsyncImpl extends PersistenceBuilderImpl implements PersistenceAsync {
 
     private Session session;
 

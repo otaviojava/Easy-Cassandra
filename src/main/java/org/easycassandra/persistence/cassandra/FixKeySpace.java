@@ -14,9 +14,10 @@
  */
 package org.easycassandra.persistence.cassandra;
 
-import java.util.logging.Logger;
-
 import org.easycassandra.ReplicaStrategy;
+import org.easycassandra.persistence.cassandra.FixKeySpaceUtil.CreateKeySpace;
+import org.easycassandra.persistence.cassandra.FixKeySpaceUtil.CreateKeySpaceException;
+import org.easycassandra.persistence.cassandra.FixKeySpaceUtil.KeySpaceQueryInformation;
 
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.exceptions.InvalidQueryException;
@@ -27,9 +28,6 @@ import com.datastax.driver.core.exceptions.InvalidQueryException;
  */
 class FixKeySpace {
 
-    private static final String CREATE_KEY_SPACE_CQL = "CREATE KEYSPACE "
-            + ":keySpace WITH replication = {'class': :replication , 'replication_factor': "
-            + ":factor};";
 
     private static final int DEFAULT_REPLICATION_FACTOR = 3;
 
@@ -37,10 +35,8 @@ class FixKeySpace {
 
     /**
      * Verify if keySpace exist.
-     * @param keySpace
-     *            - nome of keyspace
-     * @param session
-     *            - session of Cassandra
+     * @param keySpace - nome of keyspace
+     * @param session - session of Cassandra
      */
     public final void verifyKeySpace(String keySpace, Session session) {
         verifyKeySpace(keySpace, session, DEFAULT_REPLICA_STRATEGY, DEFAULT_REPLICATION_FACTOR);
@@ -48,23 +44,50 @@ class FixKeySpace {
 
     public void verifyKeySpace(String keySpace, Session session,
             ReplicaStrategy replicaStrategy, int factor) {
-        try {
-            session.execute("use " + keySpace);
-        } catch (InvalidQueryException exception) {
-            Logger.getLogger(FixKeySpace.class.getName()).info(
-                    "KeySpace does not exist, create a keySpace: " + keySpace);
-            createKeySpace(session, keySpace, replicaStrategy, factor);
-            verifyKeySpace(keySpace, session);
-        }
-
+        createKeySpace(session, keySpace, replicaStrategy, factor);
     }
 
     public void createKeySpace(Session session, String keySpace,
             ReplicaStrategy replicaStrategy, int factor) {
-        String query = CREATE_KEY_SPACE_CQL.replace(":keySpace", keySpace)
-                .replace(":replication", replicaStrategy.getValue())
-                .replace(":factor", String.valueOf(factor));
-        session.execute(query);
+
+        KeySpaceQueryInformation information = getInformation(replicaStrategy,
+                factor);
+        createKeySpace(information, session);
 
     }
+
+    public void createKeySpace(KeySpaceQueryInformation information, Session session) {
+
+        CreateKeySpace createKeySpace = FixKeySpaceUtil.INSTANCE
+                .getCreate(information.getReplicaStrategy());
+        try {
+            session.execute(createKeySpace.createQuery(information));
+        } catch (InvalidQueryException exception) {
+            error(information, createKeySpace, exception);
+        }
+    }
+
+    private void error(KeySpaceQueryInformation information,
+            CreateKeySpace createKeySpace, InvalidQueryException exception) {
+        StringBuilder error = new StringBuilder();
+        error.append(" An error happened when execute create keyspace: ")
+                .append(information.getKeySpace());
+        error.append(" with type: ").append(information.getReplicaStrategy());
+        error.append(" With query: ").append(
+                createKeySpace.createQuery(information));
+        error.append(" Error cause: ").append(exception.getCause()).append(" ")
+                .append(exception.getMessage());
+
+        throw new CreateKeySpaceException(error.toString());
+
+    }
+
+    private KeySpaceQueryInformation getInformation(
+            ReplicaStrategy replicaStrategy, int factor) {
+        KeySpaceQueryInformation information = new KeySpaceQueryInformation();
+        information.setReplicaStrategy(replicaStrategy);
+        information.setFactor(factor);
+        return information;
+    }
+
 }

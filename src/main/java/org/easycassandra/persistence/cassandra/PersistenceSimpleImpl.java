@@ -23,7 +23,7 @@ import com.datastax.driver.core.Session;
  * Class to persist information in cassandra database.
  * @author otaviojava
  */
-public class PersistenceSimpleImpl extends BuilderPersistenceImpl implements Persistence  {
+public class PersistenceSimpleImpl extends PersistenceBuilderImpl implements Persistence  {
 
     private Session session;
 

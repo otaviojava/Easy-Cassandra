@@ -1,7 +1,12 @@
 package org.easycassandra.persistence.cassandra;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+
+import org.easycassandra.ReplicaStrategy;
+import org.easycassandra.persistence.cassandra.FixKeySpaceUtil.KeySpaceQueryInformation;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Cluster.Builder;
@@ -16,17 +21,25 @@ public class ClusterInformation {
 
     private String keySpace;
 
-    private int port = PORT_DEFAULT;
-
-    private int replicaFactor = REPLICA_FACTOR_DEFAULT;
-
     private String user = "";
 
     private String password = "";
 
+    private Map<String, Integer> dataCenter = new HashMap<>();
+
+    private ReplicaStrategy replicaStrategy = REPLICASTRATEGY_DEFAULT;
+
+    private String customQuery;
+
+    private int replicaFactor = REPLICA_FACTOR_DEFAULT;
+
+    private int port = PORT_DEFAULT;
+
     private static final int PORT_DEFAULT = 9042;
 
     private static final int REPLICA_FACTOR_DEFAULT = 3;
+    private static final ReplicaStrategy REPLICASTRATEGY_DEFAULT = ReplicaStrategy.SIMPLES_TRATEGY;
+
 
     public List<String> getHosts() {
         return hosts;
@@ -75,6 +88,31 @@ public class ClusterInformation {
     public void setReplicaFactor(int replicaFactor) {
         this.replicaFactor = replicaFactor;
     }
+
+    public Map<String, Integer> getDataCenter() {
+        return dataCenter;
+    }
+
+    public void setDataCenter(Map<String, Integer> dataCenter) {
+        this.dataCenter = dataCenter;
+    }
+
+    public ReplicaStrategy getReplicaStrategy() {
+        return replicaStrategy;
+    }
+
+    public void setReplicaStrategy(ReplicaStrategy replicaStrategy) {
+        this.replicaStrategy = replicaStrategy;
+    }
+
+    public String getCustomQuery() {
+        return customQuery;
+    }
+
+    public void setCustomQuery(String customQuery) {
+        this.customQuery = customQuery;
+    }
+
     /**
      * new instance of ClusterInformation.
      * @return the new instance
@@ -144,7 +182,40 @@ public class ClusterInformation {
         }
         return this;
     }
-
+    /**
+     * define the replica placement strategy on Cassandra and
+     *  how a keyspace will create if not exists.
+     * @param replicaStrategy {@link ReplicaStrategy}
+     * @return this
+     */
+    public ClusterInformation withReplicaStrategy(
+            ReplicaStrategy replicaStrategy) {
+        this.replicaStrategy = replicaStrategy;
+        return this;
+    }
+    /**
+     * a custom query to create the keyspace if not exist, it is mandatory when is
+     * {@link ReplicaStrategy#CUSTOM_STRATEGY}
+     *  if you define and must begin with.
+     * @param customQuery the create to be executed
+     * @return this
+     */
+    public ClusterInformation withCustomQuery(String customQuery) {
+        this.customQuery = customQuery;
+        return this;
+    }
+    /**
+     * Inform a replica factor to a specific data center, you should use when define
+     *  {@link ReplicaStrategy#NETWORK_TOPOLOGY_STRATEGY}
+     *  as Replica Strategy.
+     * @param dataCenterName the data center name
+     * @param factor the replica factor to data center
+     * @return this.
+     */
+    public ClusterInformation addDataCenter(String dataCenterName, int factor) {
+        this.dataCenter.put(dataCenterName, factor);
+        return this;
+    }
     Cluster build() {
 
         Builder buildCluster = Cluster.builder().withPort(port)
@@ -154,5 +225,15 @@ public class ClusterInformation {
             buildCluster.withCredentials(user, password);
         }
         return buildCluster.build();
+    }
+
+    KeySpaceQueryInformation toInformationKeySpace() {
+        KeySpaceQueryInformation information = new KeySpaceQueryInformation();
+        information.setCustomQuery(customQuery);
+        information.setDataCenter(dataCenter);
+        information.setFactor(replicaFactor);
+        information.setKeySpace(keySpace);
+        information.setReplicaStrategy(replicaStrategy);
+        return information;
     }
 }

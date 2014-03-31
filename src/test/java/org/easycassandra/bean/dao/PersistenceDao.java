@@ -29,7 +29,7 @@ public class PersistenceDao<T, K> {
         this.baseClass = baseClass;
 
         persistence = PersistenceUtil.INSTANCE.getPersistence();
-
+        PersistenceUtil.INSTANCE.addFamilyObject(baseClass);
     }
     /**
      * insert.

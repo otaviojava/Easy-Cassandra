@@ -17,8 +17,8 @@ package org.easycassandra.persistence.cassandra.spring;
 import java.util.List;
 
 import org.easycassandra.persistence.cassandra.BatchBuilder;
-import org.easycassandra.persistence.cassandra.BuilderPersistence;
-import org.easycassandra.persistence.cassandra.BuilderPersistenceImpl;
+import org.easycassandra.persistence.cassandra.PersistenceBuilder;
+import org.easycassandra.persistence.cassandra.PersistenceBuilderImpl;
 import org.easycassandra.persistence.cassandra.CassandraFactory;
 import org.easycassandra.persistence.cassandra.DeleteBuilder;
 import org.easycassandra.persistence.cassandra.InsertBuilder;
@@ -44,7 +44,7 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
 
 	private RunCassandraCommand command;
 
-	private BuilderPersistence builderPersistence;
+	private PersistenceBuilder builderPersistence;
 
 	/**
 	 * return a simple template of cassandra.
@@ -54,7 +54,7 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
 	    this.session = factory.getSession();
         this.keySpace = factory.getKeySpace();
         command = new RunCassandraCommand(keySpace);
-        builderPersistence = new BuilderPersistenceImpl(session, keySpace);
+        builderPersistence = new PersistenceBuilderImpl(session, keySpace);
 	}
 
     /**
@@ -66,7 +66,7 @@ public class SimpleCassandraTemplateImpl implements CassandraTemplate {
 	    this.session = session;
         this.keySpace = keySpace;
         command = new RunCassandraCommand(keySpace);
-        builderPersistence = new BuilderPersistenceImpl(session, keySpace);
+        builderPersistence = new PersistenceBuilderImpl(session, keySpace);
 	}
 
 	@Override

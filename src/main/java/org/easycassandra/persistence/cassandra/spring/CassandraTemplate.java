@@ -16,7 +16,7 @@ package org.easycassandra.persistence.cassandra.spring;
 
 import java.util.List;
 
-import org.easycassandra.persistence.cassandra.BuilderPersistence;
+import org.easycassandra.persistence.cassandra.PersistenceBuilder;
 
 import com.datastax.driver.core.ConsistencyLevel;
 
@@ -27,7 +27,7 @@ import com.datastax.driver.core.ConsistencyLevel;
  * Cassandra database.
  * @author otaviojava
  */
-public interface CassandraTemplate extends BuilderPersistence {
+public interface CassandraTemplate extends PersistenceBuilder {
     /**
      * saves the object.
      * @param entity

@@ -34,7 +34,11 @@ public enum ReplicaStrategy {
      * strategy allows you to specify how many replicas you want in each data
      * center.
      */
-    NETWORK_TOPOLOGY_STRATEGY("'NetworkTopologyStrategy'");
+    NETWORK_TOPOLOGY_STRATEGY("'NetworkTopologyStrategy'"),
+    /**
+     * use a custom query.
+     */
+    CUSTOM_STRATEGY("");
 
     private String value;
 

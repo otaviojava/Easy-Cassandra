@@ -37,8 +37,9 @@ public interface CassandraFactory {
 	/**
 	 * create a new keySpace on the cluster.
 	 * @param keySpace - the keySpace name
-	 * @param replicaStrategy - {@link ReplicaStrategy}
 	 * @param factor - the number of replica factor
+	 * @param replicaStrategy the replicaStrategy
 	 */
-	void createKeySpace(String keySpace, ReplicaStrategy replicaStrategy, int factor);
+    void createKeySpace(String keySpace, ReplicaStrategy replicaStrategy,
+            int factor);
 }

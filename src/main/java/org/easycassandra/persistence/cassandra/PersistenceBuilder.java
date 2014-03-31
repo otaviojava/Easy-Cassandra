@@ -17,7 +17,7 @@ package org.easycassandra.persistence.cassandra;
  * Base to create query builder on persistence Cassandra.
  * @author otaviojava
  */
-public interface BuilderPersistence {
+public interface PersistenceBuilder {
     /**
      * create the selectbuilder.
      * {@link SelectBuilder}

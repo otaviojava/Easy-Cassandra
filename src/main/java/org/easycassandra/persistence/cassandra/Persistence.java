@@ -23,7 +23,7 @@ import com.datastax.driver.core.ConsistencyLevel;
  * Cassandra database.
  * @author otaviojava
  */
-public interface Persistence extends BasePersistence, BuilderPersistence  {
+public interface Persistence extends BasePersistence, PersistenceBuilder  {
 
 
     /**
