@@ -14,7 +14,7 @@ import org.junit.Test;
  *
  * @author otavio
  */
-public class PersonDAOSyncTest {
+public class PersonDAOASyncTest {
 
     private static final long SAMPLE_ID = 32L;
     private static final int TEN = 10;
