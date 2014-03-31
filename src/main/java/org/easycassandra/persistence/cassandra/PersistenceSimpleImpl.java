@@ -23,18 +23,17 @@ import com.datastax.driver.core.Session;
  * Class to persist information in cassandra database.
  * @author otaviojava
  */
-public class PersistenceSimpleImpl implements Persistence {
+public class PersistenceSimpleImpl extends BuilderPersistenceImpl implements Persistence  {
 
     private Session session;
 
     private RunCassandraCommand command;
 
-    private BuilderPersistence builderPersistence;
 
     PersistenceSimpleImpl(Session session, String keySpace) {
+        super(session, keySpace);
         this.session = session;
         command = new RunCassandraCommand(keySpace);
-        builderPersistence = new BuilderPersistenceImpl(session, keySpace);
     }
 
     /**
@@ -125,7 +124,7 @@ public class PersistenceSimpleImpl implements Persistence {
 
     @Override
     public <K, T> List<T> findByKeys(Iterable<K> keys, Class<T> bean) {
-        return command.findAll(bean, session);
+        return command.findByKeys(keys, bean, session);
     }
 
     @Override
@@ -218,49 +217,4 @@ public class PersistenceSimpleImpl implements Persistence {
     public <T> Long count(Class<T> bean, ConsistencyLevel consistency) {
         return command.count(bean, session, consistency);
     }
-
-    @Override
-    public <T> SelectBuilder<T> selectBuilder(Class<T> classBean) {
-        return builderPersistence.selectBuilder(classBean);
-    }
-
-    @Override
-    public <T> InsertBuilder<T> insertBuilder(Class<T> classBean) {
-        return builderPersistence.insertBuilder(classBean);
-    }
-
-    @Override
-    public <T> InsertBuilder<T> insertBuilder(T classBean) {
-        return builderPersistence.insertBuilder(classBean);
-    }
-
-    @Override
-    public <T> UpdateBuilder<T> updateBuilder(Class<T> classBean) {
-        return builderPersistence.updateBuilder(classBean);
-    }
-
-
-    @Override
-    public <T> UpdateBuilder<T> updateBuilder(Class<T> classBean, Object key) {
-        return builderPersistence.updateBuilder(classBean, key);
-    }
-
-    @Override
-    public <T> DeleteBuilder<T> deleteBuilder(Class<T> classBean, String... columnNames) {
-        return builderPersistence.deleteBuilder(classBean, columnNames);
-    }
-
-    @Override
-    public <T, K> DeleteBuilder<T> deleteBuilder(Class<T> classBean, K key,
-            String... columnNames) {
-
-        return builderPersistence.deleteBuilder(classBean, key, columnNames);
-    }
-
-    @Override
-    public BatchBuilder batchBuilder() {
-        return builderPersistence.batchBuilder();
-    }
-
-
 }

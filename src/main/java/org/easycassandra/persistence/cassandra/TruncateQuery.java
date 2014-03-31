@@ -24,10 +24,14 @@ class TruncateQuery {
      * @param <T> the kind of object
      */
     public <T> void truncate(Class<T> bean, Session session) {
+        Truncate query = getQuery(bean);
+        session.execute(query.toString());
+    }
+    protected <T> Truncate getQuery(Class<T> bean) {
         ClassInformation classInformation = ClassInformations.INSTACE
                 .getClass(bean);
         Truncate query = QueryBuilder
                 .truncate(keySpace, classInformation.getNameSchema());
-        session.execute(query.toString());
+        return query;
     }
 }

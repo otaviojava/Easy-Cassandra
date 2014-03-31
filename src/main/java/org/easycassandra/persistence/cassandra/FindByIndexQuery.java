@@ -64,12 +64,17 @@ class FindByIndexQuery extends FindByKeyQuery {
     private <T> List<T> executeConditions(String indexName, Object key,
             Class<T> bean, Session session, QueryBean byKeyBean) {
 
+        prepareIndex(indexName, bean, byKeyBean);
+        ResultSet resultSet = executeQuery(key, bean, session, byKeyBean);
+        return RecoveryObject.INTANCE.recoverObjet(bean, resultSet);
+    }
+
+    protected <T> void prepareIndex(String indexName, Class<T> bean,
+            QueryBean byKeyBean) {
         ClassInformation classInformation = ClassInformations.INSTACE.getClass(bean);
 
         byKeyBean.setSearchField(classInformation.findIndexByName(indexName));
         checkIndexProblem(bean, byKeyBean);
-        ResultSet resultSet = executeQuery(key, bean, session, byKeyBean);
-        return RecoveryObject.INTANCE.recoverObjet(bean, resultSet);
     }
     protected void defineSearchField(QueryBean byKeyBean, Class<?> bean) {
     }

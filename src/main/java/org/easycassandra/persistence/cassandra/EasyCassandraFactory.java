@@ -47,4 +47,10 @@ public interface EasyCassandraFactory {
      * @return the {@link BuilderPersistenceImpl}
      */
     BuilderPersistence getBuilderPersistence();
+
+    /**
+     * returns a persistence async.
+     * @return the persistence that process async way.
+     */
+    PersistenceAsync getPersistenceAsync();
 }

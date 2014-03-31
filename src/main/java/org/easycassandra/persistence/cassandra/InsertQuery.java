@@ -46,6 +46,7 @@ class InsertQuery {
         session.execute(createStatment(bean, consistency));
         return true;
     }
+
     public <T> boolean prepare(Iterable<T> beans, Session session, ConsistencyLevel consistency) {
 
         for (T bean:beans) {
@@ -53,7 +54,6 @@ class InsertQuery {
         }
         return true;
     }
-
 
     public <T> Insert createStatment(T bean, ConsistencyLevel consistency) {
         ClassInformation classInformation = ClassInformations.INSTACE.getClass(bean.getClass());

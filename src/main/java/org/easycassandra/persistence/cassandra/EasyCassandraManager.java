@@ -69,6 +69,11 @@ public class EasyCassandraManager extends AbstractCassandraFactory implements
         return new BuilderPersistenceImpl(getSession(), getKeySpace());
     }
 
+    @Override
+    public PersistenceAsync getPersistenceAsync() {
+        return new PersistenceAsyncImpl(getSession(), getKeySpace());
+    }
+
     /**
      * list of classes added by Cassandra.
      */
@@ -86,7 +91,6 @@ public class EasyCassandraManager extends AbstractCassandraFactory implements
         }
         ClassInformation classInformation = ClassInformations.INSTACE.getClass(class1);
 
-        String familyColumn = classInformation.getNameSchema();
         Session session = getCluster().connect(keySpace);
         if (!classInformation.getSchema().equals("")) {
             getPersistence(classInformation.getSchema());
@@ -107,4 +111,5 @@ public class EasyCassandraManager extends AbstractCassandraFactory implements
     public boolean addFamilyObject(Class<?> class1) {
         return addFamilyObject(class1, getKeySpace());
     }
+
 }

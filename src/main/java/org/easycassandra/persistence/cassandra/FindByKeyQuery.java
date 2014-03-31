@@ -71,6 +71,16 @@ class FindByKeyQuery extends FindAllQuery {
     protected ResultSet executeQuery(Object key, Class<?> bean,
             Session session, QueryBean byKeyBean) {
 
+        FieldInformation fieldInformation = findKey(key, bean, byKeyBean);
+        if (fieldInformation.isEmbedded()) {
+            return executeComplexKey(key, session, byKeyBean);
+        } else {
+            return executeSingleKey(key, session, byKeyBean);
+        }
+    }
+
+    protected FieldInformation findKey(Object key, Class<?> bean,
+            QueryBean byKeyBean) {
         defineSearchField(byKeyBean, bean);
 
         FieldInformation fieldInformation = byKeyBean.getSearchField();
@@ -78,11 +88,7 @@ class FindByKeyQuery extends FindAllQuery {
         if (!key.getClass().equals(fieldInformation.getField().getType())) {
             createKeyProblemMensage(key, fieldInformation.getField().getType());
         }
-        if (fieldInformation.isEmbedded()) {
-            return executeComplexKey(key, session, byKeyBean);
-        } else {
-            return executeSingleKey(key, session, byKeyBean);
-        }
+        return fieldInformation;
     }
 
     private void createKeyProblemMensage(Object key, Class<?> keyClass) {
@@ -109,7 +115,6 @@ class FindByKeyQuery extends FindAllQuery {
         return session.execute(byKeyBean.getSelect());
 
     }
-
     /**
      * query with complex query in column family.
      * @param key
@@ -119,6 +124,12 @@ class FindByKeyQuery extends FindAllQuery {
      */
     protected ResultSet executeComplexKey(Object key, Session session,
             QueryBean byKeyBean) {
+        executeEqKey(key, byKeyBean);
+        return session.execute(byKeyBean.getSelect());
+
+    }
+
+    protected void executeEqKey(Object key, QueryBean byKeyBean) {
         ClassInformation classInformation = ClassInformations.INSTACE.getClass(key.getClass());
 
         for (FieldInformation complexKey : classInformation.getFields()) {
@@ -129,7 +140,5 @@ class FindByKeyQuery extends FindAllQuery {
                             ReflectionUtil.INSTANCE.getMethod(key,
                                     complexKey.getField())));
         }
-        return session.execute(byKeyBean.getSelect());
-
     }
 }

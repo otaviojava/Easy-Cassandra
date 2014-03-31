@@ -38,19 +38,23 @@ class CountQuery {
 
     /**
      * return the number of row in a column family.
-     * @param bean
-     *            - column family
+     * @param bean - column family
      * @param session
      * @return number of register in a column family
      */
     public Long count(Class<?> bean, Session session,
             ConsistencyLevel consistency) {
+        Select select = prepareCount(bean, consistency);
+        ResultSet resultSet = session.execute(select);
+        return resultSet.all().get(0).getLong(0);
+    }
+
+    protected Select prepareCount(Class<?> bean, ConsistencyLevel consistency) {
         ClassInformation classInformation = ClassInformations.INSTACE.getClass(bean);
         KeySpaceInformation key = classInformation.getKeySpace(keySpace);
         Select select = QueryBuilder.select().countAll()
                 .from(key.getKeySpace(), key.getColumnFamily());
         select.setConsistencyLevel(consistency);
-        ResultSet resultSet = session.execute(select);
-        return resultSet.all().get(0).getLong(0);
+        return select;
     }
 }

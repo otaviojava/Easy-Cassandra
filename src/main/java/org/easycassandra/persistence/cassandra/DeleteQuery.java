@@ -26,7 +26,6 @@ import org.easycassandra.util.ReflectionUtil;
 
 import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.Session;
-import com.datastax.driver.core.querybuilder.Batch;
 import com.datastax.driver.core.querybuilder.Delete;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 
@@ -77,17 +76,13 @@ class DeleteQuery {
     public <K> boolean deleteByKey(Iterable<K> keys, Class<?> bean,
             Session session, ConsistencyLevel consistency) {
 
-        Batch batch = null;
         for (K key : keys) {
-            if (batch == null) {
-                QueryBuilder.batch(runDelete(key, bean, consistency));
-            } else {
-                batch.add(batch);
-            }
+            session.execute(runDelete(key, bean, consistency));
+
         }
-        session.execute(batch);
         return true;
     }
+
 
     public Delete runDelete(Object key, Class<?> bean,
             ConsistencyLevel consistency) {

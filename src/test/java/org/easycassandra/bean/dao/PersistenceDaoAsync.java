@@ -6,7 +6,8 @@ import org.easycassandra.bean.query.SimpleID;
 import org.easycassandra.persistence.cassandra.BatchBuilder;
 import org.easycassandra.persistence.cassandra.DeleteBuilder;
 import org.easycassandra.persistence.cassandra.InsertBuilder;
-import org.easycassandra.persistence.cassandra.Persistence;
+import org.easycassandra.persistence.cassandra.PersistenceAsync;
+import org.easycassandra.persistence.cassandra.ResultAsyncCallBack;
 import org.easycassandra.persistence.cassandra.SelectBuilder;
 import org.easycassandra.persistence.cassandra.UpdateBuilder;
 
@@ -16,19 +17,19 @@ import org.easycassandra.persistence.cassandra.UpdateBuilder;
  * @param <T> the entity
  * @param <K> the key
  */
-public class PersistenceDao<T, K> {
+public class PersistenceDaoAsync<T, K> {
 
-    private Persistence persistence;
+    private PersistenceAsync persistence;
     private Class<T> baseClass;
 
     /**
      * the constructor.
      * @param baseClass the class
      */
-    public PersistenceDao(Class<T> baseClass) {
+    public PersistenceDaoAsync(Class<T> baseClass) {
         this.baseClass = baseClass;
 
-        persistence = PersistenceUtil.INSTANCE.getPersistence();
+        persistence = PersistenceUtil.INSTANCE.getPersistenceAsync();
 
     }
     /**
@@ -66,56 +67,31 @@ public class PersistenceDao<T, K> {
     /**
      * retrieve.
      * @param id the id
-     * @return the object
+     * @param resultCallBack the callback is invoked after the function returns
      */
-    public T retrieve(Object id) {
-        return   persistence.findByKey(id, baseClass);
+    public void retrieve(K id, ResultAsyncCallBack<T> resultCallBack) {
+        persistence.findByKey(id, baseClass, resultCallBack);
     }
 
     /**
      * listAll.
-     * @return list all
+     * @param resultCallBack the callback is invoked after the function returns
      */
-    public List<T> listAll() {
-        return persistence.findAll(baseClass);
+    public void listAll(ResultAsyncCallBack<List<T>> resultCallBack) {
+        persistence.findAll(baseClass, resultCallBack);
     }
     /**
      * listByIndex.
      * @param indexName the indexName
      * @param index the index
-     * @return the list
+     * @param resultCallBack the callback is invoked after the function returns
      */
-    public List<T> listByIndex(String indexName, Object index) {
-        return persistence.findByIndex(indexName, index, baseClass);
+    public void listByIndex(String indexName, Object index,
+            ResultAsyncCallBack<List<T>> resultCallBack) {
+        persistence.findByIndex(indexName, index, baseClass, resultCallBack);
     }
 
-    /**
-     * Find by key and annotated index.
-     * @param id the id
-     * @param index the index
-     * @author Nenita Casuga
-     * @since 10/30/2013
-     * @return the list
-     */
-    public List<T> listByKeyAndIndex(Object id, Object index) {
-        return persistence.findByKeyAndIndex(id, index, baseClass);
-    }
 
-    /**
-     * listByKeyAndIndexRange.
-     * @param id the id
-     * @param indexStart the indexStart
-     * @param indexEnd the indexEnd
-     * @param inclusive the inclusive
-     * @author Nenita Casuga
-     * @since 10/30/201
-     * @return the list
-     */
-    public List<T> listByKeyAndIndexRange(Object id, Object indexStart,
-            Object indexEnd, boolean inclusive) {
-        return persistence.findByKeyAndIndexRange(id, indexStart, indexEnd,
-                inclusive, baseClass);
-    }
     /**
      * execute a query.
      * @param query the query
@@ -126,10 +102,10 @@ public class PersistenceDao<T, K> {
     }
     /**
      * count.
-     * @return the count.
+     * @param resultCallBack the callback is invoked after the function returns
      */
-    public Long count() {
-        return persistence.count(baseClass);
+    public void count(ResultAsyncCallBack<Long> resultCallBack) {
+        persistence.count(baseClass, resultCallBack);
     }
     /**
      * execute the query.

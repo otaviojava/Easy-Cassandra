@@ -14,12 +14,13 @@
 package org.easycassandra.persistence.cassandra.spring;
 
 import org.easycassandra.persistence.cassandra.CassandraFactory;
+import org.easycassandra.persistence.cassandra.EasyCassandraFactory;
 
 /**
  * base create Connection of Cassandra Template.
  * @author otaviojava
  */
-public interface CassandraFactorySpring extends CassandraFactory {
+public interface CassandraFactorySpring extends CassandraFactory, EasyCassandraFactory {
 
 
 	/**
