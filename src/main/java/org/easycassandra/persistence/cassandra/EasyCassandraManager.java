@@ -91,7 +91,7 @@ public class EasyCassandraManager extends AbstractCassandraFactory implements
 
     @Override
     public PersistenceAsync getPersistenceAsync() {
-        return new PersistenceAsyncImpl(getSession(), getKeySpace());
+        return new PersistenceSimpleAsyncImpl(getSession(), getKeySpace());
     }
 
     /**

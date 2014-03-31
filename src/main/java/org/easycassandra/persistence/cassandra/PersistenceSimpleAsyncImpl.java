@@ -10,13 +10,13 @@ import com.datastax.driver.core.Session;
  * @author otaviojava
  *
  */
-public class PersistenceAsyncImpl extends PersistenceBuilderImpl implements PersistenceAsync {
+public class PersistenceSimpleAsyncImpl extends PersistenceBuilderImpl implements PersistenceAsync {
 
     private Session session;
 
     private RunCassandraCommandAsync command;
 
-    PersistenceAsyncImpl(Session session, String keySpace) {
+    PersistenceSimpleAsyncImpl(Session session, String keySpace) {
         super(session, keySpace);
         this.session = session;
         command = new RunCassandraCommandAsync(keySpace);
