@@ -47,11 +47,11 @@ class FixKeySpace {
         createKeySpace(session, keySpace, replicaStrategy, factor);
     }
 
-    public void createKeySpace(Session session, String keySpace,
+    private void createKeySpace(Session session, String keySpace,
             ReplicaStrategy replicaStrategy, int factor) {
 
         KeySpaceQueryInformation information = getInformation(replicaStrategy,
-                factor);
+                factor, keySpace);
         createKeySpace(information, session);
 
     }
@@ -83,9 +83,10 @@ class FixKeySpace {
     }
 
     private KeySpaceQueryInformation getInformation(
-            ReplicaStrategy replicaStrategy, int factor) {
+            ReplicaStrategy replicaStrategy, int factor, String keySpace) {
         KeySpaceQueryInformation information = new KeySpaceQueryInformation();
         information.setReplicaStrategy(replicaStrategy);
+        information.setKeySpace(keySpace);
         information.setFactor(factor);
         return information;
     }

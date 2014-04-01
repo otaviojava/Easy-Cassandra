@@ -58,7 +58,7 @@ enum RelationShipJavaCassandra {
         primitiveMap.put("int", "java.lang.Integer");
         primitiveMap.put("long", "java.lang.Long");
         primitiveMap.put("float", "java.lang.Float");
-        primitiveMap.put("Double", "java.lang.Double");
+        primitiveMap.put("double", "java.lang.Double");
         primitiveMap.put("boolean", "java.lang.Boolean");
     }
 
@@ -153,5 +153,9 @@ enum RelationShipJavaCassandra {
         }
 
         return null;
+    }
+
+    public boolean containsType(String name) {
+        return primitiveMap.containsKey(name) || mapJava.containsKey(name);
     }
 }

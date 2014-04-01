@@ -52,7 +52,7 @@ public class EasyCassandraManager extends AbstractCassandraFactory implements
 
         if (!persistenceMap.containsKey(keySpace)) {
             Session session = getSession();
-            if (!keySpace.contains(keySpace)) {
+            if (!keySpaces.contains(keySpace)) {
                 verifyKeySpace(keySpace, getSession());
                 keySpaces.add(keySpace);
             }
@@ -111,13 +111,13 @@ public class EasyCassandraManager extends AbstractCassandraFactory implements
         }
         ClassInformation classInformation = ClassInformations.INSTACE.getClass(class1);
 
-        Session session = getCluster().connect(keySpace);
         if (!classInformation.getSchema().equals("")) {
             getPersistence(classInformation.getSchema());
 
         }
         classes.add(class1);
         KeySpaceInformation key = classInformation.getKeySpace(keySpace);
+        Session session = getCluster().connect(key.getKeySpace());
         return new FixColumnFamily().verifyColumnFamily(session, key.getKeySpace(),
                 key.getColumnFamily(), class1);
     }

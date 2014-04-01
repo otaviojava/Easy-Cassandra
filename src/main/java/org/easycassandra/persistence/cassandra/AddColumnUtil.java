@@ -76,13 +76,10 @@ enum AddColumnUtil {
                 RelationShipJavaCassandra javaCassandra) {
             StringBuilder row = new StringBuilder();
             String columnName = field.getName();
-            row.append(columnName)
-                    .append(" map<")
-                    .append(javaCassandra.getPreferenceCQLType(field.getKey().getName()))
-                    .append(",");
-            row.append(
-                    javaCassandra.getPreferenceCQLType(field
-                            .getValue().getName())).append(">,");
+            String keyType = getType(field.getKey().getName());
+            String valueType = getType(field.getValue().getName());
+            row.append(columnName).append(" map<").append(keyType).append(",");
+            row.append(valueType).append(">,");
             return row.toString();
         }
 
@@ -99,10 +96,10 @@ enum AddColumnUtil {
                 RelationShipJavaCassandra javaCassandra) {
             StringBuilder row = new StringBuilder();
             String columnName = field.getName();
-            Class<?> clazz = field.getKey();
+            String keyType = getType(field.getKey().getName());
             row.append(columnName)
                     .append(" set<")
-                    .append(javaCassandra.getPreferenceCQLType(clazz.getName()))
+                    .append(keyType)
                     .append(">,");
             return row.toString();
         }
@@ -120,10 +117,10 @@ enum AddColumnUtil {
                 RelationShipJavaCassandra javaCassandra) {
             StringBuilder row = new StringBuilder();
             String columnName = field.getName();
-            Class<?> clazz = field.getKey();
+            String keyType = getType(field.getKey().getName());
             row.append(columnName)
                     .append(" list<")
-                    .append(javaCassandra.getPreferenceCQLType(clazz.getName()))
+                    .append(keyType)
                     .append(">,");
             return row.toString();
         }
@@ -186,6 +183,17 @@ enum AddColumnUtil {
 
     }
 
+    private String getType(String type) {
+        RelationShipJavaCassandra javaCassandra = RelationShipJavaCassandra.INSTANCE;
+        if (javaCassandra.containsType(type)) {
+            return javaCassandra.getPreferenceCQLType(type);
+        } else {
+            return javaCassandra.getPreferenceCQLType(DEFAULT_COLLECTION_CLASS);
+        }
+    }
+
+    private static final String DEFAULT_COLLECTION_CLASS = String.class
+            .getName();
     /**
      * The contract to create a column to cassandra checking the annotation.
      * @author otaviojava

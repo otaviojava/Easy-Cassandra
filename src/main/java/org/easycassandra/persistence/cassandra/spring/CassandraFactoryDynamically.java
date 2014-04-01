@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.easycassandra.ClassInformation;
 import org.easycassandra.ClassInformations;
+import org.easycassandra.ClassInformation.KeySpaceInformation;
 import org.easycassandra.persistence.cassandra.ClusterInformation;
 
 import com.datastax.driver.core.Session;
@@ -54,11 +55,12 @@ public class CassandraFactoryDynamically extends AbstractCassandraFactory {
         }
         ClassInformation classInformation = ClassInformations.INSTACE.getClass(class1);
         String familyColumn = classInformation.getNameSchema();
-        Session session = getCluster().connect(keySpace);
         if (!classInformation.getSchema().equals("")) {
             getTemplate(classInformation.getSchema());
 
         }
+        KeySpaceInformation key = classInformation.getKeySpace(getKeySpace());
+        Session session = getCluster().connect(key.getKeySpace());
         classes.add(class1);
         return fixColumnFamily(session, familyColumn, class1);
     }

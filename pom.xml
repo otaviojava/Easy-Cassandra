@@ -4,7 +4,7 @@
 
     <groupId>org.easycassandra</groupId>
     <artifactId>EasyCassandra</artifactId>
-    <version>2.0.3</version>
+    <version>2.0.4-ALPHA</version>
     <packaging>jar</packaging>
 
 	<properties>
@@ -53,6 +53,13 @@
 			<artifactId>ow2-jpa-2.0-spec</artifactId>
 			<version>${jpa.version}</version>
 		</dependency>
+
+	<dependency>
+		<groupId>com.google.code.gson</groupId>
+		<artifactId>gson</artifactId>
+		<version>2.2.4</version>
+	</dependency>
+            
 
 
 		<dependency>

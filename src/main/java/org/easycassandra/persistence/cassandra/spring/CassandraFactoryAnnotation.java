@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.easycassandra.ClassInformation;
 import org.easycassandra.ClassInformations;
+import org.easycassandra.ClassInformation.KeySpaceInformation;
 import org.easycassandra.persistence.cassandra.ClusterInformation;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -60,11 +61,12 @@ public class CassandraFactoryAnnotation extends AbstractCassandraFactory
 	public boolean mappedBean(Class<?> entity) {
 	    ClassInformation classInformation = ClassInformations.INSTACE.getClass(entity);
         String familyColumn = classInformation.getNameSchema();
-        Session session = getCluster().connect(getKeySpace());
         if (!classInformation.getSchema().equals("")) {
             getTemplate(classInformation.getSchema());
 
         }
+        KeySpaceInformation key = classInformation.getKeySpace(getKeySpace());
+        Session session = getCluster().connect(key.getKeySpace());
         return fixColumnFamily(session, familyColumn, entity);
 	}
 
