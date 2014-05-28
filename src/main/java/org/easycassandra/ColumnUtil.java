@@ -103,7 +103,7 @@ enum ColumnUtil {
     public String getSchema(Class<?> class1) {
         Table columnFamily = (Table) class1.getAnnotation(Table.class);
         if (columnFamily != null) {
-            return columnFamily.schema().equals("") ? null : columnFamily
+            return columnFamily.schema().equals("") ? "" : columnFamily
                     .schema();
         }
         return "";
