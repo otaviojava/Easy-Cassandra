@@ -12,22 +12,23 @@ import com.datastax.driver.core.Session;
  */
 class AbstractCassandraFactory implements CassandraFactory {
 
-    /**
+   /**
      * Constructor to Factory.
      * @param clusterInformation {@link ClusterInformation}
      */
     public AbstractCassandraFactory(ClusterInformation clusterInformation) {
         this.clusterInformation = clusterInformation;
-		initConection();
+		initConnection();
 	}
 
     private ClusterInformation clusterInformation;
 
-    private Cluster cluter;
+    private Cluster cluster;
 
+    private Session session;
 
     protected Cluster getCluster() {
-    	return cluter;
+    	return cluster;
     }
 
     @Override
@@ -47,7 +48,7 @@ class AbstractCassandraFactory implements CassandraFactory {
 
     @Override
     public Session getSession() {
-    	return cluter.connect();
+    	return session;
     }
 
     protected boolean fixColumnFamily(Session session, String familyColumn,
@@ -62,6 +63,16 @@ class AbstractCassandraFactory implements CassandraFactory {
         verifyKeySpace(keySpace, getSession(), replicaStrategy, factor);
     }
 
+    @Override
+    public void close() {
+        if (!cluster.isClosed()) {
+            cluster.close();
+        }
+        if (!session.isClosed()) {
+            session.close();
+        }
+    }
+
     protected void verifyKeySpace(String keySpace, Session session,
             ReplicaStrategy replicaStrategy, int factor) {
 		new FixKeySpace().verifyKeySpace(keySpace, session, replicaStrategy, factor);
@@ -73,8 +84,9 @@ class AbstractCassandraFactory implements CassandraFactory {
 	/**
 	 * init the default connection.
 	 */
-    private  void initConection() {
-        cluter = clusterInformation.build();
+    private  void initConnection() {
+        cluster = clusterInformation.build();
+        session = cluster.connect();
         new FixKeySpace().createKeySpace(clusterInformation.toInformationKeySpace(), getSession());
     }
 
