@@ -42,4 +42,6 @@ public interface CassandraFactory {
 	 */
     void createKeySpace(String keySpace, ReplicaStrategy replicaStrategy,
             int factor);
+
+    void close();
 }

@@ -20,6 +20,7 @@ import org.easycassandra.ClassInformation;
 import org.easycassandra.ClassInformations;
 import org.easycassandra.ClassInformation.KeySpaceInformation;
 import org.easycassandra.persistence.cassandra.ClusterInformation;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.datastax.driver.core.Session;
@@ -29,7 +30,7 @@ import com.datastax.driver.core.Session;
  * @author otaviojava
  */
 public class CassandraFactoryAnnotation extends AbstractCassandraFactory
-        implements InitializingBean {
+        implements InitializingBean, DisposableBean {
 
 	private List<Class<?>> annotatedClasses;
 
@@ -73,5 +74,10 @@ public class CassandraFactoryAnnotation extends AbstractCassandraFactory
 	public void setAnnotatedClasses(List<Class<?>> annotatedClasses) {
 		this.annotatedClasses = annotatedClasses;
 	}
+
+    @Override
+    public void destroy() {
+        close();
+    }
 
 }
