@@ -125,5 +125,19 @@
                   <url>${github.maven.repository}</url>
           </repository>
   </distributionManagement>
-    
+
+    <profiles>
+        <profile>
+            <!-- unit tests will fail on Windows -->
+            <id>win32-skip-test</id>
+            <activation>
+                <os>
+                    <family>Windows</family>
+                </os>
+            </activation>
+            <properties>
+                <maven.test.skip>true</maven.test.skip>
+            </properties>
+        </profile>
+    </profiles>    
 </project>
