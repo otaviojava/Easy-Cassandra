@@ -12,7 +12,7 @@
     <!-- Original <artifactId>EasyCassandra</artifactId> -->
     <groupId>net.trajano</groupId>
     <artifactId>easy-cassandra</artifactId>
-    <version>2.0.4</version>
+    <version>2.0.5-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
 	<properties>
