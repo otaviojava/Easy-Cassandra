@@ -2,8 +2,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.easycassandra</groupId>
-    <artifactId>EasyCassandra</artifactId>
+    <!-- Added to set up the central requirements easily -->
+    <parent>
+      <groupId>org.sonatype.oss</groupId>
+      <artifactId>oss-parent</artifactId>
+      <version>9</version>
+    </parent>
+
+    <!-- Original <groupId>org.easycassandra</groupId> -->
+    <!-- Original <artifactId>EasyCassandra</artifactId> -->
+    <groupId>net.trajano</groupId>
+    <artifactId>easy-cassandra</artifactId>
     <version>2.0.4-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
@@ -21,6 +30,12 @@
 
     <name>EasyCassandra</name>
     <url>https://github.com/otaviojava/Easy-Cassandra</url>
+    <scm>
+        <connection>scm:git:https://github.com/trajano/${project.artifactId}</connection>
+        <developerConnection>scm:git:ssh://git@github.com/trajano/${project.artifactId}.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -118,13 +133,6 @@
             <distribution>repo</distribution>
         </license>
 </licenses>
-    
-     <distributionManagement>
-          <repository>
-                  <id>maven-repository</id>
-                  <url>${github.maven.repository}</url>
-          </repository>
-  </distributionManagement>
 
     <profiles>
         <profile>
