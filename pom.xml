@@ -1,10 +1,18 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.easycassandra</groupId>
-    <artifactId>EasyCassandra</artifactId>
-    <version>2.0.4-SNAPSHOT</version>
+    <!-- Added to set up the central requirements easily -->
+    <parent>
+      <groupId>org.sonatype.oss</groupId>
+      <artifactId>oss-parent</artifactId>
+      <version>9</version>
+    </parent>
+
+    <!-- Original <groupId>org.easycassandra</groupId> -->
+    <!-- Original <artifactId>EasyCassandra</artifactId> -->
+    <groupId>net.trajano</groupId>
+    <artifactId>easy-cassandra</artifactId>
+    <version>2.0.5-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
 	<properties>
@@ -21,6 +29,12 @@
 
     <name>EasyCassandra</name>
     <url>https://github.com/otaviojava/Easy-Cassandra</url>
+    <scm>
+        <connection>scm:git:https://github.com/trajano/${project.artifactId}</connection>
+        <developerConnection>scm:git:ssh://git@github.com/trajano/${project.artifactId}.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -118,12 +132,62 @@
             <distribution>repo</distribution>
         </license>
 </licenses>
-    
-     <distributionManagement>
-          <repository>
-                  <id>maven-repository</id>
-                  <url>${github.maven.repository}</url>
-          </repository>
-  </distributionManagement>
-    
+
+    <profiles>
+        <profile>
+            <!-- unit tests will fail on Windows -->
+            <id>win32-skip-test</id>
+            <activation>
+                <os>
+                    <family>Windows</family>
+                </os>
+            </activation>
+            <properties>
+                <maven.test.skip>true</maven.test.skip>
+            </properties>
+        </profile>
+        <profile>
+            <!-- disable plugins and javadoc lint on JDK8 -->
+            <id>jdk8-relaxation</id>
+            <activation>
+                <jdk>1.8</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>
+                            <additionalparam>-Xdoclint:none</additionalparam>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>findbugs-maven-plugin</artifactId>
+                        <inherited>false</inherited>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+            <reporting>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>
+                            <additionalparam>-Xdoclint:none</additionalparam>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>findbugs-maven-plugin</artifactId>
+                        <inherited>false</inherited>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </reporting>
+        </profile>
+    </profiles>
 </project>
