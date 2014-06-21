@@ -84,19 +84,19 @@ public class SelectBuilderImpl <T> implements SelectBuilder<T> {
     @Override
     public SelectBuilder<T> between(String name, Object startValue,
             Object endValue) {
-        return lte(name, startValue).gt(name, endValue);
+        return gte(name, startValue).lt(name, endValue);
     }
 
     @Override
     public SelectBuilder<T> betweenInclusive(String name, Object startValue,
             Object endValue) {
-        return lte(name, startValue).gte(name, endValue);
+        return gte(name, startValue).lte(name, endValue);
     }
 
     @Override
     public SelectBuilder<T> betweenExclusive(String name, Object startValue,
             Object endValue) {
-        return lt(name, startValue).gt(name, endValue);
+        return gt(name, startValue).lt(name, endValue);
     }
 
     @Override
