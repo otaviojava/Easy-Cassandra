@@ -339,6 +339,39 @@ enum ColumnUtil {
     }
 
     /**
+     * verify if this is a Partkey id column.
+     * @param field the field
+     * @return if has PartKey annotation
+     */
+    public boolean isPartkeyField(Field field) {
+        return field.getAnnotation(Partkey.class) != null;
+    }
+
+    /**
+     * verify is this field is Cluester Ordering column.
+     *
+     * @param field the field
+     * @return if has ClusteringOrder annotation
+     */
+    public boolean isClusteringOrderField(Field field) {
+        return field.getAnnotation(ClusteringOrder.class) != null;
+    }
+
+    /**
+     * Retrieve the cluster order.
+     *
+     * @param field the field
+     * @return The instance of Order that indicates the order
+     */
+    public Order getClusterOrder(Field field) {
+        Order order = null;
+        if (isClusteringOrderField(field)) {
+            order = field.getAnnotation(ClusteringOrder.class).order();
+        }
+        return order;
+    }
+
+    /**
      * verify if this is a Version column.
      * @param field the field
      * @return if has Version annotation

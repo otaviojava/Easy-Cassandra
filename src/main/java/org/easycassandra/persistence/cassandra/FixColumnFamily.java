@@ -33,6 +33,9 @@ import com.datastax.driver.core.Session;
 import com.datastax.driver.core.exceptions.InvalidQueryException;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.core.querybuilder.Select;
+import java.util.Collections;
+import java.util.Comparator;
+import org.easycassandra.Order;
 
 /**
  * Class to fix a column family.
@@ -41,6 +44,7 @@ import com.datastax.driver.core.querybuilder.Select;
 class FixColumnFamily {
 
     private static final String QUERY_PRIMARY_KEY = " PRIMARY KEY (";
+    private static final String CLUSTERING_ORDER = " WITH CLUSTERING ORDER BY (";
 
     /**
      * verify if exist column family and try to create.
@@ -178,10 +182,13 @@ class FixColumnFamily {
         ClassInformation classInformation = ClassInformations.INSTACE.getClass(class1);
         createQueryCreateTable(classInformation, cqlCreateTable);
         if (classInformation.isComplexKey()) {
-            addComlexID(classInformation, cqlCreateTable);
+            addComplexID(classInformation, cqlCreateTable);
+            addClusteringOrder(classInformation,cqlCreateTable);
         } else {
             addSimpleId(classInformation, cqlCreateTable);
         }
+
+        cqlCreateTable.append(";");
 
         session.execute(cqlCreateTable.toString());
     }
@@ -198,7 +205,7 @@ class FixColumnFamily {
         }
         cqlCreateTable.append(QUERY_PRIMARY_KEY)
                 .append(keyField.getName())
-                .append(") );");
+                .append(") )");
     }
 
 
@@ -207,24 +214,82 @@ class FixColumnFamily {
      * @param classInformation
      * @param cqlCreateTable
      */
-    private void addComlexID(ClassInformation classInformation, StringBuilder cqlCreateTable) {
+    private void addComplexID(ClassInformation classInformation, StringBuilder cqlCreateTable) {
 
         FieldInformation keyField = classInformation.getKeyInformation();
         cqlCreateTable.append(QUERY_PRIMARY_KEY);
         boolean firstTime = true;
+        boolean endPartkey = false;
+        boolean existsPatkey = false;
         if (keyField == null) {
             createErro(classInformation);
         }
-        for (FieldInformation subKey : keyField.getSubFields().getFields()) {
+
+        for (FieldInformation subKey : getSubkeysFieldsOrderedByPartkey(keyField)) {
             if (firstTime) {
+                if (existsPatkey = subKey.isPartKeyCheck()) {
+                    cqlCreateTable.append("(");
+                }
                 cqlCreateTable.append(subKey.getName());
                 firstTime = false;
             } else {
+                if (existsPatkey && !endPartkey && !subKey.isPartKeyCheck()) {
+                    endPartkey = true;
+                    cqlCreateTable.append(")");
+                }
                 cqlCreateTable.append(",").append(subKey.getName());
             }
         }
-        cqlCreateTable.append(") );");
+        if (existsPatkey && !endPartkey) {
+            cqlCreateTable.append(")");
     }
+        cqlCreateTable.append(") )");
+
+    }
+
+    /**
+     * retrieve a ordered list of all complex key's subkeys.
+     *
+     * @param keyField
+     * @return A ordered list
+     */
+    private List<FieldInformation> getSubkeysFieldsOrderedByPartkey(FieldInformation keyField) {
+        List<FieldInformation> keyFields = keyField.getSubFields().getFields();
+        Collections.sort(keyFields, new Comparator<FieldInformation>() {
+
+            @Override
+            public int compare(FieldInformation o1, FieldInformation o2) {
+                return Boolean.compare(o2.isPartKeyCheck(), o1.isPartKeyCheck());
+            }
+        });
+        return keyFields;
+    }
+    
+     private void addClusteringOrder(ClassInformation classInformation, StringBuilder cqlCreateTable) {
+        
+        FieldInformation keyField = classInformation.getKeyInformation();
+        boolean firstTime = true;
+        for (FieldInformation subKey : keyField.getSubFields().getFields()) {
+            if (subKey.isClusteringOrderCheck() && !subKey.isPartKeyCheck()){
+                if (firstTime){
+                    cqlCreateTable.append(CLUSTERING_ORDER);
+                    cqlCreateTable.append(subKey.getName()).append(" ").append(getOrderString(subKey));
+                    firstTime = false;
+                }else{
+                    cqlCreateTable.append(",").append(subKey.getName()).append(" ").append(getOrderString(subKey));
+                }
+            }
+        }
+        if (!firstTime){
+            cqlCreateTable.append(")");
+        }
+      
+    }
+
+    private static String getOrderString(FieldInformation subKey) {
+        return subKey.getOrder()==Order.DESC?"DESC":"ASC";
+    }
+    
 
     /**
      * @param bean
@@ -291,7 +356,7 @@ class FixColumnFamily {
 		StringBuilder createIndexQuery;
 		createIndexQuery = new StringBuilder();
 		createIndexQuery.append("CREATE INDEX ");
-		createIndexQuery.append(index.getName()).append(" ON ");
+                createIndexQuery.append("i_").append(index.getName()).append(" ON ");
 		createIndexQuery.append(familyColumn.getNameSchema());
 		createIndexQuery.append(" (").append(index.getName()).append(");");
 		try {
