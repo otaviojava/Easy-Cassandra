@@ -328,16 +328,7 @@ enum ColumnUtil {
     public boolean isEmbeddedField(Field field) {
         return field.getAnnotation(Embedded.class) != null;
     }
-
-    /**
-     * verify if this is a Embedded id column.
-     * @param field the field
-     * @return if has EmbeddedId annotation
-     */
-    public boolean isEmbeddedIdField(Field field) {
-        return field.getAnnotation(EmbeddedId.class) != null;
-    }
-
+    
     /**
      * verify if this is a Partkey id column.
      * @param field the field
@@ -346,7 +337,7 @@ enum ColumnUtil {
     public boolean isPartkeyField(Field field) {
         return field.getAnnotation(Partkey.class) != null;
     }
-
+    
     /**
      * verify is this field is Cluester Ordering column.
      *
@@ -356,7 +347,7 @@ enum ColumnUtil {
     public boolean isClusteringOrderField(Field field) {
         return field.getAnnotation(ClusteringOrder.class) != null;
     }
-
+    
     /**
      * Retrieve the cluster order.
      *
@@ -369,6 +360,15 @@ enum ColumnUtil {
             order = field.getAnnotation(ClusteringOrder.class).order();
         }
         return order;
+    }    
+
+    /**
+     * verify if this is a Embedded id column.
+     * @param field the field
+     * @return if has EmbeddedId annotation
+     */
+    public boolean isEmbeddedIdField(Field field) {
+        return field.getAnnotation(EmbeddedId.class) != null;
     }
 
     /**
