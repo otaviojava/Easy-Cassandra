@@ -50,6 +50,21 @@ public class FieldInformation implements Comparable<FieldInformation> {
      */
     private boolean keyCheck;
     /**
+     * indicates this field is partkey.
+     */
+    private boolean partkeyCheck;
+
+    /**
+     * indicates if the field is part of ordering cluster.
+     */
+    private boolean clusteringOrderCheck;
+
+    /**
+     * indicates the order
+     */
+    private Order order;
+
+    /**
      * list of information when this field is embedded or embedded Id.
      */
     private ClassInformation subFields;
@@ -114,6 +129,19 @@ public class FieldInformation implements Comparable<FieldInformation> {
     public boolean isKeyCheck() {
         return keyCheck;
     }
+
+    public boolean isPartKeyCheck() {
+        return partkeyCheck;
+    }
+
+    public boolean isClusteringOrderCheck() {
+        return clusteringOrderCheck;
+    }
+
+    public Order getOrder() {
+        return order;
+    }
+
     /**
      * create the class with field.
      * @param field - field to receive the information
@@ -124,6 +152,13 @@ public class FieldInformation implements Comparable<FieldInformation> {
 
         this.keyCheck = ColumnUtil.INTANCE.isEmbeddedIdField(field)
                 || ColumnUtil.INTANCE.isIdField(field);
+
+        this.partkeyCheck = ColumnUtil.INTANCE.isPartkeyField(field);
+
+        this.clusteringOrderCheck = ColumnUtil.INTANCE.isClusteringOrderField(field);
+
+        this.order = ColumnUtil.INTANCE.getClusterOrder(field);
+
         this.type = FieldType.getTypeByField(field);
         this.field = field;
         this.collectionType = FieldType.EMPTY;
